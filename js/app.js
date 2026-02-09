@@ -39,18 +39,13 @@
   async function autoLoadData() {
     try {
       for (const div of ['mens', 'womens']) {
-        const [teamsResp, drawResp] = await Promise.all([
-          fetch(`data/teams_${div}.json`),
-          fetch(`data/draw_${div}.json`),
-        ]);
-        if (teamsResp.ok) {
-          const teams = await teamsResp.json();
+        const teams = BundledData.teams[div];
+        const draw  = BundledData.draw[div];
+        if (teams) {
           CalcuttaData.activeDivision = div;
-          // Import teams array into the active division
           CalcuttaData.importJSON(teams);
         }
-        if (drawResp.ok) {
-          const draw = await drawResp.json();
+        if (draw) {
           CalcuttaData.activeDivision = div;
           CalcuttaData.state[div].draw = draw;
         }
@@ -58,9 +53,9 @@
       CalcuttaData.activeDivision = 'mens';
       CalcuttaData.state.config = CalcuttaData.config; // keep defaults
       CalcuttaData.save();
-      console.log('Auto-loaded team and draw data from JSON files.');
+      console.log('Auto-loaded team and draw data from bundled data.');
     } catch (e) {
-      console.warn('Auto-load failed (OK if running without data files):', e);
+      console.warn('Auto-load failed:', e);
     }
   }
 
@@ -249,14 +244,12 @@
 
   async function loadBracketTree() {
     const div = CalcuttaData.activeDivision;
-    try {
-      const resp = await fetch(`data/bracket_${div}.json`);
-      if (resp.ok) {
-        cachedBracketTree = await resp.json();
-        renderBracket();
-      }
-    } catch (e) {
-      console.warn('Could not load bracket tree:', e);
+    const tree = BundledData.bracket[div] || null;
+    if (tree) {
+      cachedBracketTree = tree;
+      renderBracket();
+    } else {
+      console.warn('No bundled bracket tree for', div);
     }
   }
 
@@ -629,10 +622,15 @@
 
   function renderPayoutCards() {
     const payouts = CalcuttaData.eventPayouts();
+    const pcts = CalcuttaData.config.payoutPcts;
     document.getElementById('payout-a').textContent = fmt$(payouts.A);
     document.getElementById('payout-b').textContent = fmt$(payouts.B);
     document.getElementById('payout-c').textContent = fmt$(payouts.C);
     document.getElementById('payout-d').textContent = fmt$(payouts.D);
+    document.getElementById('payout-a-hdr').textContent = `A Event (${Math.round(pcts.A * 100)}%)`;
+    document.getElementById('payout-b-hdr').textContent = `B Event (${Math.round(pcts.B * 100)}%)`;
+    document.getElementById('payout-c-hdr').textContent = `C Event (${Math.round(pcts.C * 100)}%)`;
+    document.getElementById('payout-d-hdr').textContent = `D Event (${Math.round(pcts.D * 100)}%)`;
   }
 
   function bindBidActions() {
@@ -1134,6 +1132,9 @@
       inp.addEventListener('change', () => {
         readSettingsFromUI();
         CalcuttaData.save();
+        cachedAnalysis = [];
+        renderAll();
+        runFullAnalysis();
       });
     });
 
