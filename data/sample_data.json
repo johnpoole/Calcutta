@@ -1,0 +1,88 @@
+{
+  "mens": {
+    "teams": [
+      {
+        "id": "team1",
+        "name": "Team Smith",
+        "wins": 12,
+        "losses": 3,
+        "ties": 1,
+        "pointsFor": 95,
+        "pointsAgainst": 58,
+        "seed": 1,
+        "h2h": {
+          "team2": { "w": 2, "l": 1 },
+          "team3": { "w": 3, "l": 0 },
+          "team4": { "w": 2, "l": 0 }
+        }
+      },
+      {
+        "id": "team2",
+        "name": "Team Jones",
+        "wins": 10,
+        "losses": 4,
+        "ties": 2,
+        "pointsFor": 87,
+        "pointsAgainst": 62,
+        "seed": 2,
+        "h2h": {
+          "team1": { "w": 1, "l": 2 },
+          "team3": { "w": 2, "l": 1 },
+          "team4": { "w": 3, "l": 0 }
+        }
+      },
+      {
+        "id": "team3",
+        "name": "Team Brown",
+        "wins": 8,
+        "losses": 6,
+        "ties": 2,
+        "pointsFor": 76,
+        "pointsAgainst": 71,
+        "seed": 3,
+        "h2h": {
+          "team1": { "w": 0, "l": 3 },
+          "team2": { "w": 1, "l": 2 },
+          "team4": { "w": 2, "l": 1 }
+        }
+      },
+      {
+        "id": "team4",
+        "name": "Team Wilson",
+        "wins": 6,
+        "losses": 8,
+        "ties": 2,
+        "pointsFor": 65,
+        "pointsAgainst": 80,
+        "seed": 4,
+        "h2h": {
+          "team1": { "w": 0, "l": 2 },
+          "team2": { "w": 0, "l": 3 },
+          "team3": { "w": 1, "l": 2 }
+        }
+      }
+    ],
+    "draw": [],
+    "bids": [],
+    "priorPayouts": [
+      { "teamId": "team1", "amount": 4960 },
+      { "teamId": "team2", "amount": 3720 },
+      { "teamId": "team3", "amount": 1860 },
+      { "teamId": "team4", "amount": 1860 }
+    ]
+  },
+  "womens": {
+    "teams": [],
+    "draw": [],
+    "bids": [],
+    "priorPayouts": []
+  },
+  "config": {
+    "payoutPcts": { "A": 0.40, "B": 0.30, "C": 0.15, "D": 0.15 },
+    "priorPools": { "mens": 12400, "womens": 4700 },
+    "buyBack": { "fee": 40, "payoutPct": 0.25 },
+    "kalman": { "Q": 100, "R": 200, "P0": 500 },
+    "weights": { "standings": 0.5, "h2h": 0.3, "draw": 0.2 },
+    "currentYear": 2026
+  }
+}

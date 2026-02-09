@@ -1,0 +1,134 @@
+[
+  {
+    "id": "vogt",
+    "name": "Vogt",
+    "wins": 0,
+    "losses": 0,
+    "ties": 0,
+    "pointsFor": 0,
+    "pointsAgainst": 0,
+    "h2h": {},
+    "seed": 1
+  },
+  {
+    "id": "snethun",
+    "name": "Snethun",
+    "wins": 0,
+    "losses": 0,
+    "ties": 0,
+    "pointsFor": 0,
+    "pointsAgainst": 0,
+    "h2h": {},
+    "seed": 2
+  },
+  {
+    "id": "newman",
+    "name": "Newman",
+    "wins": 0,
+    "losses": 0,
+    "ties": 0,
+    "pointsFor": 0,
+    "pointsAgainst": 0,
+    "h2h": {},
+    "seed": 3
+  },
+  {
+    "id": "sheeran",
+    "name": "Sheeran",
+    "wins": 0,
+    "losses": 0,
+    "ties": 0,
+    "pointsFor": 0,
+    "pointsAgainst": 0,
+    "h2h": {},
+    "seed": 4
+  },
+  {
+    "id": "williams",
+    "name": "Williams",
+    "wins": 0,
+    "losses": 0,
+    "ties": 0,
+    "pointsFor": 0,
+    "pointsAgainst": 0,
+    "h2h": {},
+    "seed": 5
+  },
+  {
+    "id": "lougheed",
+    "name": "Lougheed",
+    "wins": 0,
+    "losses": 0,
+    "ties": 0,
+    "pointsFor": 0,
+    "pointsAgainst": 0,
+    "h2h": {},
+    "seed": 6
+  },
+  {
+    "id": "hawkins",
+    "name": "Hawkins",
+    "wins": 0,
+    "losses": 0,
+    "ties": 0,
+    "pointsFor": 0,
+    "pointsAgainst": 0,
+    "h2h": {},
+    "seed": 7
+  },
+  {
+    "id": "clark",
+    "name": "Clark",
+    "wins": 0,
+    "losses": 0,
+    "ties": 0,
+    "pointsFor": 0,
+    "pointsAgainst": 0,
+    "h2h": {},
+    "seed": 8
+  },
+  {
+    "id": "wilson",
+    "name": "Wilson",
+    "wins": 0,
+    "losses": 0,
+    "ties": 0,
+    "pointsFor": 0,
+    "pointsAgainst": 0,
+    "h2h": {},
+    "seed": 9
+  },
+  {
+    "id": "inman",
+    "name": "Inman",
+    "wins": 0,
+    "losses": 0,
+    "ties": 0,
+    "pointsFor": 0,
+    "pointsAgainst": 0,
+    "h2h": {},
+    "seed": 10
+  },
+  {
+    "id": "patrick",
+    "name": "Patrick",
+    "wins": 0,
+    "losses": 0,
+    "ties": 0,
+    "pointsFor": 0,
+    "pointsAgainst": 0,
+    "h2h": {},
+    "seed": 11
+  },
+  {
+    "id": "loczy",
+    "name": "Loczy",
+    "wins": 0,
+    "losses": 0,
+    "ties": 0,
+    "pointsFor": 0,
+    "pointsAgainst": 0,
+    "h2h": {},
+    "seed": 12
+  }
+]

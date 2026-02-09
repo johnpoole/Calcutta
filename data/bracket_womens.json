@@ -1,0 +1,229 @@
+{
+  "a_event": [
+    {
+      "match": {
+        "left": {
+          "match": {
+            "left": {
+              "match": {
+                "left": {
+                  "team": "williams"
+                },
+                "right": {
+                  "team": "patrick"
+                },
+                "loserSlot": "L3"
+              }
+            },
+            "right": {
+              "team": "sheeran"
+            },
+            "loserSlot": "L5"
+          }
+        },
+        "right": {
+          "match": {
+            "left": {
+              "match": {
+                "left": {
+                  "team": "wilson"
+                },
+                "right": {
+                  "team": "lougheed"
+                },
+                "loserSlot": "L2"
+              }
+            },
+            "right": {
+              "team": "snethun"
+            },
+            "loserSlot": "L6"
+          }
+        },
+        "loserSlot": "L9"
+      }
+    },
+    {
+      "match": {
+        "left": {
+          "match": {
+            "left": {
+              "match": {
+                "left": {
+                  "team": "hawkins"
+                },
+                "right": {
+                  "team": "inman"
+                },
+                "loserSlot": "L1"
+              }
+            },
+            "right": {
+              "team": "newman"
+            },
+            "loserSlot": "L7"
+          }
+        },
+        "right": {
+          "match": {
+            "left": {
+              "match": {
+                "left": {
+                  "team": "loczy"
+                },
+                "right": {
+                  "team": "vogt"
+                },
+                "loserSlot": "L4"
+              }
+            },
+            "right": {
+              "team": "clark"
+            },
+            "loserSlot": "L8"
+          }
+        },
+        "loserSlot": "L10"
+      }
+    }
+  ],
+  "b_event": [
+    {
+      "match": {
+        "left": {
+          "match": {
+            "left": {
+              "match": {
+                "left": {
+                  "slot": "L3"
+                },
+                "right": {
+                  "slot": "L6"
+                },
+                "loserSlot": "C1"
+              }
+            },
+            "right": {
+              "match": {
+                "left": {
+                  "slot": "L4"
+                },
+                "right": {
+                  "slot": "L5"
+                },
+                "loserSlot": "C2"
+              }
+            },
+            "loserSlot": "C5"
+          }
+        },
+        "right": {
+          "slot": "L10"
+        },
+        "loserSlot": "D1"
+      }
+    },
+    {
+      "match": {
+        "left": {
+          "match": {
+            "left": {
+              "match": {
+                "left": {
+                  "slot": "L1"
+                },
+                "right": {
+                  "slot": "L8"
+                },
+                "loserSlot": "C3"
+              }
+            },
+            "right": {
+              "match": {
+                "left": {
+                  "slot": "L2"
+                },
+                "right": {
+                  "slot": "L7"
+                },
+                "loserSlot": "C4"
+              }
+            },
+            "loserSlot": "C6"
+          }
+        },
+        "right": {
+          "slot": "L9"
+        },
+        "loserSlot": "D2"
+      }
+    }
+  ],
+  "championship": {
+    "numQualifiers": 4,
+    "quarterSeed": [
+      [
+        0,
+        3
+      ],
+      [
+        1,
+        2
+      ]
+    ],
+    "semiPairs": [
+      [
+        0,
+        1
+      ]
+    ]
+  },
+  "c_event": {
+    "match": {
+      "left": {
+        "match": {
+          "left": {
+            "match": {
+              "left": {
+                "slot": "C1"
+              },
+              "right": {
+                "slot": "C2"
+              }
+            }
+          },
+          "right": {
+            "slot": "C6"
+          }
+        }
+      },
+      "right": {
+        "match": {
+          "left": {
+            "match": {
+              "left": {
+                "slot": "C3"
+              },
+              "right": {
+                "slot": "C4"
+              }
+            }
+          },
+          "right": {
+            "slot": "C5"
+          }
+        }
+      }
+    }
+  },
+  "d_event": {
+    "match": {
+      "left": {
+        "slot": "D1"
+      },
+      "right": {
+        "slot": "D2"
+      }
+    }
+  }
+}

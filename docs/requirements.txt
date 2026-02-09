@@ -1,0 +1,6 @@
+Write a web application that pre calculates the odds of each teams winning the a,b,c, or d events in curling
+based on the draw, the teams league standings, and the record against other teams in the league
+
+Then using last years payout amounts, and this year's bids on each team, use a kalman filter
+to predict the payout for each team in the current year, and from that calculate the expected value of bidding on each team in the current year.
+the optimum bid.

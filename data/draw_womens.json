@@ -1,0 +1,42 @@
+[
+  {
+    "id": "womens-a-q1-1",
+    "drawNum": 1,
+    "sheet": "",
+    "team1Id": "williams",
+    "team2Id": "patrick",
+    "event": "A",
+    "winnerId": "",
+    "loserGoesTo": "L3"
+  },
+  {
+    "id": "womens-a-q1-2",
+    "drawNum": 2,
+    "sheet": "",
+    "team1Id": "wilson",
+    "team2Id": "lougheed",
+    "event": "A",
+    "winnerId": "",
+    "loserGoesTo": "L2"
+  },
+  {
+    "id": "womens-a-q2-1",
+    "drawNum": 1,
+    "sheet": "",
+    "team1Id": "hawkins",
+    "team2Id": "inman",
+    "event": "A",
+    "winnerId": "",
+    "loserGoesTo": "L1"
+  },
+  {
+    "id": "womens-a-q2-2",
+    "drawNum": 2,
+    "sheet": "",
+    "team1Id": "loczy",
+    "team2Id": "vogt",
+    "event": "A",
+    "winnerId": "",
+    "loserGoesTo": "L4"
+  }
+]

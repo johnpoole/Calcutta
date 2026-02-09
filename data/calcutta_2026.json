@@ -1,0 +1,550 @@
+{
+  "mens": {
+    "teams": [
+      {
+        "id": "henry",
+        "name": "Henry",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 1
+      },
+      {
+        "id": "bell",
+        "name": "Bell",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 2
+      },
+      {
+        "id": "duckworth",
+        "name": "Duckworth",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 3
+      },
+      {
+        "id": "kelly",
+        "name": "Kelly",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 4
+      },
+      {
+        "id": "clark",
+        "name": "Clark",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 5
+      },
+      {
+        "id": "wilson",
+        "name": "Wilson",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 6
+      },
+      {
+        "id": "carson",
+        "name": "Carson",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 7
+      },
+      {
+        "id": "flock",
+        "name": "Flock",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 8
+      },
+      {
+        "id": "waddell",
+        "name": "Waddell",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 9
+      },
+      {
+        "id": "poole",
+        "name": "Poole",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 10
+      },
+      {
+        "id": "moss",
+        "name": "Moss",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 11
+      },
+      {
+        "id": "smith",
+        "name": "Smith",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 12
+      },
+      {
+        "id": "kennedy",
+        "name": "Kennedy",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 13
+      },
+      {
+        "id": "lefebvre",
+        "name": "Lefebvre",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 14
+      },
+      {
+        "id": "fairbanks",
+        "name": "Fairbanks",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 15
+      },
+      {
+        "id": "linder",
+        "name": "Linder",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 16
+      },
+      {
+        "id": "annable",
+        "name": "Annable",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 17
+      },
+      {
+        "id": "cameron",
+        "name": "Cameron",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 18
+      },
+      {
+        "id": "nickles",
+        "name": "Nickles",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 19
+      },
+      {
+        "id": "lessard",
+        "name": "Lessard",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 20
+      },
+      {
+        "id": "snethun",
+        "name": "Snethun",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 21
+      },
+      {
+        "id": "richardson",
+        "name": "Richardson",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 22
+      },
+      {
+        "id": "feilding",
+        "name": "Feilding",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 23
+      }
+    ],
+    "draw": [
+      {
+        "id": "mens-a-q1-1",
+        "drawNum": 1,
+        "sheet": "",
+        "team1Id": "lessard",
+        "team2Id": "clark",
+        "event": "A",
+        "winnerId": "",
+        "loserGoesTo": "B1"
+      },
+      {
+        "id": "mens-a-q1-2",
+        "drawNum": 2,
+        "sheet": "",
+        "team1Id": "smith",
+        "team2Id": "carson",
+        "event": "A",
+        "winnerId": "",
+        "loserGoesTo": "B8"
+      },
+      {
+        "id": "mens-a-q2-1",
+        "drawNum": 1,
+        "sheet": "",
+        "team1Id": "wilson",
+        "team2Id": "poole",
+        "event": "A",
+        "winnerId": "",
+        "loserGoesTo": "B2"
+      },
+      {
+        "id": "mens-a-q2-2",
+        "drawNum": 2,
+        "sheet": "",
+        "team1Id": "feilding",
+        "team2Id": "flock",
+        "event": "A",
+        "winnerId": "",
+        "loserGoesTo": "B3"
+      },
+      {
+        "id": "mens-a-q3-1",
+        "drawNum": 1,
+        "sheet": "",
+        "team1Id": "richardson",
+        "team2Id": "kelly",
+        "event": "A",
+        "winnerId": "",
+        "loserGoesTo": "B4"
+      },
+      {
+        "id": "mens-a-q3-2",
+        "drawNum": 2,
+        "sheet": "",
+        "team1Id": "bell",
+        "team2Id": "nickles",
+        "event": "A",
+        "winnerId": "",
+        "loserGoesTo": "B5"
+      },
+      {
+        "id": "mens-a-q4-1",
+        "drawNum": 1,
+        "sheet": "",
+        "team1Id": "henry",
+        "team2Id": "annable",
+        "event": "A",
+        "winnerId": "",
+        "loserGoesTo": "B6"
+      },
+      {
+        "id": "mens-a-q4-2",
+        "drawNum": 2,
+        "sheet": "",
+        "team1Id": "cameron",
+        "team2Id": "snethun",
+        "event": "A",
+        "winnerId": "",
+        "loserGoesTo": "B7"
+      }
+    ],
+    "bids": [],
+    "priorPayouts": []
+  },
+  "womens": {
+    "teams": [
+      {
+        "id": "vogt",
+        "name": "Vogt",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 1
+      },
+      {
+        "id": "snethun",
+        "name": "Snethun",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 2
+      },
+      {
+        "id": "newman",
+        "name": "Newman",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 3
+      },
+      {
+        "id": "sheeran",
+        "name": "Sheeran",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 4
+      },
+      {
+        "id": "williams",
+        "name": "Williams",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 5
+      },
+      {
+        "id": "lougheed",
+        "name": "Lougheed",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 6
+      },
+      {
+        "id": "hawkins",
+        "name": "Hawkins",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 7
+      },
+      {
+        "id": "clark",
+        "name": "Clark",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 8
+      },
+      {
+        "id": "wilson",
+        "name": "Wilson",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 9
+      },
+      {
+        "id": "inman",
+        "name": "Inman",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 10
+      },
+      {
+        "id": "patrick",
+        "name": "Patrick",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 11
+      },
+      {
+        "id": "loczy",
+        "name": "Loczy",
+        "wins": 0,
+        "losses": 0,
+        "ties": 0,
+        "pointsFor": 0,
+        "pointsAgainst": 0,
+        "h2h": {},
+        "seed": 12
+      }
+    ],
+    "draw": [
+      {
+        "id": "womens-a-q1-1",
+        "drawNum": 1,
+        "sheet": "",
+        "team1Id": "williams",
+        "team2Id": "patrick",
+        "event": "A",
+        "winnerId": "",
+        "loserGoesTo": "L3"
+      },
+      {
+        "id": "womens-a-q1-2",
+        "drawNum": 2,
+        "sheet": "",
+        "team1Id": "wilson",
+        "team2Id": "lougheed",
+        "event": "A",
+        "winnerId": "",
+        "loserGoesTo": "L2"
+      },
+      {
+        "id": "womens-a-q2-1",
+        "drawNum": 1,
+        "sheet": "",
+        "team1Id": "hawkins",
+        "team2Id": "inman",
+        "event": "A",
+        "winnerId": "",
+        "loserGoesTo": "L1"
+      },
+      {
+        "id": "womens-a-q2-2",
+        "drawNum": 2,
+        "sheet": "",
+        "team1Id": "loczy",
+        "team2Id": "vogt",
+        "event": "A",
+        "winnerId": "",
+        "loserGoesTo": "L4"
+      }
+    ],
+    "bids": [],
+    "priorPayouts": []
+  },
+  "config": {
+    "payoutPcts": {
+      "A": 0.4,
+      "B": 0.3,
+      "C": 0.15,
+      "D": 0.15
+    },
+    "priorPools": {
+      "mens": 12400,
+      "womens": 4700
+    },
+    "buyBack": {
+      "fee": 40,
+      "payoutPct": 0.25
+    },
+    "kalman": {
+      "Q": 100,
+      "R": 200,
+      "P0": 500
+    },
+    "weights": {
+      "standings": 0.5,
+      "h2h": 0.3,
+      "draw": 0.2
+    },
+    "currentYear": 2026
+  }
+}

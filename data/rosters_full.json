@@ -1,0 +1,642 @@
+{
+  "mens": [
+    {
+      "id": "henry",
+      "name": "Henry",
+      "skip": "Tom Henry",
+      "members": [
+        "Bryan Wright",
+        "Graham Bwint",
+        "Jim Newton"
+      ],
+      "rosterNum": 1,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 1
+    },
+    {
+      "id": "bell",
+      "name": "Bell",
+      "skip": "Dave Bell",
+      "members": [
+        "Thad Snethun",
+        "Glen Phelps",
+        "John Lamarsh",
+        "Greg Delcourt"
+      ],
+      "rosterNum": 2,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 2
+    },
+    {
+      "id": "duckworth",
+      "name": "Duckworth",
+      "skip": "Ryan Duckworth",
+      "members": [
+        "Robert Birrell",
+        "Curtis Fairhurst",
+        "Dave Murray"
+      ],
+      "rosterNum": 3,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 3
+    },
+    {
+      "id": "kelly",
+      "name": "Kelly",
+      "skip": "Stu Kelly",
+      "members": [
+        "Mike Murphy",
+        "Alan Surasky",
+        "Travis Corcoran"
+      ],
+      "rosterNum": 4,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 4
+    },
+    {
+      "id": "clark",
+      "name": "Clark",
+      "skip": "Paul Clark",
+      "members": [
+        "Jon Clark",
+        "Bill Clark",
+        "Brian Guichon"
+      ],
+      "rosterNum": 5,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 5
+    },
+    {
+      "id": "wilson",
+      "name": "Wilson",
+      "skip": "Brett Wilson",
+      "members": [
+        "Jeff Hall",
+        "Dan Pow",
+        "Wiggy"
+      ],
+      "rosterNum": 6,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 6
+    },
+    {
+      "id": "carson",
+      "name": "Carson",
+      "skip": "Lorne Carson",
+      "members": [
+        "Garry Worth",
+        "Mike Mah-Poy",
+        "Zac Carson"
+      ],
+      "rosterNum": 7,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 7
+    },
+    {
+      "id": "flock",
+      "name": "Flock",
+      "skip": "Brad Flock",
+      "members": [
+        "Scott Yaholtinsky",
+        "Vaughn Inman"
+      ],
+      "rosterNum": 8,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 8
+    },
+    {
+      "id": "waddell",
+      "name": "Waddell",
+      "skip": "Russ Waddell",
+      "members": [
+        "Kyle Hawkins",
+        "Glen Hawkins",
+        "Johnny Hammill",
+        "Dave Pakosh"
+      ],
+      "rosterNum": 9,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 9
+    },
+    {
+      "id": "poole",
+      "name": "Poole",
+      "skip": "John Poole",
+      "members": [
+        "Phil La Flair",
+        "Jason Grelowski",
+        "Brad Culver"
+      ],
+      "rosterNum": 10,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 10
+    },
+    {
+      "id": "moss",
+      "name": "Moss",
+      "skip": "Jack Moss",
+      "members": [
+        "David Hall",
+        "Johnny Moss",
+        "Trevor Kobluk"
+      ],
+      "rosterNum": 11,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 11
+    },
+    {
+      "id": "smith",
+      "name": "Smith",
+      "skip": "Craig Smith",
+      "members": [
+        "Craig Armstrong",
+        "Andy Lee",
+        "Mark Andreychuk",
+        "Graham Duckworth"
+      ],
+      "rosterNum": 12,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 12
+    },
+    {
+      "id": "kennedy",
+      "name": "Kennedy",
+      "skip": "Rob Kennedy",
+      "members": [
+        "Geoff Williams",
+        "Bill MaDonald",
+        "Bernie Bajnok"
+      ],
+      "rosterNum": 13,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 13
+    },
+    {
+      "id": "lefebvre",
+      "name": "Lefebvre",
+      "skip": "Gord Lefebvre",
+      "members": [
+        "Dennis Balderston",
+        "Gord Vogt",
+        "Kevin Vogt"
+      ],
+      "rosterNum": 14,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 14
+    },
+    {
+      "id": "fairbanks",
+      "name": "Fairbanks",
+      "skip": "Riley Fairbanks",
+      "members": [
+        "Rich Moody",
+        "Grady Fairbanks",
+        "Ben Moody"
+      ],
+      "rosterNum": 15,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 15
+    },
+    {
+      "id": "linder",
+      "name": "Linder",
+      "skip": "Peter Linder",
+      "members": [
+        "Robyn Hemminger",
+        "Trevor Galon",
+        "Kevin Johnson"
+      ],
+      "rosterNum": 16,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 16
+    },
+    {
+      "id": "annable",
+      "name": "Annable",
+      "skip": "Doug Annable",
+      "members": [
+        "Riley Waite",
+        "James Radder",
+        "Ron Slater"
+      ],
+      "rosterNum": 17,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 17
+    },
+    {
+      "id": "cameron",
+      "name": "Cameron",
+      "skip": "Sheldon Cameron",
+      "members": [
+        "Tim Kearns",
+        "Sean O'Neil",
+        "Matt Rallison"
+      ],
+      "rosterNum": 18,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 18
+    },
+    {
+      "id": "nickles",
+      "name": "Nickles",
+      "skip": "Brendan Nickles",
+      "members": [
+        "Connor Lea",
+        "Harry Robb",
+        "Kevin Lea",
+        "A. Carbott"
+      ],
+      "rosterNum": 19,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 19
+    },
+    {
+      "id": "lessard",
+      "name": "Lessard",
+      "skip": "Paul Lessard",
+      "members": [
+        "Steve Saunders",
+        "Andy Sharp"
+      ],
+      "rosterNum": 20,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 20
+    },
+    {
+      "id": "snethun",
+      "name": "Snethun",
+      "skip": "Leif Snethun",
+      "members": [
+        "Fred Edwards",
+        "Andrew Brotherhood",
+        "Shea Fairbanks"
+      ],
+      "rosterNum": 21,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 21
+    },
+    {
+      "id": "richardson",
+      "name": "Richardson",
+      "skip": "Lee Richardson",
+      "members": [
+        "Rob Heemskerk",
+        "Dave Dial",
+        "Bryant Tomimoto"
+      ],
+      "rosterNum": 22,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 22
+    },
+    {
+      "id": "feilding",
+      "name": "Feilding",
+      "skip": "Jon Feilding",
+      "members": [
+        "Mitch Williams",
+        "Tyler Brill",
+        "Chris Webster"
+      ],
+      "rosterNum": 23,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 23
+    }
+  ],
+  "womens": [
+    {
+      "id": "vogt",
+      "name": "Vogt",
+      "skip": "Linda Vogt",
+      "members": [
+        "Jill Mitchel",
+        "Trish Snethun",
+        "Lynn O'Neil"
+      ],
+      "rosterNum": 1,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 1
+    },
+    {
+      "id": "snethun",
+      "name": "Snethun",
+      "skip": "Kim Snethun",
+      "members": [
+        "Andrea Kosa",
+        "Julia Phelps"
+      ],
+      "rosterNum": 2,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 2
+    },
+    {
+      "id": "newman",
+      "name": "Newman",
+      "skip": "Donna Newman",
+      "members": [
+        "Gail Bell",
+        "Karen Emery",
+        "Sarah Scott"
+      ],
+      "rosterNum": 3,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 3
+    },
+    {
+      "id": "sheeran",
+      "name": "Sheeran",
+      "skip": "Louise Sheeran",
+      "members": [
+        "Shelley MacDougall",
+        "Nancy Baxter",
+        "Lisa Retzer"
+      ],
+      "rosterNum": 4,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 4
+    },
+    {
+      "id": "williams",
+      "name": "Williams",
+      "skip": "Diane Williams",
+      "members": [
+        "Kathy Lowe",
+        "Joanne Hruska",
+        "Kia Pyrcz",
+        "Margo Harris"
+      ],
+      "rosterNum": 5,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 5
+    },
+    {
+      "id": "lougheed",
+      "name": "Lougheed",
+      "skip": "Dana Lougheed",
+      "members": [
+        "Trish Brown",
+        "Tamara Cohos",
+        "Karen Radford",
+        "Jenn Crysdale"
+      ],
+      "rosterNum": 6,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 6
+    },
+    {
+      "id": "hawkins",
+      "name": "Hawkins",
+      "skip": "Mildred Hawkins",
+      "members": [
+        "Margie Kennedy",
+        "Margot Theriault",
+        "Tracye Osler",
+        "Dena Flock"
+      ],
+      "rosterNum": 7,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 7
+    },
+    {
+      "id": "clark",
+      "name": "Clark",
+      "skip": "Joyce Clark",
+      "members": [
+        "Megan Waddell",
+        "Erin Waite",
+        "Joanne Saunders"
+      ],
+      "rosterNum": 8,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 8
+    },
+    {
+      "id": "wilson",
+      "name": "Wilson",
+      "skip": "Reagan Wilson",
+      "members": [
+        "Amber Fairhurst",
+        "Carley Goodreau",
+        "Ali Sinclair"
+      ],
+      "rosterNum": 9,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 9
+    },
+    {
+      "id": "inman",
+      "name": "Inman",
+      "skip": "Dixie Inman",
+      "members": [
+        "Anna Worth",
+        "Angela McKinnon",
+        "Barb O'Connor",
+        "Simonne Birrell"
+      ],
+      "rosterNum": 10,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 10
+    },
+    {
+      "id": "patrick",
+      "name": "Patrick",
+      "skip": "Lorraine Patrick",
+      "members": [
+        "Judy Forshner",
+        "Joanne Feick",
+        "Trish Gray",
+        "Lorri Cavanagh"
+      ],
+      "rosterNum": 11,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 11
+    },
+    {
+      "id": "loczy",
+      "name": "Loczy",
+      "skip": "Lisa Loczy",
+      "members": [
+        "Charlotte Annable",
+        "Vivian Allain",
+        "Deborah Johnson"
+      ],
+      "rosterNum": 12,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "h2h": {},
+      "seed": 12
+    }
+  ]
+}

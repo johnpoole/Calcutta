@@ -1,0 +1,430 @@
+{
+  "a_event": [
+    {
+      "match": {
+        "left": {
+          "match": {
+            "left": {
+              "match": {
+                "left": {
+                  "team": "lessard"
+                },
+                "right": {
+                  "team": "clark"
+                },
+                "loserSlot": "B1"
+              }
+            },
+            "right": {
+              "team": "duckworth"
+            },
+            "loserSlot": "B9"
+          }
+        },
+        "right": {
+          "match": {
+            "left": {
+              "team": "smith"
+            },
+            "right": {
+              "team": "carson"
+            },
+            "loserSlot": "B8"
+          }
+        },
+        "loserSlot": "B28"
+      }
+    },
+    {
+      "match": {
+        "left": {
+          "match": {
+            "left": {
+              "match": {
+                "left": {
+                  "team": "wilson"
+                },
+                "right": {
+                  "team": "poole"
+                },
+                "loserSlot": "B2"
+              }
+            },
+            "right": {
+              "team": "moss"
+            },
+            "loserSlot": "B10"
+          }
+        },
+        "right": {
+          "match": {
+            "left": {
+              "match": {
+                "left": {
+                  "team": "feilding"
+                },
+                "right": {
+                  "team": "flock"
+                },
+                "loserSlot": "B3"
+              }
+            },
+            "right": {
+              "team": "linder"
+            },
+            "loserSlot": "B11"
+          }
+        },
+        "loserSlot": "B27"
+      }
+    },
+    {
+      "match": {
+        "left": {
+          "match": {
+            "left": {
+              "match": {
+                "left": {
+                  "team": "richardson"
+                },
+                "right": {
+                  "team": "kelly"
+                },
+                "loserSlot": "B4"
+              }
+            },
+            "right": {
+              "team": "waddell"
+            },
+            "loserSlot": "B12"
+          }
+        },
+        "right": {
+          "match": {
+            "left": {
+              "match": {
+                "left": {
+                  "team": "bell"
+                },
+                "right": {
+                  "team": "nickles"
+                },
+                "loserSlot": "B5"
+              }
+            },
+            "right": {
+              "team": "lefebvre"
+            },
+            "loserSlot": "B13"
+          }
+        },
+        "loserSlot": "B29"
+      }
+    },
+    {
+      "match": {
+        "left": {
+          "match": {
+            "left": {
+              "match": {
+                "left": {
+                  "team": "henry"
+                },
+                "right": {
+                  "team": "annable"
+                },
+                "loserSlot": "B6"
+              }
+            },
+            "right": {
+              "team": "kennedy"
+            },
+            "loserSlot": "B14"
+          }
+        },
+        "right": {
+          "match": {
+            "left": {
+              "match": {
+                "left": {
+                  "team": "cameron"
+                },
+                "right": {
+                  "team": "snethun"
+                },
+                "loserSlot": "B7"
+              }
+            },
+            "right": {
+              "team": "fairbanks"
+            },
+            "loserSlot": "B15"
+          }
+        },
+        "loserSlot": "B30"
+      }
+    }
+  ],
+  "b_event": [
+    {
+      "match": {
+        "left": {
+          "match": {
+            "left": {
+              "match": {
+                "left": {
+                  "slot": "B1"
+                },
+                "right": {
+                  "slot": "B12"
+                },
+                "loserSlot": "C1"
+              }
+            },
+            "right": {
+              "slot": "B13"
+            },
+            "loserSlot": "C8"
+          }
+        },
+        "right": {
+          "slot": "B27"
+        },
+        "loserSlot": "D1"
+      }
+    },
+    {
+      "match": {
+        "left": {
+          "match": {
+            "left": {
+              "match": {
+                "left": {
+                  "slot": "B14"
+                },
+                "right": {
+                  "slot": "B15"
+                },
+                "loserSlot": "C2"
+              }
+            },
+            "right": {
+              "match": {
+                "left": {
+                  "slot": "B2"
+                },
+                "right": {
+                  "slot": "B3"
+                },
+                "loserSlot": "C3"
+              }
+            },
+            "loserSlot": "C9"
+          }
+        },
+        "right": {
+          "slot": "B28"
+        },
+        "loserSlot": "D2"
+      }
+    },
+    {
+      "match": {
+        "left": {
+          "match": {
+            "left": {
+              "match": {
+                "left": {
+                  "slot": "B9"
+                },
+                "right": {
+                  "slot": "B4"
+                },
+                "loserSlot": "C4"
+              }
+            },
+            "right": {
+              "match": {
+                "left": {
+                  "slot": "B8"
+                },
+                "right": {
+                  "slot": "B5"
+                },
+                "loserSlot": "C5"
+              }
+            },
+            "loserSlot": "C10"
+          }
+        },
+        "right": {
+          "slot": "B29"
+        },
+        "loserSlot": "D3"
+      }
+    },
+    {
+      "match": {
+        "left": {
+          "match": {
+            "left": {
+              "match": {
+                "left": {
+                  "slot": "B10"
+                },
+                "right": {
+                  "slot": "B6"
+                },
+                "loserSlot": "C6"
+              }
+            },
+            "right": {
+              "match": {
+                "left": {
+                  "slot": "B11"
+                },
+                "right": {
+                  "slot": "B7"
+                },
+                "loserSlot": "C7"
+              }
+            },
+            "loserSlot": "C11"
+          }
+        },
+        "right": {
+          "slot": "B30"
+        },
+        "loserSlot": "D4"
+      }
+    }
+  ],
+  "championship": {
+    "numQualifiers": 8,
+    "quarterSeed": [
+      [
+        0,
+        7
+      ],
+      [
+        1,
+        6
+      ],
+      [
+        2,
+        5
+      ],
+      [
+        3,
+        4
+      ]
+    ],
+    "semiPairs": [
+      [
+        0,
+        1
+      ],
+      [
+        2,
+        3
+      ]
+    ]
+  },
+  "c_event": {
+    "match": {
+      "left": {
+        "match": {
+          "left": {
+            "match": {
+              "left": {
+                "match": {
+                  "left": {
+                    "slot": "C3"
+                  },
+                  "right": {
+                    "slot": "C6"
+                  }
+                }
+              },
+              "right": {
+                "slot": "C7"
+              }
+            }
+          },
+          "right": {
+            "match": {
+              "left": {
+                "match": {
+                  "left": {
+                    "slot": "C4"
+                  },
+                  "right": {
+                    "slot": "C5"
+                  }
+                }
+              },
+              "right": {
+                "slot": "C9"
+              }
+            }
+          }
+        }
+      },
+      "right": {
+        "match": {
+          "left": {
+            "match": {
+              "left": {
+                "slot": "C11"
+              },
+              "right": {
+                "slot": "C8"
+              }
+            }
+          },
+          "right": {
+            "match": {
+              "left": {
+                "match": {
+                  "left": {
+                    "slot": "C1"
+                  },
+                  "right": {
+                    "slot": "C2"
+                  }
+                }
+              },
+              "right": {
+                "slot": "C10"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "d_event": {
+    "match": {
+      "left": {
+        "match": {
+          "left": {
+            "slot": "D1"
+          },
+          "right": {
+            "slot": "D2"
+          }
+        }
+      },
+      "right": {
+        "match": {
+          "left": {
+            "slot": "D3"
+          },
+          "right": {
+            "slot": "D4"
+          }
+        }
+      }
+    }
+  }
+}

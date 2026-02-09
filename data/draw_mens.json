@@ -1,0 +1,82 @@
+[
+  {
+    "id": "mens-a-q1-1",
+    "drawNum": 1,
+    "sheet": "",
+    "team1Id": "lessard",
+    "team2Id": "clark",
+    "event": "A",
+    "winnerId": "",
+    "loserGoesTo": "B1"
+  },
+  {
+    "id": "mens-a-q1-2",
+    "drawNum": 2,
+    "sheet": "",
+    "team1Id": "smith",
+    "team2Id": "carson",
+    "event": "A",
+    "winnerId": "",
+    "loserGoesTo": "B8"
+  },
+  {
+    "id": "mens-a-q2-1",
+    "drawNum": 1,
+    "sheet": "",
+    "team1Id": "wilson",
+    "team2Id": "poole",
+    "event": "A",
+    "winnerId": "",
+    "loserGoesTo": "B2"
+  },
+  {
+    "id": "mens-a-q2-2",
+    "drawNum": 2,
+    "sheet": "",
+    "team1Id": "feilding",
+    "team2Id": "flock",
+    "event": "A",
+    "winnerId": "",
+    "loserGoesTo": "B3"
+  },
+  {
+    "id": "mens-a-q3-1",
+    "drawNum": 1,
+    "sheet": "",
+    "team1Id": "richardson",
+    "team2Id": "kelly",
+    "event": "A",
+    "winnerId": "",
+    "loserGoesTo": "B4"
+  },
+  {
+    "id": "mens-a-q3-2",
+    "drawNum": 2,
+    "sheet": "",
+    "team1Id": "bell",
+    "team2Id": "nickles",
+    "event": "A",
+    "winnerId": "",
+    "loserGoesTo": "B5"
+  },
+  {
+    "id": "mens-a-q4-1",
+    "drawNum": 1,
+    "sheet": "",
+    "team1Id": "henry",
+    "team2Id": "annable",
+    "event": "A",
+    "winnerId": "",
+    "loserGoesTo": "B6"
+  },
+  {
+    "id": "mens-a-q4-2",
+    "drawNum": 2,
+    "sheet": "",
+    "team1Id": "cameron",
+    "team2Id": "snethun",
+    "event": "A",
+    "winnerId": "",
+    "loserGoesTo": "B7"
+  }
+]

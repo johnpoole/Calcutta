@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calcutta Auction — Curling Bonspiel</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header>
+    <h1>Bid Calculator</h1>
+  </header>
+
+  <nav class="tab-bar">
+    <button class="tab active" data-tab="dashboard">Dashboard</button>
+    <button class="tab" data-tab="teams">Teams &amp; Standings</button>
+    <button class="tab" data-tab="draw">Draw / Bracket</button>
+    <button class="tab" data-tab="odds">Win Probabilities</button>
+    <button class="tab" data-tab="auction">Auction &amp; Analysis</button>
+    <button class="tab" data-tab="settings">Settings</button>
+  </nav>
+
+  <!-- ═══════════════════  DASHBOARD  ═══════════════════ -->
+  <section id="dashboard" class="panel active">
+    <h2>Dashboard</h2>
+    <div class="division-toggle">
+      <button class="div-btn active" data-division="mens">Men's</button>
+      <button class="div-btn" data-division="womens">Women's</button>
+    </div>
+
+    <div class="dashboard-grid">
+      <div class="card">
+        <h3>Total Pool</h3>
+        <p id="dash-pool" class="big-number">$0</p>
+      </div>
+      <div class="card">
+        <h3>Teams Entered</h3>
+        <p id="dash-teams" class="big-number">0</p>
+      </div>
+      <div class="card">
+        <h3>Highest Bid</h3>
+        <p id="dash-high-bid" class="big-number">$0</p>
+      </div>
+      <div class="card">
+        <h3>Best Expected Value</h3>
+        <p id="dash-best-ev" class="big-number">—</p>
+      </div>
+    </div>
+
+    <div class="card wide">
+      <h3>Top 5 Teams by Expected Value</h3>
+      <table id="dash-top5">
+        <thead>
+          <tr><th>Team</th><th>Win Prob (A)</th><th>Bid</th><th>Expected Value</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══════════════════  TEAMS & STANDINGS  ═══════════════════ -->
+  <section id="teams" class="panel">
+    <h2>Teams &amp; League Standings</h2>
+    <div class="division-toggle">
+      <button class="div-btn active" data-division="mens">Men's</button>
+      <button class="div-btn" data-division="womens">Women's</button>
+    </div>
+
+    <div class="toolbar">
+      <button id="btn-add-team" class="btn btn-primary">+ Add Team</button>
+      <button id="btn-import-teams" class="btn">Import JSON</button>
+      <input type="file" id="file-import-teams" accept=".json" hidden>
+      <button id="btn-export-teams" class="btn">Export JSON</button>
+    </div>
+
+    <table id="standings-table" class="sortable">
+      <thead>
+        <tr>
+          <th data-sort="name">Team</th>
+          <th data-sort="wins">W</th>
+          <th data-sort="losses">L</th>
+          <th data-sort="ties">T</th>
+          <th data-sort="winPct">Win %</th>
+          <th data-sort="pointsFor">PF</th>
+          <th data-sort="pointsAgainst">PA</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div class="card wide" style="margin-top:1.5rem;">
+      <h3>Head-to-Head Records</h3>
+      <div id="h2h-matrix" class="matrix-container"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════  DRAW / BRACKET  ═══════════════════ -->
+  <section id="draw" class="panel">
+    <h2>Draw / Bracket</h2>
+    <div class="division-toggle">
+      <button class="div-btn active" data-division="mens">Men's</button>
+      <button class="div-btn" data-division="womens">Women's</button>
+    </div>
+
+    <div class="toolbar">
+      <button id="btn-import-draw" class="btn">Import Draw JSON</button>
+      <input type="file" id="file-import-draw" accept=".json" hidden>
+      <button id="btn-generate-draw" class="btn btn-primary">Auto-Generate Bracket</button>
+    </div>
+
+    <div id="bracket-container" class="bracket"></div>
+
+    <div class="card wide" style="margin-top:1.5rem;">
+      <h3>Draw Schedule</h3>
+      <table id="draw-schedule">
+        <thead>
+          <tr><th>Draw</th><th>Sheet</th><th>Team 1</th><th>vs</th><th>Team 2</th><th>Event</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══════════════════  WIN PROBABILITIES  ═══════════════════ -->
+  <section id="odds" class="panel">
+    <h2>Win Probabilities</h2>
+    <div class="division-toggle">
+      <button class="div-btn active" data-division="mens">Men's</button>
+      <button class="div-btn" data-division="womens">Women's</button>
+    </div>
+
+    <div class="info-box">
+      <p><strong>Pre-computed odds:</strong> Probabilities are calculated by the Python script <code>scripts/calculate_odds.py</code> before deployment. Run it whenever team data or the draw changes.</p>
+    </div>
+    <div class="toolbar">
+      <button id="btn-reload-odds" class="btn btn-primary">Reload Odds</button>
+      <span id="odds-status" style="color:var(--muted);font-size:.85rem;"></span>
+    </div>
+
+    <table id="odds-table">
+      <thead>
+        <tr>
+          <th>Team</th>
+          <th>A Event %</th>
+          <th>B Event %</th>
+          <th>C Event %</th>
+          <th>D Event %</th>
+          <th>Any Event %</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div class="card wide" style="margin-top:1.5rem;">
+      <h3>Probability Chart</h3>
+      <canvas id="odds-chart" height="300"></canvas>
+    </div>
+  </section>
+
+  <!-- ═══════════════════  AUCTION & ANALYSIS  ═══════════════════ -->
+  <section id="auction" class="panel">
+    <h2>Auction &amp; Analysis</h2>
+    <div class="division-toggle">
+      <button class="div-btn active" data-division="mens">Men's</button>
+      <button class="div-btn" data-division="womens">Women's</button>
+    </div>
+
+    <!-- ── Bids Entry ── -->
+    <div class="auction-section">
+      <h3 class="section-heading">Bids</h3>
+      <div class="toolbar">
+        <button id="btn-import-bids" class="btn">Import Bids JSON</button>
+        <input type="file" id="file-import-bids" accept=".json" hidden>
+        <button id="btn-export-bids" class="btn">Export Bids JSON</button>
+        <button id="btn-run-analysis" class="btn btn-primary" style="margin-left:auto;">Run Full Analysis</button>
+      </div>
+
+      <table id="bids-table">
+        <thead>
+          <tr>
+            <th>Team</th>
+            <th>Buyer</th>
+            <th>Bid Amount</th>
+            <th>Self Buy-Back?</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <!-- ── Payout Structure ── -->
+    <div class="card wide" style="margin-top:1.5rem;">
+      <h3>Payout Structure</h3>
+      <div class="payout-grid">
+        <div class="payout-card a-event">
+          <h4>A Event (40%)</h4>
+          <p id="payout-a" class="big-number">$0</p>
+        </div>
+        <div class="payout-card b-event">
+          <h4>B Event (30%)</h4>
+          <p id="payout-b" class="big-number">$0</p>
+        </div>
+        <div class="payout-card c-event">
+          <h4>C Event (15%)</h4>
+          <p id="payout-c" class="big-number">$0</p>
+        </div>
+        <div class="payout-card d-event">
+          <h4>D Event (15%)</h4>
+          <p id="payout-d" class="big-number">$0</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Expected Value Analysis ── -->
+    <div class="auction-section" style="margin-top:2rem;">
+      <h3 class="section-heading">Expected Value &amp; Optimal Bids</h3>
+
+      <div class="info-box">
+        <p><strong>Kalman Filter Prediction:</strong> Uses last year's payouts and this year's bid data to predict expected payouts, then computes expected value = Σ(P(event) × Payout(event)) − Bid.</p>
+      </div>
+
+      <table id="ev-table">
+        <thead>
+          <tr>
+            <th>Team</th>
+            <th>Current Bid</th>
+            <th>Predicted Payout</th>
+            <th>Expected Value</th>
+            <th>Optimal Bid</th>
+            <th>Rating</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <!-- ── Charts ── -->
+    <div class="card wide" style="margin-top:1.5rem;">
+      <h3>EV Chart</h3>
+      <canvas id="ev-chart" height="300"></canvas>
+    </div>
+
+    <div class="card wide" style="margin-top:1.5rem;">
+      <h3>Kalman Filter State</h3>
+      <table id="kalman-table">
+        <thead>
+          <tr><th>Team</th><th>Prior Estimate</th><th>Kalman Gain</th><th>Posterior Estimate</th><th>Uncertainty</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══════════════════  SETTINGS  ═══════════════════ -->
+  <section id="settings" class="panel">
+    <h2>Settings</h2>
+
+    <div class="settings-grid">
+      <div class="card">
+        <h3>Payout Configuration</h3>
+        <div class="form-group">
+          <label>A Event Payout %</label>
+          <input type="number" id="set-payout-a" value="40" min="0" max="100">
+        </div>
+        <div class="form-group">
+          <label>B Event Payout %</label>
+          <input type="number" id="set-payout-b" value="30" min="0" max="100">
+        </div>
+        <div class="form-group">
+          <label>C Event Payout %</label>
+          <input type="number" id="set-payout-c" value="15" min="0" max="100">
+        </div>
+        <div class="form-group">
+          <label>D Event Payout %</label>
+          <input type="number" id="set-payout-d" value="15" min="0" max="100">
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Prior Year Pools</h3>
+        <div class="form-group">
+          <label>Men's Pool (2025)</label>
+          <input type="number" id="set-mens-pool" value="12400">
+        </div>
+        <div class="form-group">
+          <label>Women's Pool (2025)</label>
+          <input type="number" id="set-womens-pool" value="4700">
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Self Buy-Back</h3>
+        <div class="form-group">
+          <label>Buy-Back Fee</label>
+          <input type="number" id="set-buyback-fee" value="40">
+        </div>
+        <div class="form-group">
+          <label>Buy-Back Payout Share %</label>
+          <input type="number" id="set-buyback-pct" value="25">
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Kalman Filter Tuning</h3>
+        <div class="form-group">
+          <label>Process Noise (Q)</label>
+          <input type="number" id="set-kalman-q" value="100" step="10">
+        </div>
+        <div class="form-group">
+          <label>Measurement Noise (R)</label>
+          <input type="number" id="set-kalman-r" value="200" step="10">
+        </div>
+        <div class="form-group">
+          <label>Initial Uncertainty (P₀)</label>
+          <input type="number" id="set-kalman-p0" value="500" step="50">
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Odds Weights (Python script)</h3>
+        <div class="info-box" style="margin-bottom:0;">
+          <p>Win probabilities are computed offline via:<br>
+          <code>python scripts/calculate_odds.py</code></p>
+          <p style="margin-top:.4rem;">Configure weights with CLI flags:<br>
+          <code>--standings-weight 0.5 --h2h-weight 0.3 --draw-weight 0.2</code></p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Data Management</h3>
+        <button id="btn-save-all" class="btn btn-primary" style="width:100%;margin-bottom:0.5rem;">Save All Data (LocalStorage)</button>
+        <button id="btn-load-all" class="btn" style="width:100%;margin-bottom:0.5rem;">Load Saved Data</button>
+        <button id="btn-export-all" class="btn" style="width:100%;margin-bottom:0.5rem;">Export All as JSON</button>
+        <button id="btn-clear-all" class="btn btn-danger" style="width:100%;">Clear All Data</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════  MODALS  ═══════════════════ -->
+  <div id="modal-overlay" class="modal-overlay hidden">
+    <div id="modal" class="modal">
+      <div class="modal-header">
+        <h3 id="modal-title"></h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div id="modal-body" class="modal-body"></div>
+      <div class="modal-footer">
+        <button id="modal-cancel" class="btn">Cancel</button>
+        <button id="modal-save" class="btn btn-primary">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/kalman.js"></script>
+  <script src="js/odds.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
