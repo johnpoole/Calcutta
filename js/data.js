@@ -33,8 +33,6 @@ const CalcuttaData = (() => {
    * @property {number}  wins
    * @property {number}  losses
    * @property {number}  ties
-   * @property {number}  pointsFor
-   * @property {number}  pointsAgainst
    * @property {Object}  h2h        - { opponentId: { w, l } }
    * @property {number}  seed       - seeding rank (1 = best)
    */
@@ -45,8 +43,6 @@ const CalcuttaData = (() => {
       wins: overrides.wins ?? 0,
       losses: overrides.losses ?? 0,
       ties: overrides.ties ?? 0,
-      pointsFor: overrides.pointsFor ?? 0,
-      pointsAgainst: overrides.pointsAgainst ?? 0,
       h2h: overrides.h2h || {},
       seed: overrides.seed ?? 99,
     };

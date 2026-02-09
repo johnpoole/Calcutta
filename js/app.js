@@ -14,8 +14,12 @@
   // ═══════════════════════════════════════════════════════
   //  INIT
   // ═══════════════════════════════════════════════════════
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', async () => {
     CalcuttaData.load();
+    // If no teams exist, auto-load from bundled JSON data files
+    if (CalcuttaData.getTeams().length === 0) {
+      await autoLoadData();
+    }
     syncSettingsUI();
     bindTabs();
     bindDivisionToggles();
@@ -27,9 +31,38 @@
     bindSettingsActions();
     bindModal();
     renderAll();
-    // Auto-load pre-computed odds on startup
+    // Auto-load pre-computed odds and bracket tree on startup
     loadPrecomputedOdds();
+    loadBracketTree();
   });
+
+  async function autoLoadData() {
+    try {
+      for (const div of ['mens', 'womens']) {
+        const [teamsResp, drawResp] = await Promise.all([
+          fetch(`data/teams_${div}.json`),
+          fetch(`data/draw_${div}.json`),
+        ]);
+        if (teamsResp.ok) {
+          const teams = await teamsResp.json();
+          CalcuttaData.activeDivision = div;
+          // Import teams array into the active division
+          CalcuttaData.importJSON(teams);
+        }
+        if (drawResp.ok) {
+          const draw = await drawResp.json();
+          CalcuttaData.activeDivision = div;
+          CalcuttaData.state[div].draw = draw;
+        }
+      }
+      CalcuttaData.activeDivision = 'mens';
+      CalcuttaData.state.config = CalcuttaData.config; // keep defaults
+      CalcuttaData.save();
+      console.log('Auto-loaded team and draw data from JSON files.');
+    } catch (e) {
+      console.warn('Auto-load failed (OK if running without data files):', e);
+    }
+  }
 
   // ═══════════════════════════════════════════════════════
   //  TABS
@@ -60,8 +93,10 @@
           CalcuttaData.activeDivision = btn.dataset.division;
           cachedOdds = [];
           cachedAnalysis = [];
+          cachedBracketTree = null;
           renderAll();
           loadPrecomputedOdds();
+          loadBracketTree();
         });
       });
     });
@@ -74,7 +109,6 @@
     renderDashboard();
     renderStandings();
     renderH2H();
-    renderDrawSchedule();
     renderBracket();
     renderBids();
     renderPayoutCards();
@@ -148,8 +182,6 @@
         <td>${t.losses}</td>
         <td>${t.ties}</td>
         <td>${pct(CalcuttaData.winPct(t))}</td>
-        <td>${t.pointsFor}</td>
-        <td>${t.pointsAgainst}</td>
         <td>
           <button class="btn" data-action="edit-team" data-id="${t.id}" style="padding:.2rem .5rem;font-size:.78rem;">Edit</button>
           <button class="btn btn-danger" data-action="delete-team" data-id="${t.id}" style="padding:.2rem .5rem;font-size:.78rem;">×</button>
@@ -210,114 +242,146 @@
   }
 
   // ═══════════════════════════════════════════════════════
-  //  DRAW / BRACKET
+  //  DRAW / BRACKET  (renders from bracket-tree JSON)
   // ═══════════════════════════════════════════════════════
-  function renderDrawSchedule() {
-    const tbody = document.querySelector('#draw-schedule tbody');
-    tbody.innerHTML = '';
-    const draw = CalcuttaData.getDraw();
+  let cachedBracketTree = null;
+  let activeEvent = 'a';
 
-    if (draw.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" style="color:var(--muted);text-align:center;">No draw loaded</td></tr>';
-      return;
-    }
-
-    const sorted = [...draw].sort((a, b) => a.drawNum - b.drawNum || a.sheet.localeCompare(b.sheet));
-    for (const m of sorted) {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${m.drawNum}</td>
-        <td>${esc(m.sheet)}</td>
-        <td>${esc(CalcuttaData.getTeamName(m.team1Id))}</td>
-        <td>vs</td>
-        <td>${esc(CalcuttaData.getTeamName(m.team2Id))}</td>
-        <td>${m.event}</td>
-      `;
-      tbody.appendChild(tr);
+  async function loadBracketTree() {
+    const div = CalcuttaData.activeDivision;
+    try {
+      const resp = await fetch(`data/bracket_${div}.json`);
+      if (resp.ok) {
+        cachedBracketTree = await resp.json();
+        renderBracket();
+      }
+    } catch (e) {
+      console.warn('Could not load bracket tree:', e);
     }
   }
 
+  /* ── Recursive tree → HTML ─────────────────────────── */
+  function treeNodeHTML(node) {
+    if (node.team) {
+      const t = CalcuttaData.getTeams().find(t => t.id === node.team);
+      const name = t ? t.name : node.team;
+      const seed = t ? t.seed : '';
+      return `<div class="bt-team">${seed ? `<small style="color:var(--muted)">${seed}.</small> ` : ''}${esc(name)}</div>`;
+    }
+    if (node.slot) {
+      return `<div class="bt-slot">${esc(node.slot)}</div>`;
+    }
+    const m = node.match;
+    const loser = m.loserSlot ? `<span class="bt-loser">→${m.loserSlot}</span>` : '';
+    return `<div class="bt-match">
+      <div class="bt-seeds">
+        <div class="bt-seed">${treeNodeHTML(m.left)}</div>
+        <div class="bt-seed">${treeNodeHTML(m.right)}</div>
+      </div>
+      <div class="bt-line"><div class="bt-line-t"></div><div class="bt-line-b"></div></div>
+      <div class="bt-out"></div>
+      ${loser}
+    </div>`;
+  }
+
+  /* ── Render full bracket page ──────────────────────── */
   function renderBracket() {
     const container = document.getElementById('bracket-container');
-    const draw = CalcuttaData.getDraw();
-    const teams = CalcuttaData.getTeams();
-
-    if (draw.length === 0 || teams.length === 0) {
-      container.innerHTML = '<p style="color:var(--muted);">Import or generate a draw to see the bracket</p>';
+    if (!cachedBracketTree) {
+      container.innerHTML = '<p style="color:var(--muted);">Loading bracket…</p>';
       return;
     }
 
-    // Group matches by round number
-    const rounds = new Map();
-    for (const m of draw) {
-      if (!rounds.has(m.drawNum)) rounds.set(m.drawNum, []);
-      rounds.get(m.drawNum).push(m);
-    }
+    const tree = cachedBracketTree;
 
-    let html = '<div style="display:flex;gap:2rem;align-items:flex-start;">';
-    for (const [roundNum, matches] of [...rounds.entries()].sort((a, b) => a[0] - b[0])) {
-      html += `<div class="bracket-round"><h4>Draw ${roundNum}</h4>`;
-      for (const m of matches) {
-        const t1 = CalcuttaData.getTeamName(m.team1Id);
-        const t2 = CalcuttaData.getTeamName(m.team2Id);
-        const w1 = m.winnerId === m.team1Id ? 'winner' : '';
-        const w2 = m.winnerId === m.team2Id ? 'winner' : '';
-        html += `
-          <div class="bracket-match">
-            <div class="team-slot ${w1}">${esc(t1)}</div>
-            <div class="team-slot ${w2}">${esc(t2)}</div>
-          </div>`;
-      }
-      html += '</div>';
+    // Build per-event HTML
+    const events = {};
+
+    // A Event
+    const qLabels = tree.a_event.length === 4
+      ? ['Qualifier 1', 'Qualifier 2', 'Qualifier 3', 'Qualifier 4']
+      : ['Qualifier 1', 'Qualifier 2'];
+    let aHTML = '';
+    tree.a_event.forEach((q, i) => {
+      aHTML += `<div class="qualifier-section"><h4>${qLabels[i]}</h4>
+        <div class="bracket-tree" style="overflow-x:auto;padding:.5rem 0;">${treeNodeHTML(q)}</div></div>`;
+    });
+    events.a = aHTML;
+
+    // B Event
+    const bStart = tree.a_event.length + 1;
+    const bLabels = tree.b_event.map((_, i) => `Qualifier ${bStart + i}`);
+    let bHTML = '';
+    tree.b_event.forEach((q, i) => {
+      bHTML += `<div class="qualifier-section"><h4>${bLabels[i]}</h4>
+        <div class="bracket-tree" style="overflow-x:auto;padding:.5rem 0;">${treeNodeHTML(q)}</div></div>`;
+    });
+    events.b = bHTML;
+
+    // Championship
+    events.champ = renderChampionship(tree.championship);
+
+    // C Event
+    events.c = `<div class="qualifier-section"><h4>C Event Bracket</h4>
+      <div class="bracket-tree" style="overflow-x:auto;padding:.5rem 0;">${treeNodeHTML(tree.c_event)}</div></div>`;
+
+    // D Event
+    events.d = `<div class="qualifier-section"><h4>D Event Bracket</h4>
+      <div class="bracket-tree" style="overflow-x:auto;padding:.5rem 0;">${treeNodeHTML(tree.d_event)}</div></div>`;
+
+    let html = '';
+    for (const key of ['a', 'b', 'champ', 'c', 'd']) {
+      html += `<div class="bracket-event${key === activeEvent ? ' active' : ''}" data-event="${key}">${events[key]}</div>`;
     }
-    html += '</div>';
     container.innerHTML = html;
   }
 
+  function renderChampionship(champ) {
+    const n = champ.numQualifiers;
+    let html = '';
+
+    // Quarterfinals (or first round)
+    const qfLabel = n === 8 ? 'Quarterfinals' : 'Semifinals';
+    html += `<div class="champ-round"><h5>${qfLabel}</h5><div class="champ-matches">`;
+    champ.quarterSeed.forEach(([a, b], i) => {
+      html += `<div class="champ-card"><span class="qualifier">Q${a + 1}</span><span class="vs">vs</span><span class="qualifier">Q${b + 1}</span></div>`;
+    });
+    html += '</div></div>';
+
+    // Semifinals (if 8 qualifiers)
+    if (n === 8) {
+      html += `<div class="champ-round"><h5>Semifinals</h5><div class="champ-matches">`;
+      champ.semiPairs.forEach(([a, b]) => {
+        html += `<div class="champ-card">${qfLabel.slice(0, -1)} ${a + 1} Winner <span class="vs">vs</span> ${qfLabel.slice(0, -1)} ${b + 1} Winner</div>`;
+      });
+      html += '</div></div>';
+    }
+
+    // Final
+    const sfLabel = n === 8 ? 'Semifinal' : qfLabel.slice(0, -1);
+    html += `<div class="champ-round"><h5>Championship Final</h5><div class="champ-matches">`;
+    html += `<div class="champ-card">${sfLabel} Winners → <strong>Champion</strong> (40% payout)</div>`;
+    html += '</div></div>';
+
+    // Consolation
+    html += `<div class="champ-round"><h5>Consolation Final</h5><div class="champ-matches">`;
+    html += `<div class="champ-card">${sfLabel} Losers → <strong>Consolation</strong> (30% payout)</div>`;
+    html += '</div></div>';
+
+    return html;
+  }
+
   function bindDrawActions() {
-    document.getElementById('btn-import-draw').addEventListener('click', () => {
-      document.getElementById('file-import-draw').click();
-    });
-    document.getElementById('file-import-draw').addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        try {
-          const data = JSON.parse(ev.target.result);
-          const div = CalcuttaData.state[CalcuttaData.activeDivision];
-          div.draw = Array.isArray(data) ? data.map(m => CalcuttaData.createMatch(m)) : [];
-          CalcuttaData.save();
-          renderAll();
-        } catch (err) { alert('Invalid JSON: ' + err.message); }
-      };
-      reader.readAsText(file);
-      e.target.value = '';
-    });
-
-    document.getElementById('btn-generate-draw').addEventListener('click', () => {
-      const teams = CalcuttaData.getTeams();
-      if (teams.length < 2) { alert('Need at least 2 teams to generate a bracket.'); return; }
-
-      const sorted = [...teams].sort((a, b) => a.seed - b.seed);
-      const div = CalcuttaData.state[CalcuttaData.activeDivision];
-      div.draw = [];
-
-      // Generate seeded first-round matches
-      const sheets = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
-      for (let i = 0; i < sorted.length; i += 2) {
-        if (i + 1 >= sorted.length) break;
-        div.draw.push(CalcuttaData.createMatch({
-          drawNum: 1,
-          sheet: sheets[(i / 2) % sheets.length],
-          team1Id: sorted[i].id,
-          team2Id: sorted[i + 1].id,
-          event: 'A',
-        }));
-      }
-
-      CalcuttaData.save();
-      renderAll();
+    // Event tab switching
+    document.querySelectorAll('.event-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.event-tab').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.bracket-event').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        activeEvent = btn.dataset.event;
+        const panel = document.querySelector(`.bracket-event[data-event="${btn.dataset.event}"]`);
+        if (panel) panel.classList.add('active');
+      });
     });
   }
 
@@ -750,10 +814,6 @@
         <div class="form-group"><label>Losses</label><input type="number" id="inp-team-l" value="${team?.losses ?? 0}" min="0"></div>
         <div class="form-group"><label>Ties</label><input type="number" id="inp-team-t" value="${team?.ties ?? 0}" min="0"></div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;">
-        <div class="form-group"><label>Points For</label><input type="number" id="inp-team-pf" value="${team?.pointsFor ?? 0}" min="0"></div>
-        <div class="form-group"><label>Points Against</label><input type="number" id="inp-team-pa" value="${team?.pointsAgainst ?? 0}" min="0"></div>
-      </div>
       <div class="form-group">
         <label>Seed</label>
         <input type="number" id="inp-team-seed" value="${team?.seed ?? CalcuttaData.getTeams().length + 1}" min="1">
@@ -766,8 +826,6 @@
         wins: parseInt(document.getElementById('inp-team-w').value) || 0,
         losses: parseInt(document.getElementById('inp-team-l').value) || 0,
         ties: parseInt(document.getElementById('inp-team-t').value) || 0,
-        pointsFor: parseInt(document.getElementById('inp-team-pf').value) || 0,
-        pointsAgainst: parseInt(document.getElementById('inp-team-pa').value) || 0,
         seed: parseInt(document.getElementById('inp-team-seed').value) || 99,
       };
 

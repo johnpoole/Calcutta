@@ -105,7 +105,6 @@ def parse_rosters(wb):
             "id": last_name, "name": skip_name.split()[-1],
             "skip": skip_name, "members": members, "rosterNum": num,
             "wins": 0, "losses": 0, "ties": 0,
-            "pointsFor": 0, "pointsAgainst": 0,
             "h2h": {}, "seed": num,
         })
 
@@ -301,8 +300,7 @@ def flatten_bracket(tree, event_label, division, counter=None):
 # ═══════════════════════════════════════════════════════════
 
 def strip_extra_fields(teams):
-    keep = ("id", "name", "wins", "losses", "ties",
-            "pointsFor", "pointsAgainst", "h2h", "seed")
+    keep = ("id", "name", "wins", "losses", "ties", "h2h", "seed")
     return [{k: t[k] for k in keep} for t in teams]
 
 

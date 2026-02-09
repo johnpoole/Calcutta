@@ -81,8 +81,6 @@
           <th data-sort="losses">L</th>
           <th data-sort="ties">T</th>
           <th data-sort="winPct">Win %</th>
-          <th data-sort="pointsFor">PF</th>
-          <th data-sort="pointsAgainst">PA</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -103,23 +101,15 @@
       <button class="div-btn" data-division="womens">Women's</button>
     </div>
 
-    <div class="toolbar">
-      <button id="btn-import-draw" class="btn">Import Draw JSON</button>
-      <input type="file" id="file-import-draw" accept=".json" hidden>
-      <button id="btn-generate-draw" class="btn btn-primary">Auto-Generate Bracket</button>
+    <div class="event-tabs">
+      <button class="event-tab active" data-event="a">A Event</button>
+      <button class="event-tab" data-event="b">B Event</button>
+      <button class="event-tab" data-event="champ">Championship</button>
+      <button class="event-tab" data-event="c">C Event</button>
+      <button class="event-tab" data-event="d">D Event</button>
     </div>
 
-    <div id="bracket-container" class="bracket"></div>
-
-    <div class="card wide" style="margin-top:1.5rem;">
-      <h3>Draw Schedule</h3>
-      <table id="draw-schedule">
-        <thead>
-          <tr><th>Draw</th><th>Sheet</th><th>Team 1</th><th>vs</th><th>Team 2</th><th>Event</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
+    <div id="bracket-container"></div>
   </section>
 
   <!-- ═══════════════════  WIN PROBABILITIES  ═══════════════════ -->

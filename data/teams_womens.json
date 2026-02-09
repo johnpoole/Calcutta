@@ -1,134 +1,650 @@
 [
   {
-    "id": "vogt",
-    "name": "Vogt",
-    "wins": 0,
-    "losses": 0,
-    "ties": 0,
-    "pointsFor": 0,
-    "pointsAgainst": 0,
-    "h2h": {},
+    "id": "patrick",
+    "name": "Patrick",
+    "wins": 18,
+    "losses": 2,
+    "ties": 1,
+    "h2h": {
+      "vogt": {
+        "w": 2,
+        "l": 2
+      },
+      "snethun": {
+        "w": 1,
+        "l": 3
+      },
+      "newman": {
+        "w": 1,
+        "l": 1
+      },
+      "sheeran": {
+        "w": 2,
+        "l": 0
+      },
+      "williams": {
+        "w": 2,
+        "l": 1
+      },
+      "lougheed": {
+        "w": 2,
+        "l": 0
+      },
+      "hawkins": {
+        "w": 2,
+        "l": 2
+      },
+      "clark": {
+        "w": 1,
+        "l": 2
+      },
+      "wilson": {
+        "w": 1,
+        "l": 1
+      },
+      "inman": {
+        "w": 2,
+        "l": 1
+      },
+      "loczy": {
+        "w": 3,
+        "l": 1
+      }
+    },
     "seed": 1
   },
   {
     "id": "snethun",
     "name": "Snethun",
-    "wins": 0,
-    "losses": 0,
+    "wins": 18,
+    "losses": 3,
     "ties": 0,
-    "pointsFor": 0,
-    "pointsAgainst": 0,
-    "h2h": {},
+    "h2h": {
+      "vogt": {
+        "w": 0,
+        "l": 3
+      },
+      "newman": {
+        "w": 2,
+        "l": 0
+      },
+      "sheeran": {
+        "w": 1,
+        "l": 1
+      },
+      "williams": {
+        "w": 3,
+        "l": 0
+      },
+      "lougheed": {
+        "w": 3,
+        "l": 1
+      },
+      "hawkins": {
+        "w": 0,
+        "l": 3
+      },
+      "clark": {
+        "w": 2,
+        "l": 2
+      },
+      "wilson": {
+        "w": 3,
+        "l": 1
+      },
+      "inman": {
+        "w": 0,
+        "l": 3
+      },
+      "patrick": {
+        "w": 3,
+        "l": 1
+      },
+      "loczy": {
+        "w": 4,
+        "l": 0
+      }
+    },
     "seed": 2
   },
   {
     "id": "newman",
     "name": "Newman",
-    "wins": 0,
-    "losses": 0,
-    "ties": 0,
-    "pointsFor": 0,
-    "pointsAgainst": 0,
-    "h2h": {},
+    "wins": 17,
+    "losses": 3,
+    "ties": 2,
+    "h2h": {
+      "vogt": {
+        "w": 1,
+        "l": 3
+      },
+      "snethun": {
+        "w": 0,
+        "l": 2
+      },
+      "sheeran": {
+        "w": 1,
+        "l": 3
+      },
+      "williams": {
+        "w": 2,
+        "l": 1
+      },
+      "lougheed": {
+        "w": 2,
+        "l": 2
+      },
+      "hawkins": {
+        "w": 1,
+        "l": 1
+      },
+      "clark": {
+        "w": 1,
+        "l": 3
+      },
+      "wilson": {
+        "w": 1,
+        "l": 1
+      },
+      "inman": {
+        "w": 2,
+        "l": 2
+      },
+      "patrick": {
+        "w": 1,
+        "l": 1
+      },
+      "loczy": {
+        "w": 4,
+        "l": 0
+      }
+    },
     "seed": 3
   },
   {
     "id": "sheeran",
     "name": "Sheeran",
-    "wins": 0,
-    "losses": 0,
+    "wins": 18,
+    "losses": 4,
     "ties": 0,
-    "pointsFor": 0,
-    "pointsAgainst": 0,
-    "h2h": {},
+    "h2h": {
+      "vogt": {
+        "w": 2,
+        "l": 0
+      },
+      "snethun": {
+        "w": 1,
+        "l": 1
+      },
+      "newman": {
+        "w": 3,
+        "l": 1
+      },
+      "williams": {
+        "w": 3,
+        "l": 0
+      },
+      "lougheed": {
+        "w": 2,
+        "l": 1
+      },
+      "hawkins": {
+        "w": 0,
+        "l": 2
+      },
+      "clark": {
+        "w": 2,
+        "l": 0
+      },
+      "wilson": {
+        "w": 2,
+        "l": 0
+      },
+      "inman": {
+        "w": 2,
+        "l": 1
+      },
+      "patrick": {
+        "w": 0,
+        "l": 2
+      },
+      "loczy": {
+        "w": 2,
+        "l": 1
+      }
+    },
     "seed": 4
   },
   {
     "id": "williams",
     "name": "Williams",
-    "wins": 0,
-    "losses": 0,
-    "ties": 0,
-    "pointsFor": 0,
-    "pointsAgainst": 0,
-    "h2h": {},
+    "wins": 17,
+    "losses": 3,
+    "ties": 2,
+    "h2h": {
+      "vogt": {
+        "w": 2,
+        "l": 1
+      },
+      "snethun": {
+        "w": 0,
+        "l": 3
+      },
+      "newman": {
+        "w": 1,
+        "l": 2
+      },
+      "sheeran": {
+        "w": 0,
+        "l": 3
+      },
+      "lougheed": {
+        "w": 2,
+        "l": 2
+      },
+      "hawkins": {
+        "w": 2,
+        "l": 0
+      },
+      "clark": {
+        "w": 1,
+        "l": 3
+      },
+      "wilson": {
+        "w": 0,
+        "l": 4
+      },
+      "inman": {
+        "w": 0,
+        "l": 2
+      },
+      "patrick": {
+        "w": 1,
+        "l": 2
+      },
+      "loczy": {
+        "w": 1,
+        "l": 2
+      }
+    },
     "seed": 5
-  },
-  {
-    "id": "lougheed",
-    "name": "Lougheed",
-    "wins": 0,
-    "losses": 0,
-    "ties": 0,
-    "pointsFor": 0,
-    "pointsAgainst": 0,
-    "h2h": {},
-    "seed": 6
-  },
-  {
-    "id": "hawkins",
-    "name": "Hawkins",
-    "wins": 0,
-    "losses": 0,
-    "ties": 0,
-    "pointsFor": 0,
-    "pointsAgainst": 0,
-    "h2h": {},
-    "seed": 7
-  },
-  {
-    "id": "clark",
-    "name": "Clark",
-    "wins": 0,
-    "losses": 0,
-    "ties": 0,
-    "pointsFor": 0,
-    "pointsAgainst": 0,
-    "h2h": {},
-    "seed": 8
-  },
-  {
-    "id": "wilson",
-    "name": "Wilson",
-    "wins": 0,
-    "losses": 0,
-    "ties": 0,
-    "pointsFor": 0,
-    "pointsAgainst": 0,
-    "h2h": {},
-    "seed": 9
-  },
-  {
-    "id": "inman",
-    "name": "Inman",
-    "wins": 0,
-    "losses": 0,
-    "ties": 0,
-    "pointsFor": 0,
-    "pointsAgainst": 0,
-    "h2h": {},
-    "seed": 10
-  },
-  {
-    "id": "patrick",
-    "name": "Patrick",
-    "wins": 0,
-    "losses": 0,
-    "ties": 0,
-    "pointsFor": 0,
-    "pointsAgainst": 0,
-    "h2h": {},
-    "seed": 11
   },
   {
     "id": "loczy",
     "name": "Loczy",
-    "wins": 0,
-    "losses": 0,
+    "wins": 14,
+    "losses": 3,
+    "ties": 2,
+    "h2h": {
+      "vogt": {
+        "w": 1,
+        "l": 1
+      },
+      "snethun": {
+        "w": 0,
+        "l": 4
+      },
+      "newman": {
+        "w": 0,
+        "l": 4
+      },
+      "sheeran": {
+        "w": 1,
+        "l": 2
+      },
+      "williams": {
+        "w": 2,
+        "l": 1
+      },
+      "lougheed": {
+        "w": 0,
+        "l": 3
+      },
+      "hawkins": {
+        "w": 1,
+        "l": 2
+      },
+      "clark": {
+        "w": 0,
+        "l": 2
+      },
+      "wilson": {
+        "w": 1,
+        "l": 2
+      },
+      "inman": {
+        "w": 1,
+        "l": 2
+      },
+      "patrick": {
+        "w": 1,
+        "l": 3
+      }
+    },
+    "seed": 6
+  },
+  {
+    "id": "clark",
+    "name": "Clark",
+    "wins": 12,
+    "losses": 5,
+    "ties": 3,
+    "h2h": {
+      "vogt": {
+        "w": 1,
+        "l": 2
+      },
+      "snethun": {
+        "w": 2,
+        "l": 2
+      },
+      "newman": {
+        "w": 3,
+        "l": 1
+      },
+      "sheeran": {
+        "w": 0,
+        "l": 2
+      },
+      "williams": {
+        "w": 3,
+        "l": 1
+      },
+      "lougheed": {
+        "w": 2,
+        "l": 2
+      },
+      "hawkins": {
+        "w": 2,
+        "l": 0
+      },
+      "wilson": {
+        "w": 3,
+        "l": 0
+      },
+      "inman": {
+        "w": 3,
+        "l": 0
+      },
+      "patrick": {
+        "w": 2,
+        "l": 1
+      },
+      "loczy": {
+        "w": 2,
+        "l": 0
+      }
+    },
+    "seed": 7
+  },
+  {
+    "id": "inman",
+    "name": "Inman",
+    "wins": 8,
+    "losses": 12,
+    "ties": 1,
+    "h2h": {
+      "vogt": {
+        "w": 0,
+        "l": 2
+      },
+      "snethun": {
+        "w": 3,
+        "l": 0
+      },
+      "newman": {
+        "w": 2,
+        "l": 2
+      },
+      "sheeran": {
+        "w": 1,
+        "l": 2
+      },
+      "williams": {
+        "w": 2,
+        "l": 0
+      },
+      "lougheed": {
+        "w": 2,
+        "l": 1
+      },
+      "hawkins": {
+        "w": 1,
+        "l": 1
+      },
+      "clark": {
+        "w": 0,
+        "l": 3
+      },
+      "wilson": {
+        "w": 2,
+        "l": 1
+      },
+      "patrick": {
+        "w": 1,
+        "l": 2
+      },
+      "loczy": {
+        "w": 2,
+        "l": 1
+      }
+    },
+    "seed": 8
+  },
+  {
+    "id": "lougheed",
+    "name": "Lougheed",
+    "wins": 7,
+    "losses": 11,
+    "ties": 2,
+    "h2h": {
+      "vogt": {
+        "w": 1,
+        "l": 2
+      },
+      "snethun": {
+        "w": 1,
+        "l": 3
+      },
+      "newman": {
+        "w": 2,
+        "l": 2
+      },
+      "sheeran": {
+        "w": 1,
+        "l": 2
+      },
+      "williams": {
+        "w": 2,
+        "l": 2
+      },
+      "hawkins": {
+        "w": 1,
+        "l": 3
+      },
+      "clark": {
+        "w": 2,
+        "l": 2
+      },
+      "wilson": {
+        "w": 2,
+        "l": 0
+      },
+      "inman": {
+        "w": 1,
+        "l": 2
+      },
+      "patrick": {
+        "w": 0,
+        "l": 2
+      },
+      "loczy": {
+        "w": 3,
+        "l": 0
+      }
+    },
+    "seed": 9
+  },
+  {
+    "id": "hawkins",
+    "name": "Hawkins",
+    "wins": 7,
+    "losses": 12,
     "ties": 0,
-    "pointsFor": 0,
-    "pointsAgainst": 0,
-    "h2h": {},
+    "h2h": {
+      "vogt": {
+        "w": 3,
+        "l": 0
+      },
+      "snethun": {
+        "w": 3,
+        "l": 0
+      },
+      "newman": {
+        "w": 1,
+        "l": 1
+      },
+      "sheeran": {
+        "w": 2,
+        "l": 0
+      },
+      "williams": {
+        "w": 0,
+        "l": 2
+      },
+      "lougheed": {
+        "w": 3,
+        "l": 1
+      },
+      "clark": {
+        "w": 0,
+        "l": 2
+      },
+      "wilson": {
+        "w": 4,
+        "l": 0
+      },
+      "inman": {
+        "w": 1,
+        "l": 1
+      },
+      "patrick": {
+        "w": 2,
+        "l": 2
+      },
+      "loczy": {
+        "w": 2,
+        "l": 1
+      }
+    },
+    "seed": 10
+  },
+  {
+    "id": "vogt",
+    "name": "Vogt",
+    "wins": 3,
+    "losses": 16,
+    "ties": 1,
+    "h2h": {
+      "snethun": {
+        "w": 3,
+        "l": 0
+      },
+      "newman": {
+        "w": 3,
+        "l": 1
+      },
+      "sheeran": {
+        "w": 0,
+        "l": 2
+      },
+      "williams": {
+        "w": 1,
+        "l": 2
+      },
+      "lougheed": {
+        "w": 2,
+        "l": 1
+      },
+      "hawkins": {
+        "w": 0,
+        "l": 3
+      },
+      "clark": {
+        "w": 2,
+        "l": 1
+      },
+      "wilson": {
+        "w": 2,
+        "l": 1
+      },
+      "inman": {
+        "w": 2,
+        "l": 0
+      },
+      "patrick": {
+        "w": 2,
+        "l": 2
+      },
+      "loczy": {
+        "w": 1,
+        "l": 1
+      }
+    },
+    "seed": 11
+  },
+  {
+    "id": "wilson",
+    "name": "Wilson",
+    "wins": 2,
+    "losses": 15,
+    "ties": 1,
+    "h2h": {
+      "vogt": {
+        "w": 1,
+        "l": 2
+      },
+      "snethun": {
+        "w": 1,
+        "l": 3
+      },
+      "newman": {
+        "w": 1,
+        "l": 1
+      },
+      "sheeran": {
+        "w": 0,
+        "l": 2
+      },
+      "williams": {
+        "w": 4,
+        "l": 0
+      },
+      "lougheed": {
+        "w": 0,
+        "l": 2
+      },
+      "hawkins": {
+        "w": 0,
+        "l": 4
+      },
+      "clark": {
+        "w": 0,
+        "l": 3
+      },
+      "inman": {
+        "w": 1,
+        "l": 2
+      },
+      "patrick": {
+        "w": 1,
+        "l": 1
+      },
+      "loczy": {
+        "w": 2,
+        "l": 1
+      }
+    },
     "seed": 12
   }
 ]
