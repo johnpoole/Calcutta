@@ -947,8 +947,20 @@
     }
 
     // 2. Pool estimation (prior-year scaling)
+    // If no prior payouts exist, derive them from odds so predictions
+    // are proportional to each team's win probabilities, not flat equal.
+    let effectivePriors = priorPayouts;
+    if (!effectivePriors || effectivePriors.length === 0) {
+      const basePcts = cfg.payoutPcts;
+      effectivePriors = cachedOdds.map(o => {
+        const share = (o.A * basePcts.A) + (o.B * basePcts.B) +
+                      (o.C * basePcts.C) + (o.D * basePcts.D);
+        return { teamId: o.teamId, amount: share * priorPool };
+      });
+    }
+
     const poolEstimates = PoolEstimator.estimatePayouts(
-      teams, bids, priorPayouts, priorPool
+      teams, bids, effectivePriors, priorPool
     );
     const estPool = PoolEstimator.estimatedPool(poolEstimates);
     // Scale event payouts by estimated pool
