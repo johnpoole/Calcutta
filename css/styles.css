@@ -325,6 +325,36 @@ tbody tr:hover { background: rgba(79,140,255,.06); }
 .champ-card .vs { color: var(--muted); margin: 0 .3rem; }
 .champ-card .qualifier { color: var(--accent); font-weight: 600; }
 
+/* ── Path to Win ── */
+.path-selector { margin-bottom: 1rem; }
+.path-selector select {
+  background: var(--surface); color: var(--text); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: .45rem .8rem; font-size: .9rem; min-width: 200px;
+}
+.path-rounds { display: flex; flex-direction: column; gap: .75rem; }
+.path-round {
+  display: flex; align-items: flex-start; gap: .75rem;
+}
+.path-round-label {
+  min-width: 130px; flex-shrink: 0; font-weight: 600; font-size: .85rem;
+  color: var(--accent); padding-top: .35rem;
+}
+.path-opponents {
+  display: flex; flex-wrap: wrap; gap: .4rem; align-items: center;
+}
+.path-opponent {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 3px;
+  padding: .3rem .7rem; font-size: .82rem; white-space: nowrap;
+}
+.path-opponent.seed-info { color: var(--muted); font-size: .75rem; }
+.path-or { color: var(--muted); font-size: .78rem; font-style: italic; }
+.path-divider {
+  border: none; border-top: 1px solid var(--border); margin: .25rem 0;
+}
+.path-section-title {
+  font-size: .95rem; font-weight: 700; color: var(--text); margin: .5rem 0 .25rem;
+}
+
 /* ── Rating badges ── */
 .badge {
   display: inline-block;

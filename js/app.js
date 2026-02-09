@@ -329,11 +329,21 @@
     events.d = `<div class="qualifier-section"><h4>D Event Bracket</h4>
       <div class="bracket-tree" style="overflow-x:auto;padding:.5rem 0;">${treeNodeHTML(tree.d_event)}</div></div>`;
 
+    // Path to Win
+    events.path = renderPathToWin();
+
     let html = '';
-    for (const key of ['a', 'b', 'champ', 'c', 'd']) {
+    for (const key of ['a', 'b', 'champ', 'c', 'd', 'path']) {
       html += `<div class="bracket-event${key === activeEvent ? ' active' : ''}" data-event="${key}">${events[key]}</div>`;
     }
     container.innerHTML = html;
+
+    // If path tab is active, initialize the result
+    if (activeEvent === 'path') {
+      updatePathResult();
+      const sel = document.getElementById('path-team-select');
+      if (sel) sel.addEventListener('change', updatePathResult);
+    }
   }
 
   function renderChampionship(champ) {
@@ -371,6 +381,176 @@
     return html;
   }
 
+  /* ── Path to Win: trace a team's opponents ─────────── */
+
+  /** Collect all team ids from a subtree */
+  function collectTeams(node) {
+    if (node.team) return [node.team];
+    if (node.slot) return []; // slots are unknown at auction time
+    const m = node.match;
+    return [...collectTeams(m.left), ...collectTeams(m.right)];
+  }
+
+  /**
+   * Find the path from a team to the root of a bracket tree.
+   * Returns array of { opponents: [teamId, …], roundLabel: string } from
+   * first round to qualifier final, or null if team is not in this tree.
+   */
+  function findPath(node, teamId, depth) {
+    if (node.team) {
+      return node.team === teamId ? [] : null;
+    }
+    if (node.slot) return null;
+    if (!node.match) return null;
+    const m = node.match;
+
+    const leftPath = findPath(m.left, teamId, depth + 1);
+    if (leftPath !== null) {
+      leftPath.push({ opponents: collectTeams(m.right) });
+      return leftPath;
+    }
+    const rightPath = findPath(m.right, teamId, depth + 1);
+    if (rightPath !== null) {
+      rightPath.push({ opponents: collectTeams(m.left) });
+      return rightPath;
+    }
+    return null;
+  }
+
+  function renderPathToWin() {
+    if (!cachedBracketTree) return '';
+    const teams = CalcuttaData.getTeams();
+    if (teams.length === 0) return '<p style="color:var(--muted);">No teams loaded</p>';
+
+    const tree = cachedBracketTree;
+    const sorted = [...teams].sort((a, b) => a.seed - b.seed);
+
+    // Team selector
+    let html = `<div class="path-selector">
+      <label style="margin-right:.5rem;font-weight:600;">Select team:</label>
+      <select id="path-team-select">
+        ${sorted.map(t => `<option value="${t.id}">${t.seed}. ${esc(t.name)}</option>`).join('')}
+      </select>
+    </div>
+    <div id="path-result"></div>`;
+
+    return html;
+  }
+
+  function updatePathResult() {
+    const resultEl = document.getElementById('path-result');
+    if (!resultEl || !cachedBracketTree) return;
+
+    const teamId = document.getElementById('path-team-select')?.value;
+    if (!teamId) return;
+
+    const tree = cachedBracketTree;
+    const teams = CalcuttaData.getTeams();
+    const teamName = (id) => {
+      const t = teams.find(t => t.id === id);
+      return t ? `${t.seed}. ${t.name}` : id;
+    };
+
+    // Find which qualifier this team is in
+    let qualifierIdx = -1;
+    let path = null;
+    for (let i = 0; i < tree.a_event.length; i++) {
+      path = findPath(tree.a_event[i], teamId, 0);
+      if (path) { qualifierIdx = i; break; }
+    }
+
+    if (!path) {
+      resultEl.innerHTML = '<p style="color:var(--muted);">Team not found in A Event bracket.</p>';
+      return;
+    }
+
+    const champ = tree.championship;
+    const numQ = champ.numQualifiers;
+    const qNum = qualifierIdx + 1; // Q1-based
+
+    let html = `<div class="path-rounds">`;
+
+    // A Event path  
+    html += `<div class="path-section-title">A Event — Qualifier ${qNum}</div>`;
+    const roundNames = getRoundNames(path.length);
+    path.forEach((step, i) => {
+      html += `<div class="path-round">
+        <div class="path-round-label">${roundNames[i]}</div>
+        <div class="path-opponents">
+          ${step.opponents.length > 0
+            ? step.opponents.map(id => `<span class="path-opponent">${esc(teamName(id))}</span>`).join('<span class="path-or">or</span>')
+            : '<span class="path-opponent seed-info">TBD (slot)</span>'}
+        </div>
+      </div>`;
+    });
+
+    // Championship path
+    html += `<hr class="path-divider"><div class="path-section-title">Championship (as Q${qNum})</div>`;
+
+    if (numQ === 8) {
+      // Quarterfinal opponent
+      const qfPair = champ.quarterSeed.find(p => p.includes(qualifierIdx));
+      const qfOpp = qfPair[0] === qualifierIdx ? qfPair[1] : qfPair[0];
+      html += `<div class="path-round">
+        <div class="path-round-label">Quarterfinal</div>
+        <div class="path-opponents"><span class="path-opponent">Q${qfOpp + 1} winner</span></div>
+      </div>`;
+
+      // Which half of the draw? Find the semi pair index
+      const qfIdx = champ.quarterSeed.indexOf(qfPair);
+      const semiPair = champ.semiPairs.find(p => p.includes(qfIdx));
+      const semiOppQfIdx = semiPair[0] === qfIdx ? semiPair[1] : semiPair[0];
+      const semiOppSeeds = champ.quarterSeed[semiOppQfIdx];
+      html += `<div class="path-round">
+        <div class="path-round-label">Semifinal</div>
+        <div class="path-opponents">
+          <span class="path-opponent">Q${semiOppSeeds[0] + 1}</span>
+          <span class="path-or">or</span>
+          <span class="path-opponent">Q${semiOppSeeds[1] + 1}</span>
+        </div>
+      </div>`;
+
+      // Final — the other semi bracket
+      const otherSemiIdx = champ.semiPairs.find(p => !p.includes(qfIdx));
+      const otherSeeds = otherSemiIdx.flatMap(i => champ.quarterSeed[i]);
+      html += `<div class="path-round">
+        <div class="path-round-label">Final</div>
+        <div class="path-opponents">
+          ${otherSeeds.map(s => `<span class="path-opponent">Q${s + 1}</span>`).join('<span class="path-or">or</span>')}
+        </div>
+      </div>`;
+    } else {
+      // 4 qualifiers — semifinals then final
+      const sfPair = champ.quarterSeed.find(p => p.includes(qualifierIdx));
+      const sfOpp = sfPair[0] === qualifierIdx ? sfPair[1] : sfPair[0];
+      html += `<div class="path-round">
+        <div class="path-round-label">Semifinal</div>
+        <div class="path-opponents"><span class="path-opponent">Q${sfOpp + 1} winner</span></div>
+      </div>`;
+
+      const otherPair = champ.quarterSeed.find(p => !p.includes(qualifierIdx));
+      html += `<div class="path-round">
+        <div class="path-round-label">Final</div>
+        <div class="path-opponents">
+          <span class="path-opponent">Q${otherPair[0] + 1}</span>
+          <span class="path-or">or</span>
+          <span class="path-opponent">Q${otherPair[1] + 1}</span>
+        </div>
+      </div>`;
+    }
+
+    html += '</div>';
+    resultEl.innerHTML = html;
+  }
+
+  function getRoundNames(total) {
+    if (total === 1) return ['Qualifier Final'];
+    if (total === 2) return ['Round 1', 'Qualifier Final'];
+    if (total === 3) return ['Round 1', 'Semifinal', 'Qualifier Final'];
+    if (total === 4) return ['Round 1', 'Round 2', 'Semifinal', 'Qualifier Final'];
+    return Array.from({ length: total }, (_, i) => i === total - 1 ? 'Qualifier Final' : `Round ${i + 1}`);
+  }
+
   function bindDrawActions() {
     // Event tab switching
     document.querySelectorAll('.event-tab').forEach(btn => {
@@ -381,6 +561,12 @@
         activeEvent = btn.dataset.event;
         const panel = document.querySelector(`.bracket-event[data-event="${btn.dataset.event}"]`);
         if (panel) panel.classList.add('active');
+        // Initialize path result when switching to path tab
+        if (activeEvent === 'path') {
+          updatePathResult();
+          const sel = document.getElementById('path-team-select');
+          if (sel) sel.addEventListener('change', updatePathResult);
+        }
       });
     });
   }
