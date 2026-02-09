@@ -616,6 +616,7 @@
         CalcuttaData.save();
         renderPayoutCards();
         renderDashboard();
+        runFullAnalysis();   // pool changed → recompute EV (odds stay cached)
       });
     });
   }

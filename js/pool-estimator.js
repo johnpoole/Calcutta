@@ -1,14 +1,15 @@
 /* ═══════════════════════════════════════════════════════════
    Calcutta Auction — Pool Estimator Module
    Estimates the total pool and per-team payouts using
-   prior-year scaling.
+   prior-year data.
 
    Logic:
      1. Before any bids: estimated pool = prior year pool
-     2. As teams sell: compute a scaling factor from
-        (actual bids for sold teams) / (prior payouts for sold teams)
-     3. Unsold teams are projected at their prior payout × scale
-     4. EV = Σ(P(event) × Payout(event)) − Bid
+     2. As teams sell: replace their prior with the actual bid
+     3. Unsold teams keep their prior (best estimate until sold)
+     4. Scale factor = sold_bids / sold_priors  (informational —
+        shows whether the auction is running hot or cold)
+     5. EV = Σ(P(event) × Payout(event)) − Bid
    ═══════════════════════════════════════════════════════════ */
 
 const PoolEstimator = (() => {
@@ -39,7 +40,7 @@ const PoolEstimator = (() => {
       if (b.amount > 0) bidMap[b.teamId] = b;
     }
 
-    // Compute scaling factor from sold teams
+    // Compute scaling factor from sold teams (informational)
     let soldPrior = 0;
     let soldActual = 0;
     for (const tid of Object.keys(bidMap)) {
@@ -47,12 +48,12 @@ const PoolEstimator = (() => {
       soldPrior += prior;
       soldActual += bidMap[tid].amount;
     }
-
-    // Scale factor: how the auction is trending vs last year
-    // If no teams sold yet, scale = 1 (use prior as-is)
     const scaleFactor = soldPrior > 0 ? (soldActual / soldPrior) : 1.0;
 
     // Build per-team predictions
+    // Sold teams: use actual bid as their pool contribution
+    // Unsold teams: use prior as best estimate (stable — one
+    // cheap/expensive sale doesn't distort the whole pool)
     const results = [];
     for (const team of teams) {
       const bid = bidMap[team.id];
@@ -60,10 +61,7 @@ const PoolEstimator = (() => {
       const selfBuyBack = bid ? bid.selfBuyBack : false;
       const prior = priorMap[team.id] ?? defaultPrior;
 
-      // Predicted payout for this team:
-      //   - If sold: use actual bid as market-clearing value
-      //   - If unsold: scale their prior payout by the auction trend
-      const predictedPayout = bid ? bidAmount : (prior * scaleFactor);
+      const predictedPayout = bid ? bidAmount : prior;
 
       results.push({
         teamId: team.id,
