@@ -535,11 +535,6 @@
       "fee": 40,
       "payoutPct": 0.25
     },
-    "kalman": {
-      "Q": 100,
-      "R": 200,
-      "P0": 500
-    },
     "weights": {
       "standings": 0.5,
       "h2h": 0.3,

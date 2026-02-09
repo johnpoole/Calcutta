@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════════════
    Calcutta Auction — Main Application Logic
    Wires UI events, renders tables/charts, and orchestrates
-   the data, odds, and Kalman modules.
+   the data, odds, and pool-estimator modules.
    ═══════════════════════════════════════════════════════════ */
 
 (function () {
@@ -9,7 +9,7 @@
 
   // ── Cached odds & analysis results ─────────────────────
   let cachedOdds = [];      // [{ teamId, A, B, C, D, any }]  (loaded from pre-computed JSON)
-  let cachedAnalysis = [];   // [{ teamId, ev, optimalBid, ... }]  (Kalman + EV, computed client-side)
+  let cachedAnalysis = [];   // [{ teamId, ev, optimalBid, ... }]  (pool estimates + EV, computed client-side)
 
   // ═══════════════════════════════════════════════════════
   //  INIT
@@ -552,12 +552,12 @@
   function renderAnalysis() {
     const tbody = document.querySelector('#ev-table tbody');
     tbody.innerHTML = '';
-    const kalmanBody = document.querySelector('#kalman-table tbody');
-    kalmanBody.innerHTML = '';
+    const poolBody = document.querySelector('#pool-table tbody');
+    poolBody.innerHTML = '';
 
     if (cachedAnalysis.length === 0) {
       tbody.innerHTML = '<tr><td colspan="6" style="color:var(--muted);text-align:center;">Click "Run Full Analysis" to compute</td></tr>';
-      kalmanBody.innerHTML = '<tr><td colspan="5" style="color:var(--muted);text-align:center;">—</td></tr>';
+      poolBody.innerHTML = '<tr><td colspan="4" style="color:var(--muted);text-align:center;">—</td></tr>';
       clearCanvas('ev-chart');
       return;
     }
@@ -578,17 +578,16 @@
       tbody.appendChild(tr);
     }
 
-    // Kalman state table
+    // Pool estimate table
     for (const row of sorted) {
-      const ktr = document.createElement('tr');
-      ktr.innerHTML = `
+      const ptr = document.createElement('tr');
+      ptr.innerHTML = `
         <td>${esc(row.teamName)}</td>
-        <td>${fmt$(row.priorEstimate)}</td>
-        <td>${row.kalmanGain.toFixed(3)}</td>
+        <td>${fmt$(row.priorPayout)}</td>
+        <td>${row.scaleFactor.toFixed(2)}×</td>
         <td>${fmt$(row.predictedPayout)}</td>
-        <td>±${fmt$(row.uncertainty)}</td>
       `;
-      kalmanBody.appendChild(ktr);
+      poolBody.appendChild(ptr);
     }
 
     renderEVChart(sorted);
@@ -693,28 +692,35 @@
       }
     }
 
-    // 2. Kalman filter predictions
-    const kfResults = KalmanFilter.predictPayouts(
-      teams, bids, priorPayouts, priorPool, currentPool, cfg.payoutPcts, cfg.kalman
+    // 2. Pool estimation (prior-year scaling)
+    const poolEstimates = PoolEstimator.estimatePayouts(
+      teams, bids, priorPayouts, priorPool
     );
+    const estPool = PoolEstimator.estimatedPool(poolEstimates);
+    // Scale event payouts by estimated pool
+    const estPayouts = {
+      A: estPool * cfg.payoutPcts.A,
+      B: estPool * cfg.payoutPcts.B,
+      C: estPool * cfg.payoutPcts.C,
+      D: estPool * cfg.payoutPcts.D,
+    };
 
     // 3. Compute EV for each team
     cachedAnalysis = [];
-    for (const kf of kfResults) {
-      const odds = cachedOdds.find(o => o.teamId === kf.teamId);
+    for (const est of poolEstimates) {
+      const odds = cachedOdds.find(o => o.teamId === est.teamId);
       if (!odds) continue;
 
       const probs = { A: odds.A, B: odds.B, C: odds.C, D: odds.D };
-      const evResult = KalmanFilter.computeEV(probs, payouts, kf.bid, kf.selfBuyBack, cfg.buyBack);
+      const evResult = PoolEstimator.computeEV(probs, estPayouts, est.bid, est.selfBuyBack, cfg.buyBack);
 
       cachedAnalysis.push({
-        teamId: kf.teamId,
-        teamName: kf.teamName,
-        bid: kf.bid,
-        priorEstimate: kf.priorEstimate,
-        predictedPayout: kf.predictedPayout,
-        kalmanGain: kf.kalmanGain,
-        uncertainty: kf.uncertainty,
+        teamId: est.teamId,
+        teamName: est.teamName,
+        bid: est.bid,
+        priorPayout: est.priorPayout,
+        predictedPayout: est.predictedPayout,
+        scaleFactor: est.scaleFactor,
         grossEV: evResult.grossEV,
         ev: evResult.ev,
         evWithBuyBack: evResult.evWithBuyBack,
@@ -846,9 +852,7 @@
     document.getElementById('set-womens-pool').value = c.priorPools.womens;
     document.getElementById('set-buyback-fee').value = c.buyBack.fee;
     document.getElementById('set-buyback-pct').value = c.buyBack.payoutPct * 100;
-    document.getElementById('set-kalman-q').value = c.kalman.Q;
-    document.getElementById('set-kalman-r').value = c.kalman.R;
-    document.getElementById('set-kalman-p0').value = c.kalman.P0;
+
   }
 
   function readSettingsFromUI() {
@@ -861,9 +865,7 @@
     c.priorPools.womens = parseFloat(document.getElementById('set-womens-pool').value) || 4700;
     c.buyBack.fee = parseFloat(document.getElementById('set-buyback-fee').value) || 40;
     c.buyBack.payoutPct = (parseFloat(document.getElementById('set-buyback-pct').value) || 25) / 100;
-    c.kalman.Q = parseFloat(document.getElementById('set-kalman-q').value) || 100;
-    c.kalman.R = parseFloat(document.getElementById('set-kalman-r').value) || 200;
-    c.kalman.P0 = parseFloat(document.getElementById('set-kalman-p0').value) || 500;
+
   }
 
   function bindSettingsActions() {

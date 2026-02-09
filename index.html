@@ -218,7 +218,7 @@
       <h3 class="section-heading">Expected Value &amp; Optimal Bids</h3>
 
       <div class="info-box">
-        <p><strong>Kalman Filter Prediction:</strong> Uses last year's payouts and this year's bid data to predict expected payouts, then computes expected value = Σ(P(event) × Payout(event)) − Bid.</p>
+        <p><strong>Pool Estimation:</strong> Compares bids placed so far against last year's payouts to estimate the total pool. Unsold teams are projected using the scaling trend. EV = Σ(P(event) × Payout(event)) − Bid.</p>
       </div>
 
       <table id="ev-table">
@@ -243,10 +243,10 @@
     </div>
 
     <div class="card wide" style="margin-top:1.5rem;">
-      <h3>Kalman Filter State</h3>
-      <table id="kalman-table">
+      <h3>Pool Estimate Detail</h3>
+      <table id="pool-table">
         <thead>
-          <tr><th>Team</th><th>Prior Estimate</th><th>Kalman Gain</th><th>Posterior Estimate</th><th>Uncertainty</th></tr>
+          <tr><th>Team</th><th>Prior Payout</th><th>Scale Factor</th><th>Predicted Payout</th></tr>
         </thead>
         <tbody></tbody>
       </table>
@@ -302,21 +302,7 @@
         </div>
       </div>
 
-      <div class="card">
-        <h3>Kalman Filter Tuning</h3>
-        <div class="form-group">
-          <label>Process Noise (Q)</label>
-          <input type="number" id="set-kalman-q" value="100" step="10">
-        </div>
-        <div class="form-group">
-          <label>Measurement Noise (R)</label>
-          <input type="number" id="set-kalman-r" value="200" step="10">
-        </div>
-        <div class="form-group">
-          <label>Initial Uncertainty (P₀)</label>
-          <input type="number" id="set-kalman-p0" value="500" step="50">
-        </div>
-      </div>
+
 
       <div class="card">
         <h3>Odds Weights (Python script)</h3>
@@ -354,7 +340,7 @@
   </div>
 
   <!-- Scripts -->
-  <script src="js/kalman.js"></script>
+  <script src="js/pool-estimator.js"></script>
   <script src="js/odds.js"></script>
   <script src="js/data.js"></script>
   <script src="js/app.js"></script>

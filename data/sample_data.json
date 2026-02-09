@@ -81,7 +81,6 @@
     "payoutPcts": { "A": 0.40, "B": 0.30, "C": 0.15, "D": 0.15 },
     "priorPools": { "mens": 12400, "womens": 4700 },
     "buyBack": { "fee": 40, "payoutPct": 0.25 },
-    "kalman": { "Q": 100, "R": 200, "P0": 500 },
     "weights": { "standings": 0.5, "h2h": 0.3, "draw": 0.2 },
     "currentYear": 2026
   }
