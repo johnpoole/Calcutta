@@ -31,8 +31,8 @@
     bindSettingsActions();
     bindModal();
     renderAll();
-    // Auto-load pre-computed odds and bracket tree on startup
-    loadPrecomputedOdds();
+    // Auto-load pre-computed odds, bracket tree, and run analysis on startup
+    loadPrecomputedOdds().then(() => runFullAnalysis());
     loadBracketTree();
   });
 
@@ -95,7 +95,7 @@
           cachedAnalysis = [];
           cachedBracketTree = null;
           renderAll();
-          loadPrecomputedOdds();
+          loadPrecomputedOdds().then(() => runFullAnalysis());
           loadBracketTree();
         });
       });
@@ -695,9 +695,12 @@
 
   function renderOddsChart(odds) {
     const canvas = document.getElementById('odds-chart');
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    // If panel is hidden (display:none), rect is 0 — skip to avoid corrupting canvas
+    if (rect.width < 10 || rect.height < 10) return;
     const ctx = canvas.getContext('2d');
     const dpr = window.devicePixelRatio || 1;
-    const rect = canvas.getBoundingClientRect();
     canvas.width = rect.width * dpr;
     canvas.height = rect.height * dpr;
     ctx.scale(dpr, dpr);
@@ -845,9 +848,11 @@
 
   function renderEVChart(analysis) {
     const canvas = document.getElementById('ev-chart');
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    if (rect.width < 10 || rect.height < 10) return;
     const ctx = canvas.getContext('2d');
     const dpr = window.devicePixelRatio || 1;
-    const rect = canvas.getBoundingClientRect();
     canvas.width = rect.width * dpr;
     canvas.height = rect.height * dpr;
     ctx.scale(dpr, dpr);
@@ -921,7 +926,7 @@
 
   async function runFullAnalysis() {
     const teams = CalcuttaData.getTeams();
-    if (teams.length < 2) { alert('Need at least 2 teams.'); return; }
+    if (teams.length < 2) return;
 
     const bids = CalcuttaData.getBids();
     const cfg = CalcuttaData.config;
@@ -937,7 +942,6 @@
       if (precomputed) {
         cachedOdds = OddsLoader.mapToTeams(precomputed, teams);
       } else {
-        alert('No pre-computed odds found.\nRun: python scripts/calculate_odds.py');
         return;
       }
     }
@@ -1174,9 +1178,10 @@
   function clearCanvas(id) {
     const canvas = document.getElementById(id);
     if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    if (rect.width < 10 || rect.height < 10) return;
     const ctx = canvas.getContext('2d');
     const dpr = window.devicePixelRatio || 1;
-    const rect = canvas.getBoundingClientRect();
     canvas.width = rect.width * dpr;
     canvas.height = rect.height * dpr;
     ctx.scale(dpr, dpr);

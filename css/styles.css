@@ -369,7 +369,7 @@ tbody tr:hover { background: rgba(79,140,255,.06); }
 .badge-poor   { background: rgba(248,113,113,.15); color: var(--danger); }
 
 /* ── Chart placeholder ── */
-canvas { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); }
+canvas { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); width: 100%; }
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
