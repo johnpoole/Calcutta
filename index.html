@@ -113,8 +113,10 @@
           <tr>
             <th>Team</th>
             <th>Buyer</th>
-            <th>Bid Amount</th>
-            <th>Self Buy-Back?</th>
+            <th>Bid</th>
+            <th>BB?</th>
+            <th>Return</th>
+            <th>EV</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -142,27 +144,6 @@
           <p id="payout-d" class="big-number">$0</p>
         </div>
       </div>
-    </div>
-
-    <!-- ── Expected Value Analysis ── -->
-    <div class="auction-section" style="margin-top:2rem;">
-      <h3 class="section-heading">Expected Value &amp; Optimal Bids</h3>
-
-      <div class="info-box">
-        <p><strong>Pool Estimation:</strong> Compares bids placed so far against last year's payouts to estimate the total pool. Unsold teams are projected using the scaling trend. EV = Σ(P(event) × Payout(event)) − Bid.</p>
-      </div>
-
-      <table id="ev-table">
-        <thead>
-          <tr>
-            <th>Team</th>
-            <th>Current Bid</th>
-            <th>Expected Return</th>
-            <th>EV (Profit)</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
     </div>
 
     <!-- ── Charts ── -->

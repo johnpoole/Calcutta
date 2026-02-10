@@ -511,7 +511,7 @@
     const bids = CalcuttaData.getBids();
 
     if (teams.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="4" style="color:var(--muted);text-align:center;">No teams added</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" style="color:var(--muted);text-align:center;">No teams added</td></tr>';
       return;
     }
 
@@ -529,26 +529,32 @@
       buyerOpts += `<option value="__other__"${isOther ? ' selected' : ''}>Other…</option>`;
 
       const tr = document.createElement('tr');
+      const analysis = cachedAnalysis.find(a => a.teamId === t.id);
+      const expReturn = analysis ? fmt$(analysis.grossEV) : '—';
+      const evProfit = analysis ? fmt$(analysis.ev) : '—';
+      const evColor = analysis ? (analysis.ev >= 0 ? 'var(--success)' : 'var(--danger)') : 'var(--muted)';
       tr.innerHTML = `
         <td>${esc(t.name)}</td>
         <td>
           <select class="bid-input buyer-select" data-team="${t.id}" data-field="buyerSelect"
-                  style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:.3rem .5rem;color:var(--text);width:140px;">
+                  style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:.25rem .4rem;color:var(--text);width:120px;font-size:.85rem;">
             ${buyerOpts}
           </select>
           <input type="text" class="bid-input buyer-other" data-team="${t.id}" data-field="buyerOther"
-                 value="${isOther ? esc(curBuyer) : ''}" placeholder="Enter name"
-                 style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:.3rem .5rem;color:var(--text);width:120px;margin-top:4px;display:${isOther ? 'block' : 'none'};">
+                 value="${isOther ? esc(curBuyer) : ''}" placeholder="Name"
+                 style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:.25rem .4rem;color:var(--text);width:100px;margin-top:3px;font-size:.85rem;display:${isOther ? 'block' : 'none'};">
         </td>
         <td>
           <input type="number" class="bid-input" data-team="${t.id}" data-field="amount"
                  value="${bid?.amount || 0}" min="0" step="5"
-                 style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:.3rem .5rem;color:var(--text);width:90px;">
+                 style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:.25rem .4rem;color:var(--text);width:70px;font-size:.85rem;">
         </td>
         <td>
           <input type="checkbox" class="bid-input" data-team="${t.id}" data-field="selfBuyBack"
                  ${bid?.selfBuyBack ? 'checked' : ''}>
         </td>
+        <td style="text-align:right">${expReturn}</td>
+        <td style="text-align:right;color:${evColor}">${evProfit}</td>
       `;
       tbody.appendChild(tr);
     }
@@ -742,29 +748,16 @@
   //  EXPECTED VALUE / ANALYSIS
   // ═══════════════════════════════════════════════════════
   function renderAnalysis() {
-    const tbody = document.querySelector('#ev-table tbody');
-    tbody.innerHTML = '';
     const poolBody = document.querySelector('#pool-table tbody');
     poolBody.innerHTML = '';
 
     if (cachedAnalysis.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="4" style="color:var(--muted);text-align:center;">Click "Run Full Analysis" to compute</td></tr>';
       poolBody.innerHTML = '<tr><td colspan="4" style="color:var(--muted);text-align:center;">—</td></tr>';
       clearCanvas('ev-chart');
       return;
     }
 
     const sorted = [...cachedAnalysis].sort((a, b) => b.ev - a.ev);
-    for (const row of sorted) {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td><strong>${esc(row.teamName)}</strong></td>
-        <td>${fmt$(row.bid)}</td>
-        <td>${fmt$(row.grossEV)}</td>
-        <td style="color:${row.ev >= 0 ? 'var(--success)' : 'var(--danger)'}">${fmt$(row.ev)}</td>
-      `;
-      tbody.appendChild(tr);
-    }
 
     // Pool estimate table
     for (const row of sorted) {
