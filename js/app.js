@@ -685,27 +685,19 @@
   //  ODDS LOADING (from pre-computed Python output)
   // ═══════════════════════════════════════════════════════
   async function loadPrecomputedOdds() {
-    const statusEl = document.getElementById('odds-status');
-    if (statusEl) statusEl.textContent = 'Loading…';
-
     const precomputed = await OddsLoader.loadCurrentOdds();
     const teams = CalcuttaData.getTeams();
 
     if (precomputed && precomputed.length > 0) {
       cachedOdds = OddsLoader.mapToTeams(precomputed, teams);
-      if (statusEl) statusEl.textContent = `Loaded ${cachedOdds.length} teams (from data/odds_${CalcuttaData.activeDivision}.json)`;
     } else {
       cachedOdds = [];
-      if (statusEl) statusEl.textContent = 'No odds file found — run scripts/calculate_odds.py first';
     }
     renderOdds();
   }
 
   function bindOddsActions() {
-    document.getElementById('btn-reload-odds').addEventListener('click', () => {
-      OddsLoader.clearCache();
-      loadPrecomputedOdds();
-    });
+    // Odds are bundled inline — no reload needed
   }
 
   // ═══════════════════════════════════════════════════════
