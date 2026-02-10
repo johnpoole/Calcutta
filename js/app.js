@@ -511,7 +511,7 @@
     const bids = CalcuttaData.getBids();
 
     if (teams.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="5" style="color:var(--muted);text-align:center;">No teams added</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="4" style="color:var(--muted);text-align:center;">No teams added</td></tr>';
       return;
     }
 
@@ -549,11 +549,23 @@
           <input type="checkbox" class="bid-input" data-team="${t.id}" data-field="selfBuyBack"
                  ${bid?.selfBuyBack ? 'checked' : ''}>
         </td>
-        <td>
-          <button class="btn" data-action="save-bid" data-team="${t.id}" style="padding:.2rem .5rem;font-size:.78rem;">Save</button>
-        </td>
       `;
       tbody.appendChild(tr);
+    }
+
+    // Auto-save helper: reads row fields and persists
+    function saveRow(row) {
+      const teamId = row.dataset.team || row.querySelector('[data-field="buyerSelect"]')?.dataset.team;
+      if (!teamId) return;
+      const selectVal = row.querySelector('[data-field="buyerSelect"]').value;
+      const otherVal = row.querySelector('[data-field="buyerOther"]').value.trim();
+      const buyer = (selectVal === '__other__') ? otherVal : selectVal;
+      const amount = parseFloat(row.querySelector('[data-field="amount"]').value) || 0;
+      const selfBuyBack = row.querySelector('[data-field="selfBuyBack"]').checked;
+      CalcuttaData.setBid(teamId, { buyer, amount, selfBuyBack });
+      CalcuttaData.save();
+      renderPayoutCards();
+      runFullAnalysis();
     }
 
     // Toggle "Other" text field when dropdown changes
@@ -567,24 +579,19 @@
           otherInput.style.display = 'none';
           otherInput.value = '';
         }
+        saveRow(sel.closest('tr'));
       });
     });
 
-    // Save bid buttons
-    tbody.querySelectorAll('[data-action="save-bid"]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const teamId = btn.dataset.team;
-        const row = btn.closest('tr');
-        const selectVal = row.querySelector('[data-field="buyerSelect"]').value;
-        const otherVal = row.querySelector('[data-field="buyerOther"]').value.trim();
-        const buyer = (selectVal === '__other__') ? otherVal : selectVal;
-        const amount = parseFloat(row.querySelector('[data-field="amount"]').value) || 0;
-        const selfBuyBack = row.querySelector('[data-field="selfBuyBack"]').checked;
-        CalcuttaData.setBid(teamId, { buyer, amount, selfBuyBack });
-        CalcuttaData.save();
-        renderPayoutCards();
-        runFullAnalysis();   // pool changed → recompute EV (odds stay cached)
-      });
+    // Auto-save on blur for text/number inputs, change for checkboxes
+    tbody.querySelectorAll('input[data-field="amount"]').forEach(inp => {
+      inp.addEventListener('change', () => saveRow(inp.closest('tr')));
+    });
+    tbody.querySelectorAll('input[data-field="buyerOther"]').forEach(inp => {
+      inp.addEventListener('change', () => saveRow(inp.closest('tr')));
+    });
+    tbody.querySelectorAll('input[data-field="selfBuyBack"]').forEach(inp => {
+      inp.addEventListener('change', () => saveRow(inp.closest('tr')));
     });
   }
 
