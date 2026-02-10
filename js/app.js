@@ -517,13 +517,28 @@
 
     for (const t of teams) {
       const bid = bids.find(b => b.teamId === t.id);
+      const curBuyer = bid?.buyer || '';
+      // Build buyer dropdown: team names + "Other" for free-text
+      const teamNames = teams.map(tm => tm.name);
+      const isOther = curBuyer && !teamNames.includes(curBuyer);
+      let buyerOpts = '<option value="">— select —</option>';
+      for (const tm of teams) {
+        const sel = (curBuyer === tm.name) ? ' selected' : '';
+        buyerOpts += `<option value="${esc(tm.name)}"${sel}>${esc(tm.name)}</option>`;
+      }
+      buyerOpts += `<option value="__other__"${isOther ? ' selected' : ''}>Other…</option>`;
+
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${esc(t.name)}</td>
         <td>
-          <input type="text" class="bid-input" data-team="${t.id}" data-field="buyer"
-                 value="${esc(bid?.buyer || '')}" placeholder="Buyer name"
-                 style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:.3rem .5rem;color:var(--text);width:120px;">
+          <select class="bid-input buyer-select" data-team="${t.id}" data-field="buyerSelect"
+                  style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:.3rem .5rem;color:var(--text);width:140px;">
+            ${buyerOpts}
+          </select>
+          <input type="text" class="bid-input buyer-other" data-team="${t.id}" data-field="buyerOther"
+                 value="${isOther ? esc(curBuyer) : ''}" placeholder="Enter name"
+                 style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:.3rem .5rem;color:var(--text);width:120px;margin-top:4px;display:${isOther ? 'block' : 'none'};">
         </td>
         <td>
           <input type="number" class="bid-input" data-team="${t.id}" data-field="amount"
@@ -541,12 +556,28 @@
       tbody.appendChild(tr);
     }
 
+    // Toggle "Other" text field when dropdown changes
+    tbody.querySelectorAll('.buyer-select').forEach(sel => {
+      sel.addEventListener('change', () => {
+        const otherInput = sel.closest('td').querySelector('.buyer-other');
+        if (sel.value === '__other__') {
+          otherInput.style.display = 'block';
+          otherInput.focus();
+        } else {
+          otherInput.style.display = 'none';
+          otherInput.value = '';
+        }
+      });
+    });
+
     // Save bid buttons
     tbody.querySelectorAll('[data-action="save-bid"]').forEach(btn => {
       btn.addEventListener('click', () => {
         const teamId = btn.dataset.team;
         const row = btn.closest('tr');
-        const buyer = row.querySelector('[data-field="buyer"]').value;
+        const selectVal = row.querySelector('[data-field="buyerSelect"]').value;
+        const otherVal = row.querySelector('[data-field="buyerOther"]').value.trim();
+        const buyer = (selectVal === '__other__') ? otherVal : selectVal;
         const amount = parseFloat(row.querySelector('[data-field="amount"]').value) || 0;
         const selfBuyBack = row.querySelector('[data-field="selfBuyBack"]').checked;
         CalcuttaData.setBid(teamId, { buyer, amount, selfBuyBack });
