@@ -1,0 +1,3 @@
+get league standings, h2h records
+determine method for skips with more than one team(compare rosters somehow)
+use head to head between nights to combine the two into one list of teams with odds
