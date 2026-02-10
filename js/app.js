@@ -15,25 +15,32 @@
   //  INIT
   // ═══════════════════════════════════════════════════════
   document.addEventListener('DOMContentLoaded', async () => {
-    CalcuttaData.load();
-    // If no teams exist, auto-load from bundled JSON data files
-    if (CalcuttaData.getTeams().length === 0) {
-      await autoLoadData();
+    try {
+      CalcuttaData.load();
+      // If no teams exist, auto-load from bundled JSON data files
+      if (CalcuttaData.getTeams().length === 0) {
+        await autoLoadData();
+      }
+      syncSettingsUI();
+      bindTabs();
+      bindDivisionToggles();
+      bindTeamActions();
+      bindDrawActions();
+      bindBidActions();
+      bindOddsActions();
+      bindAnalysisActions();
+      bindSettingsActions();
+      bindModal();
+
+      // Load bracket + odds BEFORE first render so nothing shows "Loading…"
+      loadBracketTree();
+      await loadPrecomputedOdds();
+
+      renderAll();
+      runFullAnalysis();
+    } catch (e) {
+      console.error('Init failed:', e);
     }
-    syncSettingsUI();
-    bindTabs();
-    bindDivisionToggles();
-    bindTeamActions();
-    bindDrawActions();
-    bindBidActions();
-    bindOddsActions();
-    bindAnalysisActions();
-    bindSettingsActions();
-    bindModal();
-    renderAll();
-    // Auto-load pre-computed odds, bracket tree, and run analysis on startup
-    loadPrecomputedOdds().then(() => runFullAnalysis());
-    loadBracketTree();
   });
 
   async function autoLoadData() {
@@ -89,9 +96,9 @@
           cachedOdds = [];
           cachedAnalysis = [];
           cachedBracketTree = null;
+          loadBracketTree();
           renderAll();
           loadPrecomputedOdds().then(() => runFullAnalysis());
-          loadBracketTree();
         });
       });
     });
@@ -179,13 +186,13 @@
   let cachedBracketTree = null;
   let activeEvent = 'a';
 
-  async function loadBracketTree() {
+  function loadBracketTree() {
     const div = CalcuttaData.activeDivision;
     const tree = BundledData.bracket[div] || null;
     if (tree) {
       cachedBracketTree = tree;
-      renderBracket();
     } else {
+      cachedBracketTree = null;
       console.warn('No bundled bracket tree for', div);
     }
   }
@@ -218,7 +225,7 @@
   function renderBracket() {
     const container = document.getElementById('bracket-container');
     if (!cachedBracketTree) {
-      container.innerHTML = '<p style="color:var(--muted);">Loading bracket…</p>';
+      container.innerHTML = '<p style="color:var(--muted);">No bracket data available</p>';
       return;
     }
 
@@ -625,7 +632,7 @@
     tbody.innerHTML = '';
 
     if (cachedOdds.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" style="color:var(--muted);text-align:center;">Click "Recalculate Odds" to compute probabilities</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" style="color:var(--muted);text-align:center;">No odds data available</td></tr>';
       clearCanvas('odds-chart');
       return;
     }

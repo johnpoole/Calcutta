@@ -384,10 +384,42 @@ canvas { background: var(--surface); border-radius: var(--radius); border: 1px s
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
-  .tab { padding: .6rem .7rem; font-size: .78rem; }
-  .panel { padding: 1rem; }
+  header { padding: 1rem .8rem .5rem; }
+  header h1 { font-size: 1.3rem; }
+  .tab-bar { -webkit-overflow-scrolling: touch; }
+  .tab { flex: 0 0 auto; padding: .6rem .7rem; font-size: .75rem; }
+  .panel { padding: .7rem; }
+  .panel h2 { font-size: 1.1rem; }
   .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
   .settings-grid { grid-template-columns: 1fr; }
+  .payout-grid { grid-template-columns: repeat(2, 1fr) !important; gap: .5rem; }
+  .payout-card h4 { font-size: .75rem; }
+  .payout-card .big-number { font-size: 1.1rem; }
+
+  /* Tables: horizontal scroll wrapper */
+  .auction-section, .card.wide { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  #bids-table { table-layout: auto; min-width: 520px; }
+  table { font-size: .8rem; }
+  thead th { padding: .4rem .35rem; font-size: .75rem; }
+  tbody td { padding: .35rem .35rem; }
+
+  /* Bracket tree: scroll horizontally */
+  .bracket-tree { font-size: .72rem; }
+  .bt-team, .bt-slot { padding: 2px 6px; min-width: 60px; font-size: .72rem; }
+  .qualifier-section { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* H2H matrix */
+  .matrix-container table { font-size: .65rem; }
+
+  /* Path to Win */
+  .path-round { flex-direction: column; gap: .3rem; }
+  .path-round-label { min-width: unset; }
+
+  /* Charts */
+  canvas { height: 200px !important; }
+
+  /* Championship cards */
+  .champ-card { min-width: 140px; font-size: .78rem; padding: .4rem .6rem; }
 }
 
 /* ── Scrollbar ── */
