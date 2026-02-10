@@ -101,7 +101,6 @@
   //  RENDER ALL
   // ═══════════════════════════════════════════════════════
   function renderAll() {
-    renderDashboard();
     renderStandings();
     renderH2H();
     renderBracket();
@@ -109,50 +108,6 @@
     renderPayoutCards();
     renderOdds();
     renderAnalysis();
-  }
-
-  // ═══════════════════════════════════════════════════════
-  //  DASHBOARD
-  // ═══════════════════════════════════════════════════════
-  function renderDashboard() {
-    const teams = CalcuttaData.getTeams();
-    const pool = CalcuttaData.totalPool();
-    const bids = CalcuttaData.getBids();
-
-    document.getElementById('dash-pool').textContent = fmt$(pool);
-    document.getElementById('dash-teams').textContent = teams.length;
-
-    const maxBid = bids.length > 0 ? Math.max(...bids.map(b => b.amount)) : 0;
-    document.getElementById('dash-high-bid').textContent = fmt$(maxBid);
-
-    // Best EV
-    if (cachedAnalysis.length > 0) {
-      const best = [...cachedAnalysis].sort((a, b) => b.ev - a.ev)[0];
-      document.getElementById('dash-best-ev').textContent = best ? fmt$(best.ev) : '—';
-    } else {
-      document.getElementById('dash-best-ev').textContent = '—';
-    }
-
-    // Top 5 table
-    const tbody = document.querySelector('#dash-top5 tbody');
-    tbody.innerHTML = '';
-
-    if (cachedAnalysis.length > 0) {
-      const top5 = [...cachedAnalysis].sort((a, b) => b.ev - a.ev).slice(0, 5);
-      for (const row of top5) {
-        const odds = cachedOdds.find(o => o.teamId === row.teamId);
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${esc(row.teamName)}</td>
-          <td>${odds ? pct(odds.A) : '—'}</td>
-          <td>${fmt$(row.bid)}</td>
-          <td class="${row.ev >= 0 ? 'positive' : 'negative'}">${fmt$(row.ev)}</td>
-        `;
-        tbody.appendChild(tr);
-      }
-    } else {
-      tbody.innerHTML = '<tr><td colspan="4" style="color:var(--muted);text-align:center;">Run analysis to see results</td></tr>';
-    }
   }
 
   // ═══════════════════════════════════════════════════════
@@ -164,7 +119,7 @@
     const teams = CalcuttaData.getTeams();
 
     if (teams.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="8" style="color:var(--muted);text-align:center;">No teams added yet</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="5" style="color:var(--muted);text-align:center;">No teams added yet</td></tr>';
       return;
     }
 
@@ -177,27 +132,9 @@
         <td>${t.losses}</td>
         <td>${t.ties}</td>
         <td>${pct(CalcuttaData.winPct(t))}</td>
-        <td>
-          <button class="btn" data-action="edit-team" data-id="${t.id}" style="padding:.2rem .5rem;font-size:.78rem;">Edit</button>
-          <button class="btn btn-danger" data-action="delete-team" data-id="${t.id}" style="padding:.2rem .5rem;font-size:.78rem;">×</button>
-        </td>
       `;
       tbody.appendChild(tr);
     }
-
-    // Bind edit/delete buttons
-    tbody.querySelectorAll('[data-action="edit-team"]').forEach(btn => {
-      btn.addEventListener('click', () => openTeamModal(btn.dataset.id));
-    });
-    tbody.querySelectorAll('[data-action="delete-team"]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        if (confirm('Remove this team?')) {
-          CalcuttaData.removeTeam(btn.dataset.id);
-          CalcuttaData.save();
-          renderAll();
-        }
-      });
-    });
   }
 
   // ═══════════════════════════════════════════════════════
@@ -615,7 +552,6 @@
         CalcuttaData.setBid(teamId, { buyer, amount, selfBuyBack });
         CalcuttaData.save();
         renderPayoutCards();
-        renderDashboard();
         runFullAnalysis();   // pool changed → recompute EV (odds stay cached)
       });
     });
@@ -635,31 +571,6 @@
   }
 
   function bindBidActions() {
-    document.getElementById('btn-import-bids').addEventListener('click', () => {
-      document.getElementById('file-import-bids').click();
-    });
-    document.getElementById('file-import-bids').addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        try {
-          const data = JSON.parse(ev.target.result);
-          if (Array.isArray(data)) {
-            for (const b of data) CalcuttaData.setBid(b.teamId, b);
-            CalcuttaData.save();
-            renderAll();
-          }
-        } catch (err) { alert('Invalid JSON: ' + err.message); }
-      };
-      reader.readAsText(file);
-      e.target.value = '';
-    });
-
-    document.getElementById('btn-export-bids').addEventListener('click', () => {
-      const bids = CalcuttaData.getBids();
-      downloadJSON(bids, `bids_${CalcuttaData.activeDivision}.json`);
-    });
   }
 
   // ═══════════════════════════════════════════════════════
@@ -788,7 +699,6 @@
       if (statusEl) statusEl.textContent = 'No odds file found — run scripts/calculate_odds.py first';
     }
     renderOdds();
-    renderDashboard();
   }
 
   function bindOddsActions() {
@@ -808,7 +718,7 @@
     poolBody.innerHTML = '';
 
     if (cachedAnalysis.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" style="color:var(--muted);text-align:center;">Click "Run Full Analysis" to compute</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="4" style="color:var(--muted);text-align:center;">Click "Run Full Analysis" to compute</td></tr>';
       poolBody.innerHTML = '<tr><td colspan="4" style="color:var(--muted);text-align:center;">—</td></tr>';
       clearCanvas('ev-chart');
       return;
@@ -816,16 +726,12 @@
 
     const sorted = [...cachedAnalysis].sort((a, b) => b.ev - a.ev);
     for (const row of sorted) {
-      const rating = row.ev > 50 ? 'great' : row.ev > 0 ? 'good' : row.ev > -50 ? 'fair' : 'poor';
-      const ratingLabel = row.ev > 50 ? 'Great' : row.ev > 0 ? 'Good' : row.ev > -50 ? 'Fair' : 'Avoid';
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td><strong>${esc(row.teamName)}</strong></td>
         <td>${fmt$(row.bid)}</td>
-        <td>${fmt$(row.predictedPayout)}</td>
+        <td>${fmt$(row.grossEV)}</td>
         <td style="color:${row.ev >= 0 ? 'var(--success)' : 'var(--danger)'}">${fmt$(row.ev)}</td>
-        <td>${fmt$(row.optimalBid)}</td>
-        <td><span class="badge badge-${rating}">${ratingLabel}</span></td>
       `;
       tbody.appendChild(tr);
     }
@@ -920,7 +826,7 @@
   }
 
   function bindAnalysisActions() {
-    document.getElementById('btn-run-analysis').addEventListener('click', runFullAnalysis);
+    // Analysis auto-runs on load and after each bid save
   }
 
   async function runFullAnalysis() {
@@ -1044,31 +950,7 @@
   }
 
   function bindTeamActions() {
-    document.getElementById('btn-add-team').addEventListener('click', () => openTeamModal(null));
-
-    document.getElementById('btn-import-teams').addEventListener('click', () => {
-      document.getElementById('file-import-teams').click();
-    });
-    document.getElementById('file-import-teams').addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        const ok = CalcuttaData.importJSON(ev.target.result);
-        if (ok) {
-          cachedOdds = [];
-          cachedAnalysis = [];
-          renderAll();
-        }
-        else alert('Import failed — check JSON format.');
-      };
-      reader.readAsText(file);
-      e.target.value = '';
-    });
-
-    document.getElementById('btn-export-teams').addEventListener('click', () => {
-      downloadJSON(CalcuttaData.getTeams(), `teams_${CalcuttaData.activeDivision}.json`);
-    });
+    // Teams come from bundled data — no manual add/import/export needed
   }
 
   // ═══════════════════════════════════════════════════════

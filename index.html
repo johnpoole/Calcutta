@@ -12,51 +12,14 @@
   </header>
 
   <nav class="tab-bar">
-    <button class="tab active" data-tab="dashboard">Dashboard</button>
+    <button class="tab active" data-tab="auction">Auction &amp; Analysis</button>
     <button class="tab" data-tab="teams">Teams &amp; Standings</button>
     <button class="tab" data-tab="draw">Draw / Bracket</button>
     <button class="tab" data-tab="odds">Win Probabilities</button>
-    <button class="tab" data-tab="auction">Auction &amp; Analysis</button>
     <button class="tab" data-tab="settings">Settings</button>
   </nav>
 
-  <!-- ═══════════════════  DASHBOARD  ═══════════════════ -->
-  <section id="dashboard" class="panel active">
-    <h2>Dashboard</h2>
-    <div class="division-toggle">
-      <button class="div-btn active" data-division="mens">Men's</button>
-      <button class="div-btn" data-division="womens">Women's</button>
-    </div>
 
-    <div class="dashboard-grid">
-      <div class="card">
-        <h3>Total Pool</h3>
-        <p id="dash-pool" class="big-number">$0</p>
-      </div>
-      <div class="card">
-        <h3>Teams Entered</h3>
-        <p id="dash-teams" class="big-number">0</p>
-      </div>
-      <div class="card">
-        <h3>Highest Bid</h3>
-        <p id="dash-high-bid" class="big-number">$0</p>
-      </div>
-      <div class="card">
-        <h3>Best Expected Value</h3>
-        <p id="dash-best-ev" class="big-number">—</p>
-      </div>
-    </div>
-
-    <div class="card wide">
-      <h3>Top 5 Teams by Expected Value</h3>
-      <table id="dash-top5">
-        <thead>
-          <tr><th>Team</th><th>Win Prob (A)</th><th>Bid</th><th>Expected Value</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </section>
 
   <!-- ═══════════════════  TEAMS & STANDINGS  ═══════════════════ -->
   <section id="teams" class="panel">
@@ -64,13 +27,6 @@
     <div class="division-toggle">
       <button class="div-btn active" data-division="mens">Men's</button>
       <button class="div-btn" data-division="womens">Women's</button>
-    </div>
-
-    <div class="toolbar">
-      <button id="btn-add-team" class="btn btn-primary">+ Add Team</button>
-      <button id="btn-import-teams" class="btn">Import JSON</button>
-      <input type="file" id="file-import-teams" accept=".json" hidden>
-      <button id="btn-export-teams" class="btn">Export JSON</button>
     </div>
 
     <table id="standings-table" class="sortable">
@@ -81,7 +37,6 @@
           <th data-sort="losses">L</th>
           <th data-sort="ties">T</th>
           <th data-sort="winPct">Win %</th>
-          <th>Actions</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -150,7 +105,7 @@
   </section>
 
   <!-- ═══════════════════  AUCTION & ANALYSIS  ═══════════════════ -->
-  <section id="auction" class="panel">
+  <section id="auction" class="panel active">
     <h2>Auction &amp; Analysis</h2>
     <div class="division-toggle">
       <button class="div-btn active" data-division="mens">Men's</button>
@@ -160,12 +115,6 @@
     <!-- ── Bids Entry ── -->
     <div class="auction-section">
       <h3 class="section-heading">Bids</h3>
-      <div class="toolbar">
-        <button id="btn-import-bids" class="btn">Import Bids JSON</button>
-        <input type="file" id="file-import-bids" accept=".json" hidden>
-        <button id="btn-export-bids" class="btn">Export Bids JSON</button>
-        <button id="btn-run-analysis" class="btn btn-primary" style="margin-left:auto;">Run Full Analysis</button>
-      </div>
 
       <table id="bids-table">
         <thead>
@@ -217,10 +166,8 @@
           <tr>
             <th>Team</th>
             <th>Current Bid</th>
-            <th>Predicted Payout</th>
-            <th>Expected Value</th>
-            <th>Optimal Bid</th>
-            <th>Rating</th>
+            <th>Expected Return</th>
+            <th>EV (Profit)</th>
           </tr>
         </thead>
         <tbody></tbody>
