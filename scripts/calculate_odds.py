@@ -47,12 +47,30 @@ def strength_from_h2h(t: dict) -> float:
 
 
 def composite_strength(t: dict, weights: dict) -> float:
-    """Weighted combination of strength signals."""
-    ws = weights.get("standings", 0.5) * strength_from_standings(t)
-    wh = weights.get("h2h", 0.3) * strength_from_h2h(t)
+    """Weighted combination of strength signals.
+
+    If a team has no h2h data, the h2h weight is redistributed
+    proportionally to standings and seed weights so the total
+    weighting still sums to 1.0.
+    """
+    w_stand = weights.get("standings", 0.5)
+    w_h2h   = weights.get("h2h", 0.3)
+    w_seed  = weights.get("draw", 0.2)
+
+    has_h2h = bool(t.get("h2h"))
+    if not has_h2h and (w_stand + w_seed) > 0:
+        # Redistribute h2h weight to standings and seed proportionally
+        extra = w_h2h
+        total_other = w_stand + w_seed
+        w_stand += extra * (w_stand / total_other)
+        w_seed  += extra * (w_seed  / total_other)
+        w_h2h = 0
+
+    ws = w_stand * strength_from_standings(t)
+    wh = w_h2h * strength_from_h2h(t)
     # Seed-based factor: lower seed = stronger (normalised to 0–1)
     seed = t.get("seed", 50)
-    ws_seed = weights.get("draw", 0.2) * max(0, 1.0 - seed / 50.0)
+    ws_seed = w_seed * max(0, 1.0 - seed / 50.0)
     return ws + wh + ws_seed
 
 
