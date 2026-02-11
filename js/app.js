@@ -328,32 +328,6 @@
     return [...collectTeams(m.left), ...collectTeams(m.right)];
   }
 
-  /**
-   * Find the path from a team to the root of a bracket tree.
-   * Returns array of { opponents: [teamId, …], roundLabel: string } from
-   * first round to qualifier final, or null if team is not in this tree.
-   */
-  function findPath(node, teamId, depth) {
-    if (node.team) {
-      return node.team === teamId ? [] : null;
-    }
-    if (node.slot) return null;
-    if (!node.match) return null;
-    const m = node.match;
-
-    const leftPath = findPath(m.left, teamId, depth + 1);
-    if (leftPath !== null) {
-      leftPath.push({ opponents: collectTeams(m.right) });
-      return leftPath;
-    }
-    const rightPath = findPath(m.right, teamId, depth + 1);
-    if (rightPath !== null) {
-      rightPath.push({ opponents: collectTeams(m.left) });
-      return rightPath;
-    }
-    return null;
-  }
-
   function renderPathToWin() {
     if (!cachedBracketTree) return '';
     const teams = CalcuttaData.getTeams();
@@ -388,96 +362,300 @@
       return t ? `${t.seed}. ${t.name}` : id;
     };
 
-    // Find which qualifier this team is in
-    let qualifierIdx = -1;
-    let path = null;
-    for (let i = 0; i < tree.a_event.length; i++) {
-      path = findPath(tree.a_event[i], teamId, 0);
-      if (path) { qualifierIdx = i; break; }
+    // Build slot → team names map: which real teams could fill each slot
+    const slotTeams = {};
+    function mapSlotsFromTree(node) {
+      if (!node.match) return;
+      const m = node.match;
+      mapSlotsFromTree(m.left);
+      mapSlotsFromTree(m.right);
+      if (m.loserSlot) {
+        // Loser of this match fills this slot — collect all leaf teams from both sides
+        const leftTeams = collectAllLeaves(m.left);
+        const rightTeams = collectAllLeaves(m.right);
+        slotTeams[m.loserSlot] = [...leftTeams, ...rightTeams];
+      }
+    }
+    function collectAllLeaves(node) {
+      if (node.team) return [node.team];
+      if (node.slot) {
+        // Recursively resolve: this slot is itself filled by teams from a prior event
+        if (slotTeams[node.slot]) return slotTeams[node.slot];
+        return [node.slot]; // fallback
+      }
+      if (!node.match) return [];
+      return [...collectAllLeaves(node.match.left), ...collectAllLeaves(node.match.right)];
+    }
+    // Map A-event slots first (they have real teams), then B-event (which reference A-event slots)
+    tree.a_event.forEach(q => mapSlotsFromTree(q));
+    tree.b_event.forEach(q => mapSlotsFromTree(q));
+
+    // Resolve a ref (slot or team id) to display names
+    function resolveToNames(ref) {
+      if (slotTeams[ref]) return slotTeams[ref].map(id => teamName(id));
+      return [teamName(ref)];
     }
 
-    if (!path) {
-      resultEl.innerHTML = '<p style="color:var(--muted);">Team not found in A Event bracket.</p>';
+    // Find which A-event qualifier this team is in
+    let qualifierIdx = -1;
+    let aPath = null;
+    for (let i = 0; i < tree.a_event.length; i++) {
+      aPath = findPathWithSlots(tree.a_event[i], teamId);
+      if (aPath) { qualifierIdx = i; break; }
+    }
+
+    if (!aPath) {
+      resultEl.innerHTML = '<p style="color:var(--muted);">Team not found in bracket.</p>';
       return;
     }
 
     const champ = tree.championship;
     const numQ = champ.numQualifiers;
-    const qNum = qualifierIdx + 1; // Q1-based
+    const qNum = qualifierIdx + 1;
 
-    let html = `<div class="path-rounds">`;
+    // Get odds for this team
+    const odds = cachedOdds.find(o => o.teamId === teamId);
 
-    // A Event path  
-    html += `<div class="path-section-title">A Event — Qualifier ${qNum}</div>`;
-    const roundNames = getRoundNames(path.length);
-    path.forEach((step, i) => {
-      html += `<div class="path-round">
-        <div class="path-round-label">${roundNames[i]}</div>
-        <div class="path-opponents">
-          ${step.opponents.length > 0
-            ? step.opponents.map(id => `<span class="path-opponent">${esc(teamName(id))}</span>`).join('<span class="path-or">or</span>')
-            : '<span class="path-opponent seed-info">TBD (slot)</span>'}
-        </div>
-      </div>`;
+    let html = '<div class="path-rounds">';
+
+    // ── A EVENT PATH (40% payout) ────────────────────
+    const aPct = odds ? (odds.A * 100).toFixed(1) + '%' : '';
+    html += `<div class="path-section-title">🏆 A Event — Championship (40%)${aPct ? ` <span style="color:var(--success);font-weight:400;font-size:.85rem;">${aPct}</span>` : ''}</div>`;
+    html += `<div style="color:var(--muted);font-size:.8rem;margin-bottom:.5rem;">Win A-Event Q${qNum} → Win Championship bracket</div>`;
+
+    const aRoundNames = getRoundNames(aPath.length);
+    aPath.forEach((step, i) => {
+      html += renderPathRound(aRoundNames[i], step.opponents.map(id => teamName(id)));
     });
 
-    // Championship path
-    html += `<hr class="path-divider"><div class="path-section-title">Championship (as Q${qNum})</div>`;
+    // Build qualifier → team names map for Championship bracket
+    // Q0-Q3 = A-event qualifier winners, Q4-Q7 = B-event qualifier winners
+    const qualifierTeams = [];
+    for (let i = 0; i < tree.a_event.length; i++) {
+      qualifierTeams.push(collectTeams(tree.a_event[i]).map(id => teamName(id)));
+    }
+    for (let i = 0; i < tree.b_event.length; i++) {
+      const bTeams = collectAllLeaves(tree.b_event[i]).map(id => teamName(id));
+      qualifierTeams.push(bTeams);
+    }
 
-    if (numQ === 8) {
-      // Quarterfinal opponent
-      const qfPair = champ.quarterSeed.find(p => p.includes(qualifierIdx));
-      const qfOpp = qfPair[0] === qualifierIdx ? qfPair[1] : qfPair[0];
-      html += `<div class="path-round">
-        <div class="path-round-label">Quarterfinal</div>
-        <div class="path-opponents"><span class="path-opponent">Q${qfOpp + 1} winner</span></div>
-      </div>`;
+    // Championship rounds
+    html += renderChampionshipPath(qualifierIdx, champ, 'win', qualifierTeams);
 
-      // Which half of the draw? Find the semi pair index
-      const qfIdx = champ.quarterSeed.indexOf(qfPair);
-      const semiPair = champ.semiPairs.find(p => p.includes(qfIdx));
-      const semiOppQfIdx = semiPair[0] === qfIdx ? semiPair[1] : semiPair[0];
-      const semiOppSeeds = champ.quarterSeed[semiOppQfIdx];
-      html += `<div class="path-round">
-        <div class="path-round-label">Semifinal</div>
-        <div class="path-opponents">
-          <span class="path-opponent">Q${semiOppSeeds[0] + 1}</span>
-          <span class="path-or">or</span>
-          <span class="path-opponent">Q${semiOppSeeds[1] + 1}</span>
-        </div>
-      </div>`;
+    // ── B EVENT / CONSOLATION PATH (30% payout) ──────
+    const bPct = odds ? (odds.B * 100).toFixed(1) + '%' : '';
+    html += `<hr class="path-divider"><div class="path-section-title">🥈 B Event — Consolation (30%)${bPct ? ` <span style="color:var(--primary);font-weight:400;font-size:.85rem;">${bPct}</span>` : ''}</div>`;
+    html += `<div style="color:var(--muted);font-size:.8rem;margin-bottom:.5rem;">Lose in A-Event → Win B-Event qualifier → Win Consolation bracket</div>`;
 
-      // Final — the other semi bracket
-      const otherSemiIdx = champ.semiPairs.find(p => !p.includes(qfIdx));
-      const otherSeeds = otherSemiIdx.flatMap(i => champ.quarterSeed[i]);
-      html += `<div class="path-round">
-        <div class="path-round-label">Final</div>
-        <div class="path-opponents">
-          ${otherSeeds.map(s => `<span class="path-opponent">Q${s + 1}</span>`).join('<span class="path-or">or</span>')}
-        </div>
-      </div>`;
+    // Show which B-event slot each A-round loss feeds into
+    for (let i = 0; i < aPath.length; i++) {
+      const slot = aPath[i].loserSlot;
+      if (slot) {
+        const lossRound = aPath.length === 1 ? 'Qualifier Final' : aRoundNames[i];
+        html += `<div class="path-round"><div class="path-round-label" style="color:var(--danger);">Lose ${lossRound}</div>`;
+        html += `<div class="path-opponents"><span class="path-opponent seed-info">→ Enter B Event</span></div></div>`;
+
+        // Trace the B-event path for this slot
+        const bPath = findSlotPath(tree.b_event, slot);
+        if (bPath) {
+          const bRounds = getRoundNames(bPath.length);
+          bPath.forEach((step, j) => {
+            // Resolve slot refs to actual team names
+            const names = step.opponents.flatMap(ref => resolveToNames(ref));
+            html += renderPathRound('  ' + bRounds[j], names);
+          });
+        }
+      }
+    }
+    html += renderChampionshipPath(qualifierIdx, champ, 'consolation', qualifierTeams);
+
+    // ── C EVENT PATH (15% payout) ────────────────────
+    const cPct = odds ? (odds.C * 100).toFixed(1) + '%' : '';
+    html += `<hr class="path-divider"><div class="path-section-title">🥉 C Event (15%)${cPct ? ` <span style="color:var(--warning);font-weight:400;font-size:.85rem;">${cPct}</span>` : ''}</div>`;
+    html += `<div style="color:var(--muted);font-size:.8rem;margin-bottom:.5rem;">Lose in A → Lose in B-Event → Win C-Event bracket</div>`;
+
+    // Collect all C-slots this team could land in, then trace full path through C bracket
+    const cSlots = collectDownstreamSlots(tree.b_event, aPath, 'C');
+    if (cSlots.length > 0 && tree.c_event) {
+      // Show path from first entry slot (they're all equivalent routes through the same bracket)
+      const cEntrySlot = cSlots[0];
+      const cPath = findSlotInTree(tree.c_event, cEntrySlot);
+      if (cPath) {
+        const cRounds = getRoundNames(cPath.length);
+        cPath.forEach((step, j) => {
+          const names = step.opponents.flatMap(ref => resolveToNames(ref));
+          html += renderPathRound(cRounds[j], names);
+        });
+      } else {
+        const cNames = cSlots.flatMap(s => resolveToNames(s));
+        html += renderPathRound('Opponents', cNames);
+      }
     } else {
-      // 4 qualifiers — semifinals then final
-      const sfPair = champ.quarterSeed.find(p => p.includes(qualifierIdx));
-      const sfOpp = sfPair[0] === qualifierIdx ? sfPair[1] : sfPair[0];
-      html += `<div class="path-round">
-        <div class="path-round-label">Semifinal</div>
-        <div class="path-opponents"><span class="path-opponent">Q${sfOpp + 1} winner</span></div>
-      </div>`;
+      html += `<div class="path-round"><div class="path-round-label">Path</div>`;
+      html += `<div class="path-opponents"><span class="path-opponent seed-info">Via B-Event losses → C bracket</span></div></div>`;
+    }
 
-      const otherPair = champ.quarterSeed.find(p => !p.includes(qualifierIdx));
-      html += `<div class="path-round">
-        <div class="path-round-label">Final</div>
-        <div class="path-opponents">
-          <span class="path-opponent">Q${otherPair[0] + 1}</span>
-          <span class="path-or">or</span>
-          <span class="path-opponent">Q${otherPair[1] + 1}</span>
-        </div>
-      </div>`;
+    // ── D EVENT PATH (15% payout) ────────────────────
+    const dPct = odds ? (odds.D * 100).toFixed(1) + '%' : '';
+    html += `<hr class="path-divider"><div class="path-section-title">4️⃣ D Event (15%)${dPct ? ` <span style="color:var(--muted);font-weight:400;font-size:.85rem;">${dPct}</span>` : ''}</div>`;
+    html += `<div style="color:var(--muted);font-size:.8rem;margin-bottom:.5rem;">Lose in A → Lose B-Event qualifier final → Win D-Event bracket</div>`;
+
+    const dSlots = collectDownstreamSlots(tree.b_event, aPath, 'D');
+    if (dSlots.length > 0 && tree.d_event) {
+      const dEntrySlot = dSlots[0];
+      const dPath = findSlotInTree(tree.d_event, dEntrySlot);
+      if (dPath) {
+        const dRounds = getRoundNames(dPath.length);
+        dPath.forEach((step, j) => {
+          const names = step.opponents.flatMap(ref => resolveToNames(ref));
+          html += renderPathRound(dRounds[j], names);
+        });
+      } else {
+        const dNames = dSlots.flatMap(s => resolveToNames(s));
+        html += renderPathRound('Opponents', dNames);
+      }
+    } else {
+      html += `<div class="path-round"><div class="path-round-label">Path</div>`;
+      html += `<div class="path-opponents"><span class="path-opponent seed-info">Lose B-Event qualifier final → D bracket</span></div></div>`;
     }
 
     html += '</div>';
     resultEl.innerHTML = html;
+  }
+
+  /** Like findPath but also captures the loserSlot at each match node */
+  function findPathWithSlots(node, teamId) {
+    if (node.team) return node.team === teamId ? [] : null;
+    if (node.slot) return null;
+    if (!node.match) return null;
+    const m = node.match;
+
+    const leftPath = findPathWithSlots(m.left, teamId);
+    if (leftPath !== null) {
+      leftPath.push({ opponents: collectTeams(m.right), loserSlot: m.loserSlot || null });
+      return leftPath;
+    }
+    const rightPath = findPathWithSlots(m.right, teamId);
+    if (rightPath !== null) {
+      rightPath.push({ opponents: collectTeams(m.left), loserSlot: m.loserSlot || null });
+      return rightPath;
+    }
+    return null;
+  }
+
+  /** Find the path through a B-event bracket for a given slot entry */
+  function findSlotPath(bTrees, slotRef) {
+    for (const bTree of bTrees) {
+      const path = findSlotInTree(bTree, slotRef);
+      if (path) return path;
+    }
+    return null;
+  }
+
+  function findSlotInTree(node, slotRef) {
+    if (node.slot) return node.slot === slotRef ? [] : null;
+    if (node.team) return null;
+    if (!node.match) return null;
+    const m = node.match;
+
+    const leftPath = findSlotInTree(m.left, slotRef);
+    if (leftPath !== null) {
+      const opps = collectSlotRefs(m.right);
+      leftPath.push({ opponents: opps, loserSlot: m.loserSlot || null });
+      return leftPath;
+    }
+    const rightPath = findSlotInTree(m.right, slotRef);
+    if (rightPath !== null) {
+      const opps = collectSlotRefs(m.left);
+      rightPath.push({ opponents: opps, loserSlot: m.loserSlot || null });
+      return rightPath;
+    }
+    return null;
+  }
+
+  /** Collect slot refs from a subtree (for showing B-event opponents as slot labels) */
+  function collectSlotRefs(node) {
+    if (node.slot) return [node.slot];
+    if (node.team) return [node.team];
+    if (!node.match) return [];
+    return [...collectSlotRefs(node.match.left), ...collectSlotRefs(node.match.right)];
+  }
+
+  /** Collect all downstream C or D slots reachable from B-event trees for a given A-path */
+  function collectDownstreamSlots(bTrees, aPath, prefix) {
+    const slots = [];
+    for (const step of aPath) {
+      if (!step.loserSlot) continue;
+      // Find the B-event path from this slot
+      const bPath = findSlotPath(bTrees, step.loserSlot);
+      if (bPath) {
+        for (const bStep of bPath) {
+          if (bStep.loserSlot && bStep.loserSlot.startsWith(prefix)) {
+            slots.push(bStep.loserSlot);
+          }
+        }
+      }
+    }
+    return [...new Set(slots)];
+  }
+
+  function renderPathRound(label, displayNames) {
+    const oppHtml = displayNames.length > 0
+      ? displayNames.map(n => `<span class="path-opponent">${esc(n)}</span>`).join('<span class="path-or">or</span>')
+      : '<span class="path-opponent seed-info">TBD</span>';
+    return `<div class="path-round">
+      <div class="path-round-label">${label}</div>
+      <div class="path-opponents">${oppHtml}</div>
+    </div>`;
+  }
+
+  function renderChampionshipPath(qualifierIdx, champ, mode, qualifierTeams) {
+    const numQ = champ.numQualifiers;
+    let html = '';
+
+    // Helper: get display names for a qualifier index
+    const qTeams = (idx) => (qualifierTeams && qualifierTeams[idx]) ? qualifierTeams[idx] : [`Q${idx + 1}`];
+    // Helper: render a list of team names joined by 'or'
+    const teamSpans = (indices) => {
+      const names = indices.flatMap(i => qTeams(i));
+      return names.map(n => `<span class="path-opponent">${esc(n)}</span>`).join('<span class="path-or">or</span>');
+    };
+
+    if (numQ === 8) {
+      const qfPair = champ.quarterSeed.find(p => p.includes(qualifierIdx));
+      const qfOpp = qfPair[0] === qualifierIdx ? qfPair[1] : qfPair[0];
+      const qfIdx = champ.quarterSeed.indexOf(qfPair);
+      const semiPair = champ.semiPairs.find(p => p.includes(qfIdx));
+      const semiOppQfIdx = semiPair[0] === qfIdx ? semiPair[1] : semiPair[0];
+      const semiOppSeeds = champ.quarterSeed[semiOppQfIdx];
+      const otherSemi = champ.semiPairs.find(p => !p.includes(qfIdx));
+      const otherSeeds = otherSemi.flatMap(i => champ.quarterSeed[i]);
+
+      if (mode === 'win') {
+        html += `<div class="path-round"><div class="path-round-label">Quarterfinal</div>
+          <div class="path-opponents">${teamSpans([qfOpp])}</div></div>`;
+        html += `<div class="path-round"><div class="path-round-label">Semifinal</div>
+          <div class="path-opponents">${teamSpans(semiOppSeeds)}</div></div>`;
+        html += `<div class="path-round"><div class="path-round-label">Final</div>
+          <div class="path-opponents">${teamSpans(otherSeeds)}</div></div>`;
+      } else {
+        html += `<div style="color:var(--muted);font-size:.8rem;margin-top:.5rem;">Then win Consolation bracket (QF/SF/Final losers play)</div>`;
+      }
+    } else {
+      const sfPair = champ.quarterSeed.find(p => p.includes(qualifierIdx));
+      const sfOpp = sfPair[0] === qualifierIdx ? sfPair[1] : sfPair[0];
+      const otherPair = champ.quarterSeed.find(p => !p.includes(qualifierIdx));
+
+      if (mode === 'win') {
+        html += `<div class="path-round"><div class="path-round-label">Semifinal</div>
+          <div class="path-opponents">${teamSpans([sfOpp])}</div></div>`;
+        html += `<div class="path-round"><div class="path-round-label">Final</div>
+          <div class="path-opponents">${teamSpans(otherPair)}</div></div>`;
+      } else {
+        html += `<div style="color:var(--muted);font-size:.8rem;margin-top:.5rem;">Then win Consolation Final (SF losers play)</div>`;
+      }
+    }
+    return html;
   }
 
   function getRoundNames(total) {
