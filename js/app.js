@@ -715,9 +715,9 @@
 
       const tr = document.createElement('tr');
       const analysis = cachedAnalysis.find(a => a.teamId === t.id);
-      const expReturn = analysis ? fmt$(analysis.grossEV) : '—';
-      const evProfit = analysis ? fmt$(analysis.ev) : '—';
-      const evColor = analysis ? (analysis.ev >= 0 ? 'var(--success)' : 'var(--danger)') : 'var(--muted)';
+      const expReturn = analysis ? fmt$(analysis.buyerReturn) : '—';
+      const evProfit = analysis ? fmt$(analysis.buyerEV) : '—';
+      const evColor = analysis ? (analysis.buyerEV >= 0 ? 'var(--success)' : 'var(--danger)') : 'var(--muted)';
       tr.innerHTML = `
         <td>${esc(t.name)}</td>
         <td>
@@ -1102,8 +1102,9 @@
         predictedPayout: est.predictedPayout,
         scaleFactor: est.scaleFactor,
         grossEV: evResult.grossEV,
+        buyerReturn: evResult.buyerReturn,
+        buyerEV: evResult.buyerEV,
         ev: evResult.ev,
-        evWithBuyBack: evResult.evWithBuyBack,
         optimalBid: evResult.optimalBid,
       });
     }

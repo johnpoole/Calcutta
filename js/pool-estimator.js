@@ -90,18 +90,19 @@ const PoolEstimator = (() => {
   /**
    * Compute expected value for a team given event probabilities and payouts.
    *
-   * EV = Σ(P(event) × Payout(event)) − Bid
-   * For self buy-back: team owner gets buyBackPct of payout for $buyBackFee extra
+   * Without buy-back: EV = grossEV − Bid
+   * With buy-back: the skip paid $fee to buy back 25% of winnings,
+   *   so the buyer only keeps 75% of any payout.
+   *   Buyer EV = 0.75 × grossEV − Bid
    *
    * @param {Object} probs      - { A, B, C, D } probabilities
    * @param {Object} payouts    - { A, B, C, D } dollar amounts
    * @param {number} bid        - bid amount
    * @param {boolean} selfBuyBack
    * @param {Object} buyBackConfig - { fee, payoutPct }
-   * @returns {Object} { grossEV, ev, evWithBuyBack, optimalBid }
+   * @returns {Object} { grossEV, ev, buyerReturn, buyerEV, optimalBid }
    */
   function computeEV(probs, payouts, bid, selfBuyBack = false, buyBackConfig = {}) {
-    const fee = buyBackConfig.fee ?? 40;
     const pct = buyBackConfig.payoutPct ?? 0.25;
 
     const grossEV = (probs.A * payouts.A) +
@@ -109,20 +110,13 @@ const PoolEstimator = (() => {
                     (probs.C * payouts.C) +
                     (probs.D * payouts.D);
 
-    const ev = grossEV - bid;
+    // Buyer keeps (1 - pct) of winnings when buy-back is active
+    const buyerReturn = selfBuyBack ? grossEV * (1 - pct) : grossEV;
+    const buyerEV = buyerReturn - bid;
 
-    let evWithBuyBack = ev;
-    if (selfBuyBack) {
-      const buyBackEV = (probs.A * payouts.A * pct) +
-                        (probs.B * payouts.B * pct) +
-                        (probs.C * payouts.C * pct) +
-                        (probs.D * payouts.D * pct) - fee;
-      evWithBuyBack = ev + buyBackEV;
-    }
+    const optimalBid = buyerReturn;
 
-    const optimalBid = grossEV;
-
-    return { grossEV, ev, evWithBuyBack, optimalBid };
+    return { grossEV, ev: buyerEV, buyerReturn, buyerEV, optimalBid };
   }
 
   return {
