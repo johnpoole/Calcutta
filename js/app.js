@@ -418,9 +418,9 @@
 
     let html = '<div class="path-rounds">';
 
-    // ── A EVENT PATH (40% payout) ────────────────────
+    // ── CHAMPIONSHIP PATH (40% payout) ────────────────────
     const aPct = odds ? (odds.A * 100).toFixed(1) + '%' : '';
-    html += `<div class="path-section-title">🏆 A Event — Championship (40%)${aPct ? ` <span style="color:var(--success);font-weight:400;font-size:.85rem;">${aPct}</span>` : ''}</div>`;
+    html += `<div class="path-section-title">🏆 Championship (40%)${aPct ? ` <span style="color:var(--success);font-weight:400;font-size:.85rem;">${aPct}</span>` : ''}</div>`;
     html += `<div style="color:var(--muted);font-size:.8rem;margin-bottom:.5rem;">Win A-Event Q${qNum} → Win Championship bracket</div>`;
 
     const aRoundNames = getRoundNames(aPath.length);
@@ -442,9 +442,9 @@
     // Championship rounds
     html += renderChampionshipPath(qualifierIdx, champ, 'win', qualifierTeams);
 
-    // ── B EVENT / CONSOLATION PATH (30% payout) ──────
+    // ── CONSOLATION PATH (30% payout) ──────
     const bPct = odds ? (odds.B * 100).toFixed(1) + '%' : '';
-    html += `<hr class="path-divider"><div class="path-section-title">🥈 B Event — Consolation (30%)${bPct ? ` <span style="color:var(--primary);font-weight:400;font-size:.85rem;">${bPct}</span>` : ''}</div>`;
+    html += `<hr class="path-divider"><div class="path-section-title">🥈 Consolation (30%)${bPct ? ` <span style="color:var(--primary);font-weight:400;font-size:.85rem;">${bPct}</span>` : ''}</div>`;
     html += `<div style="color:var(--muted);font-size:.8rem;margin-bottom:.5rem;">Lose in A-Event → Win B-Event qualifier → Win Consolation bracket</div>`;
 
     // Show which B-event slot each A-round loss feeds into
@@ -793,8 +793,8 @@
     document.getElementById('payout-b').textContent = fmt$(payouts.B);
     document.getElementById('payout-c').textContent = fmt$(payouts.C);
     document.getElementById('payout-d').textContent = fmt$(payouts.D);
-    document.getElementById('payout-a-hdr').textContent = `A Event (${Math.round(pcts.A * 100)}%)`;
-    document.getElementById('payout-b-hdr').textContent = `B Event (${Math.round(pcts.B * 100)}%)`;
+    document.getElementById('payout-a-hdr').textContent = `Championship (${Math.round(pcts.A * 100)}%)`;
+    document.getElementById('payout-b-hdr').textContent = `Consolation (${Math.round(pcts.B * 100)}%)`;
     document.getElementById('payout-c-hdr').textContent = `C Event (${Math.round(pcts.C * 100)}%)`;
     document.getElementById('payout-d-hdr').textContent = `D Event (${Math.round(pcts.D * 100)}%)`;
   }
@@ -856,6 +856,7 @@
 
     const colors = ['#4f8cff', '#a78bfa', '#34d399', '#fbbf24'];
     const events = ['A', 'B', 'C', 'D'];
+    const eventLabels = ['Champ', 'Consol', 'C', 'D'];
     const maxVal = Math.max(0.01, ...odds.map(o => Math.max(o.A, o.B, o.C, o.D)));
 
     // Y axis
@@ -905,7 +906,7 @@
       ctx.fillStyle = '#e4e6ed';
       ctx.font = '11px sans-serif';
       ctx.textAlign = 'left';
-      ctx.fillText(events[e] + ' Event', legendX + 14, legendY + 9);
+      ctx.fillText(eventLabels[e], legendX + 14, legendY + 9);
       legendX += 75;
     }
   }
