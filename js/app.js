@@ -109,7 +109,6 @@
   // ═══════════════════════════════════════════════════════
   function renderAll() {
     renderStandings();
-    renderH2H();
     renderBracket();
     renderBids();
     renderPayoutCards();
@@ -142,42 +141,6 @@
       `;
       tbody.appendChild(tr);
     }
-  }
-
-  // ═══════════════════════════════════════════════════════
-  //  HEAD-TO-HEAD MATRIX
-  // ═══════════════════════════════════════════════════════
-  function renderH2H() {
-    const container = document.getElementById('h2h-matrix');
-    const teams = CalcuttaData.getTeams();
-    if (teams.length === 0) {
-      container.innerHTML = '<p style="color:var(--muted);">Add teams to see head-to-head matrix</p>';
-      return;
-    }
-
-    let html = '<table><thead><tr><th></th>';
-    for (const t of teams) html += `<th title="${esc(t.name)}">${esc(t.name.substring(0, 6))}</th>`;
-    html += '</tr></thead><tbody>';
-
-    for (const t of teams) {
-      html += `<tr><th>${esc(t.name.substring(0, 10))}</th>`;
-      for (const opp of teams) {
-        if (t.id === opp.id) {
-          html += '<td class="self">—</td>';
-        } else {
-          const rec = t.h2h[opp.id];
-          if (rec) {
-            const cls = rec.w > rec.l ? 'win' : rec.l > rec.w ? 'loss' : '';
-            html += `<td class="${cls}">${rec.w}-${rec.l}</td>`;
-          } else {
-            html += '<td style="color:var(--muted);">—</td>';
-          }
-        }
-      }
-      html += '</tr>';
-    }
-    html += '</tbody></table>';
-    container.innerHTML = html;
   }
 
   // ═══════════════════════════════════════════════════════

@@ -276,14 +276,6 @@ tbody tr:hover { background: rgba(79,140,255,.06); }
 .modal-body { padding: 1.2rem; }
 .modal-footer { display: flex; justify-content: flex-end; gap: .5rem; padding: .8rem 1.2rem; border-top: 1px solid var(--border); }
 
-/* ── H2H Matrix ── */
-.matrix-container { overflow-x: auto; }
-.matrix-container table { font-size: .78rem; }
-.matrix-container th, .matrix-container td { text-align: center; padding: .35rem .5rem; min-width: 45px; }
-.matrix-container td.win { background: rgba(52,211,153,.15); color: var(--success); }
-.matrix-container td.loss { background: rgba(248,113,113,.12); color: var(--danger); }
-.matrix-container td.self { background: var(--surface); color: var(--muted); }
-
 /* ── Event tabs ── */
 .event-tabs {
   display: flex; gap: .5rem; margin-bottom: 1rem; flex-wrap: wrap;
@@ -407,9 +399,6 @@ canvas { background: var(--surface); border-radius: var(--radius); border: 1px s
   .bracket-tree { font-size: .72rem; }
   .bt-team, .bt-slot { padding: 2px 6px; min-width: 60px; font-size: .72rem; }
   .qualifier-section { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-
-  /* H2H matrix */
-  .matrix-container table { font-size: .65rem; }
 
   /* Path to Win */
   .path-round { flex-direction: column; gap: .3rem; }

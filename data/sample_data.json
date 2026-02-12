@@ -9,12 +9,7 @@
         "ties": 1,
         "pointsFor": 95,
         "pointsAgainst": 58,
-        "seed": 1,
-        "h2h": {
-          "team2": { "w": 2, "l": 1 },
-          "team3": { "w": 3, "l": 0 },
-          "team4": { "w": 2, "l": 0 }
-        }
+        "seed": 1
       },
       {
         "id": "team2",
@@ -24,12 +19,7 @@
         "ties": 2,
         "pointsFor": 87,
         "pointsAgainst": 62,
-        "seed": 2,
-        "h2h": {
-          "team1": { "w": 1, "l": 2 },
-          "team3": { "w": 2, "l": 1 },
-          "team4": { "w": 3, "l": 0 }
-        }
+        "seed": 2
       },
       {
         "id": "team3",
@@ -39,12 +29,7 @@
         "ties": 2,
         "pointsFor": 76,
         "pointsAgainst": 71,
-        "seed": 3,
-        "h2h": {
-          "team1": { "w": 0, "l": 3 },
-          "team2": { "w": 1, "l": 2 },
-          "team4": { "w": 2, "l": 1 }
-        }
+        "seed": 3
       },
       {
         "id": "team4",
@@ -54,21 +39,28 @@
         "ties": 2,
         "pointsFor": 65,
         "pointsAgainst": 80,
-        "seed": 4,
-        "h2h": {
-          "team1": { "w": 0, "l": 2 },
-          "team2": { "w": 0, "l": 3 },
-          "team3": { "w": 1, "l": 2 }
-        }
+        "seed": 4
       }
     ],
     "draw": [],
     "bids": [],
     "priorPayouts": [
-      { "teamId": "team1", "amount": 4960 },
-      { "teamId": "team2", "amount": 3720 },
-      { "teamId": "team3", "amount": 1860 },
-      { "teamId": "team4", "amount": 1860 }
+      {
+        "teamId": "team1",
+        "amount": 4960
+      },
+      {
+        "teamId": "team2",
+        "amount": 3720
+      },
+      {
+        "teamId": "team3",
+        "amount": 1860
+      },
+      {
+        "teamId": "team4",
+        "amount": 1860
+      }
     ]
   },
   "womens": {
@@ -78,10 +70,24 @@
     "priorPayouts": []
   },
   "config": {
-    "payoutPcts": { "A": 0.40, "B": 0.30, "C": 0.15, "D": 0.15 },
-    "priorPools": { "mens": 12400, "womens": 4700 },
-    "buyBack": { "fee": 40, "payoutPct": 0.25 },
-    "weights": { "standings": 0.5, "h2h": 0.3, "draw": 0.2 },
+    "payoutPcts": {
+      "A": 0.4,
+      "B": 0.3,
+      "C": 0.15,
+      "D": 0.15
+    },
+    "priorPools": {
+      "mens": 12400,
+      "womens": 4700
+    },
+    "buyBack": {
+      "fee": 40,
+      "payoutPct": 0.25
+    },
+    "weights": {
+      "standings": 0.5,
+      "draw": 0.2
+    },
     "currentYear": 2026
   }
 }
