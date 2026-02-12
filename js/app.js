@@ -736,7 +736,7 @@
         </td>
         <td>
           <input type="checkbox" class="bid-input" data-team="${t.id}" data-field="selfBuyBack"
-                 ${bid?.selfBuyBack ? 'checked' : ''}>
+                 ${bid?.selfBuyBack !== false ? 'checked' : ''}>
         </td>
         <td style="text-align:right">${expReturn}</td>
         <td style="text-align:right;color:${evColor}">${evProfit}</td>
