@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
 """
-update_standings.py — Update teams_mens.json with league standings
-from poole_team_data.json.
+update_standings.py — Update teams_mens.json and teams_womens.json
+with league standings.
 
-Teams that skip on both Monday and Tuesday have their records combined.
-Nickname mappings (e.g. "Plaid Lads" → smith, "The Pants" → wilson)
-are handled automatically.
+Men's standings come from poole_team_data.json (Monday/Tuesday leagues).
+Women's standings come from data/women_standings.csv (Wednesday Ladies league).
 
-Teams that don't skip a league team (lefebvre, bell, richardson,
-lessard, feilding) keep wins=0/losses=0 and get default strength
-in the odds calculator.
+Nickname / roster-based mappings handle teams that use different names
+in the league vs. bonspiel.
 
 Usage:
     python scripts/update_standings.py
 """
 
+import csv
 import json
 from pathlib import Path
 
@@ -43,6 +42,18 @@ ROSTER_MAP = {
 MANUAL_RECORDS = {
     "lessard":    {"wins": 3, "losses": 7, "ties": 0},
     "richardson": {"wins": 3, "losses": 7, "ties": 0},
+}
+
+# ── Women's league name → bonspiel team ID ───────────────
+# Mapped via roster cross-reference (Ladies tab vs bonspiel rosters)
+WOMENS_NICKNAME_MAP = {
+    "Pink":               "sheeran",    # "Team Pink" — skip Louise Sheeran
+    "Patchwork":          "clark",      # skip Joyce Clark
+    "RAAA":               "wilson",     # skip Reagan Wilson
+    "Sweeping Beauties":  "loczy",      # skip Lisa Loczy
+    "Sweep Dreams":       "patrick",    # skip Lorraine Patrick
+    "Sheets and Giggles": "lougheed",   # skip Dana Lougheed
+    "Householders":       "inman",      # "The Householders" — skip Dixie Inman
 }
 
 
@@ -133,9 +144,78 @@ def main():
 
     save_json(DATA_DIR / "teams_mens.json", teams)
 
+    # ── Women's standings from CSV ───────────────────────
+    update_womens_standings()
+
     print(f"\n{'═' * 60}")
     print("  Done!  Next: python scripts/calculate_odds.py")
     print(f"{'═' * 60}\n")
+
+
+def womens_csv_name_to_id(name):
+    """Convert a women's standings CSV team name to a bonspiel team ID."""
+    if name in WOMENS_NICKNAME_MAP:
+        return WOMENS_NICKNAME_MAP[name]
+    return name.lower()
+
+
+def update_womens_standings():
+    print(f"\n{'═' * 60}")
+    print("  Updating Women's Team Standings from League CSV")
+    print("═" * 60)
+
+    csv_path = DATA_DIR / "women_standings.csv"
+    if not csv_path.exists():
+        print("  ⚠ women_standings.csv not found — skipping women's update")
+        return
+
+    teams = load_json(DATA_DIR / "teams_womens.json")
+    team_ids = {t["id"] for t in teams}
+
+    # Parse CSV
+    csv_records = {}
+    with open(csv_path, newline="", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            name = row["Team"].strip()
+            bid = womens_csv_name_to_id(name)
+            if bid in team_ids:
+                csv_records[bid] = {
+                    "wins": int(row["W"]),
+                    "losses": int(row["L"]),
+                    "ties": int(row["T"]),
+                    "csv_name": name,
+                }
+
+    # Apply to teams JSON
+    updated = 0
+    no_data = []
+    for t in teams:
+        if t["id"] in csv_records:
+            c = csv_records[t["id"]]
+            t["wins"] = c["wins"]
+            t["losses"] = c["losses"]
+            t["ties"] = c["ties"]
+            t["h2h"] = {}
+            updated += 1
+            gp = c["wins"] + c["losses"] + c["ties"]
+            pct = (c["wins"] + c["ties"] * 0.5) / gp if gp else 0
+            src = f" (csv: {c['csv_name']})" if c["csv_name"].lower() != t["id"] else ""
+            print(f"  {t['name']:>12}  {c['wins']:>2}W {c['losses']:>2}L {c['ties']:>1}T  "
+                  f"({pct:.3f}){src}")
+        else:
+            t["wins"] = 0
+            t["losses"] = 0
+            t["ties"] = 0
+            t["h2h"] = {}
+            no_data.append(t["name"])
+
+    print(f"\n  Updated {updated}/{len(teams)} women's teams from league standings")
+    if no_data:
+        print(f"  No league data for: {', '.join(no_data)}")
+        print("  (These teams will use default 0.50 strength)")
+
+    save_json(DATA_DIR / "teams_womens.json", teams)
 
 
 if __name__ == "__main__":
