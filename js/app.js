@@ -696,7 +696,7 @@
     const bids = CalcuttaData.getBids();
 
     if (teams.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" style="color:var(--muted);text-align:center;">No teams added</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" style="color:var(--muted);text-align:center;">No teams added</td></tr>';
       return;
     }
 
@@ -718,6 +718,7 @@
       const expReturn = analysis ? fmt$(analysis.buyerReturn) : '—';
       const evProfit = analysis ? fmt$(analysis.buyerEV) : '—';
       const evColor = analysis ? (analysis.buyerEV >= 0 ? 'var(--success)' : 'var(--danger)') : 'var(--muted)';
+      const optBid = analysis ? (analysis.optimalBid === Infinity ? '∞' : fmt$(analysis.optimalBid)) : '—';
       tr.innerHTML = `
         <td>${esc(t.name)}</td>
         <td>
@@ -740,6 +741,7 @@
         </td>
         <td style="text-align:right">${expReturn}</td>
         <td style="text-align:right;color:${evColor}">${evProfit}</td>
+        <td style="text-align:right">${optBid}</td>
       `;
       tbody.appendChild(tr);
     }
@@ -1092,7 +1094,10 @@
       if (!odds) continue;
 
       const probs = { A: odds.A, B: odds.B, C: odds.C, D: odds.D };
-      const evResult = PoolEstimator.computeEV(probs, estPayouts, est.bid, est.selfBuyBack, cfg.buyBack);
+      // Pool without this team's contribution (for elastic optimal bid)
+      const poolWithoutTeam = estPool - (est.bid > 0 ? est.bid : est.predictedPayout);
+      const poolCtx = { poolWithoutTeam, payoutPcts: cfg.payoutPcts };
+      const evResult = PoolEstimator.computeEV(probs, estPayouts, est.bid, est.selfBuyBack, cfg.buyBack, poolCtx);
 
       cachedAnalysis.push({
         teamId: est.teamId,
