@@ -13,7 +13,7 @@ const CalcuttaData = (() => {
     priorPools: { mens: 12400, womens: 4700 },
     buyBack: { fee: 40, payoutPct: 0.25 },
 
-    weights: { standings: 0.5, h2h: 0.3, draw: 0.2 },
+    weights: { standings: 0.7, draw: 0.3 },
     currentYear: 2026,
   };
 
@@ -33,7 +33,6 @@ const CalcuttaData = (() => {
    * @property {number}  wins
    * @property {number}  losses
    * @property {number}  ties
-   * @property {Object}  h2h        - { opponentId: { w, l } }
    * @property {number}  seed       - seeding rank (1 = best)
    */
   function createTeam(overrides = {}) {
@@ -43,7 +42,6 @@ const CalcuttaData = (() => {
       wins: overrides.wins ?? 0,
       losses: overrides.losses ?? 0,
       ties: overrides.ties ?? 0,
-      h2h: overrides.h2h || {},
       seed: overrides.seed ?? 99,
     };
   }

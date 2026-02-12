@@ -105,7 +105,7 @@ def parse_rosters(wb):
             "id": last_name, "name": skip_name.split()[-1],
             "skip": skip_name, "members": members, "rosterNum": num,
             "wins": 0, "losses": 0, "ties": 0,
-            "h2h": {}, "seed": num,
+            "seed": num,
         })
 
     return mens_teams, womens_teams
@@ -300,7 +300,7 @@ def flatten_bracket(tree, event_label, division, counter=None):
 # ═══════════════════════════════════════════════════════════
 
 def strip_extra_fields(teams):
-    keep = ("id", "name", "wins", "losses", "ties", "h2h", "seed")
+    keep = ("id", "name", "wins", "losses", "ties", "seed")
     return [{k: t[k] for k in keep} for t in teams]
 
 
@@ -321,7 +321,7 @@ def build_webapp_state(mt, wt, md, wd):
             "payoutPcts": {"A": 0.40, "B": 0.30, "C": 0.15, "D": 0.15},
             "priorPools": {"mens": 12400, "womens": 4700},
             "buyBack": {"fee": 40, "payoutPct": 0.25},
-            "weights": {"standings": 0.5, "h2h": 0.3, "draw": 0.2},
+            "weights": {"standings": 0.7, "draw": 0.3},
             "currentYear": 2026,
         },
     }

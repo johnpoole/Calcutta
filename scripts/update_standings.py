@@ -111,7 +111,6 @@ def main():
             t["wins"] = c["wins"]
             t["losses"] = c["losses"]
             t["ties"] = c["ties"]
-            t["h2h"] = {}  # no h2h data available
             updated += 1
             nights = " + ".join(c["nights"])
             gp = c["wins"] + c["losses"] + c["ties"]
@@ -124,7 +123,6 @@ def main():
                 t["wins"] = m["wins"]
                 t["losses"] = m["losses"]
                 t["ties"] = m["ties"]
-                t["h2h"] = {}
                 updated += 1
                 gp = m["wins"] + m["losses"] + m["ties"]
                 pct = (m["wins"] + m["ties"] * 0.5) / gp if gp else 0
@@ -134,7 +132,6 @@ def main():
                 t["wins"] = 0
                 t["losses"] = 0
                 t["ties"] = 0
-                t["h2h"] = {}
                 no_data.append(t["name"])
 
     print(f"\n  Updated {updated} teams from league standings")
@@ -196,7 +193,6 @@ def update_womens_standings():
             t["wins"] = c["wins"]
             t["losses"] = c["losses"]
             t["ties"] = c["ties"]
-            t["h2h"] = {}
             updated += 1
             gp = c["wins"] + c["losses"] + c["ties"]
             pct = (c["wins"] + c["ties"] * 0.5) / gp if gp else 0
@@ -207,7 +203,6 @@ def update_womens_standings():
             t["wins"] = 0
             t["losses"] = 0
             t["ties"] = 0
-            t["h2h"] = {}
             no_data.append(t["name"])
 
     print(f"\n  Updated {updated}/{len(teams)} women's teams from league standings")

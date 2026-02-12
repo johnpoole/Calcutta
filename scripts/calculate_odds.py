@@ -34,44 +34,16 @@ def strength_from_standings(t: dict) -> float:
     return (t["wins"] + t.get("ties", 0) * 0.5) / gp
 
 
-def strength_from_h2h(t: dict) -> float:
-    """Average H2H win rate across tracked opponents."""
-    h2h = t.get("h2h", {})
-    if not h2h:
-        return 0.5
-    tw, tg = 0, 0
-    for rec in h2h.values():
-        tw += rec.get("w", 0)
-        tg += rec.get("w", 0) + rec.get("l", 0)
-    return tw / tg if tg else 0.5
-
-
 def composite_strength(t: dict, weights: dict) -> float:
-    """Weighted combination of strength signals.
-
-    If a team has no h2h data, the h2h weight is redistributed
-    proportionally to standings and seed weights so the total
-    weighting still sums to 1.0.
-    """
-    w_stand = weights.get("standings", 0.5)
-    w_h2h   = weights.get("h2h", 0.3)
-    w_seed  = weights.get("draw", 0.2)
-
-    has_h2h = bool(t.get("h2h"))
-    if not has_h2h and (w_stand + w_seed) > 0:
-        # Redistribute h2h weight to standings and seed proportionally
-        extra = w_h2h
-        total_other = w_stand + w_seed
-        w_stand += extra * (w_stand / total_other)
-        w_seed  += extra * (w_seed  / total_other)
-        w_h2h = 0
+    """Weighted combination of standings and seed signals."""
+    w_stand = weights.get("standings", 0.7)
+    w_seed  = weights.get("draw", 0.3)
 
     ws = w_stand * strength_from_standings(t)
-    wh = w_h2h * strength_from_h2h(t)
     # Seed-based factor: lower seed = stronger (normalised to 0–1)
     seed = t.get("seed", 50)
     ws_seed = w_seed * max(0, 1.0 - seed / 50.0)
-    return ws + wh + ws_seed
+    return ws + ws_seed
 
 
 def pairwise_win_prob(sa: float, sb: float) -> float:
@@ -323,9 +295,8 @@ def main():
         description="Calculate Calcutta win probabilities via bracket simulation")
     parser.add_argument("--iterations", "-n", type=int, default=50_000)
     parser.add_argument("--divisions", "-d", nargs="+", default=["mens", "womens"])
-    parser.add_argument("--standings-weight", type=float, default=0.5)
-    parser.add_argument("--h2h-weight", type=float, default=0.3)
-    parser.add_argument("--draw-weight", type=float, default=0.2)
+    parser.add_argument("--standings-weight", type=float, default=0.7)
+    parser.add_argument("--draw-weight", type=float, default=0.3)
     parser.add_argument("--seed", "-s", type=int, default=None)
     args = parser.parse_args()
 
@@ -334,7 +305,6 @@ def main():
 
     weights = {
         "standings": args.standings_weight,
-        "h2h": args.h2h_weight,
         "draw": args.draw_weight,
     }
 

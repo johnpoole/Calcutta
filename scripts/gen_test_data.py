@@ -10,18 +10,6 @@ for division in ['mens', 'womens']:
     n = len(teams)
     ids = [t['id'] for t in teams]
 
-    # Generate round-robin H2H (each pair plays 2-4 games)
-    for t in teams:
-        t['h2h'] = {}
-
-    for i in range(n):
-        for j in range(i + 1, n):
-            games = random.randint(2, 4)
-            w_i = random.randint(0, games)
-            w_j = games - w_i
-            teams[i]['h2h'][ids[j]] = {'w': w_i, 'l': w_j}
-            teams[j]['h2h'][ids[i]] = {'w': w_j, 'l': w_i}
-
     # Derive W/L/T from 18-22 league games per team (no score tracking)
     for t in teams:
         gp = random.randint(18, 22)

@@ -5,7 +5,6 @@
     "wins": 6,
     "losses": 8,
     "ties": 1,
-    "h2h": {},
     "seed": 1
   },
   {
@@ -14,7 +13,6 @@
     "wins": 12,
     "losses": 3,
     "ties": 0,
-    "h2h": {},
     "seed": 2
   },
   {
@@ -23,7 +21,6 @@
     "wins": 13,
     "losses": 1,
     "ties": 1,
-    "h2h": {},
     "seed": 3
   },
   {
@@ -32,7 +29,6 @@
     "wins": 13,
     "losses": 2,
     "ties": 0,
-    "h2h": {},
     "seed": 4
   },
   {
@@ -41,7 +37,6 @@
     "wins": 4,
     "losses": 10,
     "ties": 1,
-    "h2h": {},
     "seed": 5
   },
   {
@@ -50,7 +45,6 @@
     "wins": 7,
     "losses": 8,
     "ties": 0,
-    "h2h": {},
     "seed": 6
   },
   {
@@ -59,7 +53,6 @@
     "wins": 11,
     "losses": 3,
     "ties": 1,
-    "h2h": {},
     "seed": 7
   },
   {
@@ -68,7 +61,6 @@
     "wins": 5,
     "losses": 9,
     "ties": 1,
-    "h2h": {},
     "seed": 8
   },
   {
@@ -77,7 +69,6 @@
     "wins": 5,
     "losses": 7,
     "ties": 3,
-    "h2h": {},
     "seed": 9
   },
   {
@@ -86,7 +77,6 @@
     "wins": 10,
     "losses": 5,
     "ties": 0,
-    "h2h": {},
     "seed": 10
   },
   {
@@ -95,7 +85,6 @@
     "wins": 10,
     "losses": 5,
     "ties": 0,
-    "h2h": {},
     "seed": 11
   },
   {
@@ -104,7 +93,6 @@
     "wins": 8,
     "losses": 6,
     "ties": 1,
-    "h2h": {},
     "seed": 12
   }
 ]
