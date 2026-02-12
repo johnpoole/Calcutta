@@ -88,19 +88,47 @@ def main():
     standings = poole_data.get("standings", {})
     team_ids = {t["id"] for t in teams}
 
-    # ── Aggregate records across both nights ─────────────
-    combined = {}  # bonspiel_id → { wins, losses, ties, nights }
+    # ── Collect per-night records ──────────────────────────
+    # Teams that curl on multiple nights get their win% averaged
+    # rather than summed, so they don't inflate total games played.
+    per_night = {}  # bonspiel_id → [ {wins, losses, ties, night}, ... ]
     for league_name, league_teams in standings.items():
         for team_name, record in league_teams.items():
             bid = standings_name_to_id(team_name)
             if bid not in team_ids:
                 continue  # not a bonspiel team
-            if bid not in combined:
-                combined[bid] = {"wins": 0, "losses": 0, "ties": 0, "nights": []}
-            combined[bid]["wins"] += record.get("wins", 0)
-            combined[bid]["losses"] += record.get("losses", 0)
-            combined[bid]["ties"] += record.get("ties", 0)
-            combined[bid]["nights"].append(league_name)
+            if bid not in per_night:
+                per_night[bid] = []
+            per_night[bid].append({
+                "wins": record.get("wins", 0),
+                "losses": record.get("losses", 0),
+                "ties": record.get("ties", 0),
+                "night": league_name,
+            })
+
+    # ── Average across nights → synthetic 10-game record ─
+    combined = {}  # bonspiel_id → { wins, losses, ties, nights }
+    for bid, nights in per_night.items():
+        if len(nights) == 1:
+            n = nights[0]
+            combined[bid] = {
+                "wins": n["wins"], "losses": n["losses"], "ties": n["ties"],
+                "nights": [n["night"]],
+            }
+        else:
+            # Average win% across nights, then project onto a 10-game record
+            pcts = []
+            for n in nights:
+                gp = n["wins"] + n["losses"] + n["ties"]
+                pcts.append((n["wins"] + n["ties"] * 0.5) / gp if gp else 0.5)
+            avg_pct = sum(pcts) / len(pcts)
+            proj_games = 10
+            proj_wins = round(avg_pct * proj_games)
+            proj_losses = proj_games - proj_wins
+            combined[bid] = {
+                "wins": proj_wins, "losses": proj_losses, "ties": 0,
+                "nights": [n["night"] for n in nights],
+            }
 
     # ── Apply to teams JSON ──────────────────────────────
     updated = 0
