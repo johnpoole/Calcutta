@@ -35,15 +35,8 @@ def strength_from_standings(t: dict) -> float:
 
 
 def composite_strength(t: dict, weights: dict) -> float:
-    """Weighted combination of standings and seed signals."""
-    w_stand = weights.get("standings", 0.7)
-    w_seed  = weights.get("draw", 0.3)
-
-    ws = w_stand * strength_from_standings(t)
-    # Seed-based factor: lower seed = stronger (normalised to 0–1)
-    seed = t.get("seed", 50)
-    ws_seed = w_seed * max(0, 1.0 - seed / 50.0)
-    return ws + ws_seed
+    """Team strength based purely on win percentage from standings."""
+    return strength_from_standings(t)
 
 
 def pairwise_win_prob(sa: float, sb: float) -> float:
