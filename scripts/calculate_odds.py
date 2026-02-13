@@ -293,7 +293,7 @@ def process_division(division, weights, iterations):
 def main():
     parser = argparse.ArgumentParser(
         description="Calculate Calcutta win probabilities via bracket simulation")
-    parser.add_argument("--iterations", "-n", type=int, default=50_000)
+    parser.add_argument("--iterations", "-n", type=int, default=500_000)
     parser.add_argument("--divisions", "-d", nargs="+", default=["mens", "womens"])
     parser.add_argument("--standings-weight", type=float, default=1.0)
     parser.add_argument("--draw-weight", type=float, default=0.0)
