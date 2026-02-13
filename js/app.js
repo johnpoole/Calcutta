@@ -1060,7 +1060,9 @@
       // Pool without this team's contribution (for elastic optimal bid)
       const poolWithoutTeam = estPool - (est.bid > 0 ? est.bid : est.predictedPayout);
       const poolCtx = { poolWithoutTeam, payoutPcts: cfg.payoutPcts };
-      const evResult = PoolEstimator.computeEV(probs, estPayouts, est.bid, est.selfBuyBack, cfg.buyBack, poolCtx);
+      // noBuyBack = false by default: all skips buy back 25%, buyer keeps 75%
+      const noBuyBack = est.noBuyBack || false;
+      const evResult = PoolEstimator.computeEV(probs, estPayouts, est.bid, noBuyBack, cfg.buyBack, poolCtx);
 
       cachedAnalysis.push({
         teamId: est.teamId,

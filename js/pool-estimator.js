@@ -90,22 +90,24 @@ const PoolEstimator = (() => {
   /**
    * Compute expected value for a team given event probabilities and payouts.
    *
-   * Without buy-back: EV = grossEV − Bid
-   * With buy-back: the skip paid $fee to buy back 25% of winnings,
-   *   so the buyer only keeps 75% of any payout.
+   * By default every skip buys back 25% of winnings ($40 fee),
+   * so the buyer keeps only 75% of any payout.
    *   Buyer EV = 0.75 × grossEV − Bid
+   *
+   * If a skip opts out of the Calcutta entirely (noBuyBack = true),
+   * the buyer keeps 100%.
    *
    * @param {Object} probs      - { A, B, C, D } probabilities
    * @param {Object} payouts    - { A, B, C, D } dollar amounts
    * @param {number} bid        - bid amount
-   * @param {boolean} selfBuyBack
+   * @param {boolean} noBuyBack - true only if skip opted out of Calcutta
    * @param {Object} buyBackConfig - { fee, payoutPct }
    * @param {Object} [poolCtx]  - optional pool context for elastic optimal bid
    * @param {number} poolCtx.poolWithoutTeam - estimated pool minus this team's contribution
    * @param {Object} poolCtx.payoutPcts      - { A, B, C, D } payout percentages
    * @returns {Object} { grossEV, ev, buyerReturn, buyerEV, optimalBid }
    */
-  function computeEV(probs, payouts, bid, selfBuyBack = false, buyBackConfig = {}, poolCtx = null) {
+  function computeEV(probs, payouts, bid, noBuyBack = false, buyBackConfig = {}, poolCtx = null) {
     const pct = buyBackConfig.payoutPct ?? 0.25;
 
     const grossEV = (probs.A * payouts.A) +
@@ -113,14 +115,15 @@ const PoolEstimator = (() => {
                     (probs.C * payouts.C) +
                     (probs.D * payouts.D);
 
-    // Buyer keeps (1 - pct) of winnings when buy-back is active
-    const buyerReturn = selfBuyBack ? grossEV * (1 - pct) : grossEV;
+    // Buyer keeps (1 - pct) of winnings by default (skip buys back 25%).
+    // Only if skip opted out entirely does the buyer keep 100%.
+    const keepFrac = noBuyBack ? 1.0 : (1 - pct);
+    const buyerReturn = grossEV * keepFrac;
     const buyerEV = buyerReturn - bid;
 
     // Pool-elastic optimal bid: the break-even bid accounting for the
     // fact that your bid increases the pool (and thus your own payout).
     //   weightedProb = Σ(p_i × payoutPct_i)
-    //   keepFrac = 0.75 (with buy-back) or 1.0
     //   optimalBid = (keepFrac × wp × poolWithoutTeam) / (1 − keepFrac × wp)
     let optimalBid = buyerReturn; // fallback if no pool context
     if (poolCtx) {
@@ -128,7 +131,6 @@ const PoolEstimator = (() => {
                  (probs.B * poolCtx.payoutPcts.B) +
                  (probs.C * poolCtx.payoutPcts.C) +
                  (probs.D * poolCtx.payoutPcts.D);
-      const keepFrac = selfBuyBack ? (1 - pct) : 1.0;
       const kwp = keepFrac * wp;
       optimalBid = kwp < 1 ? (kwp * poolCtx.poolWithoutTeam) / (1 - kwp) : Infinity;
     }
