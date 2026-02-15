@@ -336,7 +336,7 @@
         // Loser of this match fills this slot — collect all leaf teams from both sides
         const leftTeams = collectAllLeaves(m.left);
         const rightTeams = collectAllLeaves(m.right);
-        slotTeams[m.loserSlot] = [...leftTeams, ...rightTeams];
+        slotTeams[m.loserSlot] = [...new Set([...leftTeams, ...rightTeams])];
       }
     }
     function collectAllLeaves(node) {
@@ -397,10 +397,10 @@
     // Exclude the selected team — they can't be their own opponent
     const qualifierTeams = [];
     for (let i = 0; i < tree.a_event.length; i++) {
-      qualifierTeams.push(collectTeams(tree.a_event[i]).filter(id => id !== teamId).map(id => teamName(id)));
+      qualifierTeams.push([...new Set(collectTeams(tree.a_event[i]))].filter(id => id !== teamId).map(id => teamName(id)));
     }
     for (let i = 0; i < tree.b_event.length; i++) {
-      const bTeams = collectAllLeaves(tree.b_event[i]).filter(id => id !== teamId).map(id => teamName(id));
+      const bTeams = [...new Set(collectAllLeaves(tree.b_event[i]))].filter(id => id !== teamId).map(id => teamName(id));
       qualifierTeams.push(bTeams);
     }
 
@@ -425,8 +425,8 @@
         if (bPath) {
           const bRounds = getRoundNames(bPath.length);
           bPath.forEach((step, j) => {
-            // Resolve slot refs to actual team names
-            const names = step.opponents.flatMap(ref => resolveToNames(ref));
+            // Resolve slot refs to actual team names (deduplicated)
+            const names = [...new Set(step.opponents.flatMap(ref => resolveToNames(ref)))];
             html += renderPathRound('  ' + bRounds[j], names);
           });
         }
@@ -448,11 +448,11 @@
       if (cPath) {
         const cRounds = getRoundNames(cPath.length);
         cPath.forEach((step, j) => {
-          const names = step.opponents.flatMap(ref => resolveToNames(ref));
+          const names = [...new Set(step.opponents.flatMap(ref => resolveToNames(ref)))];
           html += renderPathRound(cRounds[j], names);
         });
       } else {
-        const cNames = cSlots.flatMap(s => resolveToNames(s));
+        const cNames = [...new Set(cSlots.flatMap(s => resolveToNames(s)))];
         html += renderPathRound('Opponents', cNames);
       }
     } else {
@@ -472,11 +472,11 @@
       if (dPath) {
         const dRounds = getRoundNames(dPath.length);
         dPath.forEach((step, j) => {
-          const names = step.opponents.flatMap(ref => resolveToNames(ref));
+          const names = [...new Set(step.opponents.flatMap(ref => resolveToNames(ref)))];
           html += renderPathRound(dRounds[j], names);
         });
       } else {
-        const dNames = dSlots.flatMap(s => resolveToNames(s));
+        const dNames = [...new Set(dSlots.flatMap(s => resolveToNames(s)))];
         html += renderPathRound('Opponents', dNames);
       }
     } else {
