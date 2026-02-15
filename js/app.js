@@ -353,9 +353,10 @@
     tree.a_event.forEach(q => mapSlotsFromTree(q));
     tree.b_event.forEach(q => mapSlotsFromTree(q));
 
-    // Resolve a ref (slot or team id) to display names
+    // Resolve a ref (slot or team id) to display names, excluding the selected team
     function resolveToNames(ref) {
-      if (slotTeams[ref]) return slotTeams[ref].map(id => teamName(id));
+      if (slotTeams[ref]) return slotTeams[ref].filter(id => id !== teamId).map(id => teamName(id));
+      if (ref === teamId) return [];  // don't show self
       return [teamName(ref)];
     }
 
@@ -393,12 +394,13 @@
 
     // Build qualifier → team names map for Championship bracket
     // Q0-Q3 = A-event qualifier winners, Q4-Q7 = B-event qualifier winners
+    // Exclude the selected team — they can't be their own opponent
     const qualifierTeams = [];
     for (let i = 0; i < tree.a_event.length; i++) {
-      qualifierTeams.push(collectTeams(tree.a_event[i]).map(id => teamName(id)));
+      qualifierTeams.push(collectTeams(tree.a_event[i]).filter(id => id !== teamId).map(id => teamName(id)));
     }
     for (let i = 0; i < tree.b_event.length; i++) {
-      const bTeams = collectAllLeaves(tree.b_event[i]).map(id => teamName(id));
+      const bTeams = collectAllLeaves(tree.b_event[i]).filter(id => id !== teamId).map(id => teamName(id));
       qualifierTeams.push(bTeams);
     }
 
