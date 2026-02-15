@@ -580,9 +580,9 @@
 
     // Helper: get display names for a qualifier index
     const qTeams = (idx) => (qualifierTeams && qualifierTeams[idx]) ? qualifierTeams[idx] : [`Q${idx + 1}`];
-    // Helper: render a list of team names joined by 'or'
+    // Helper: render a deduplicated list of team names joined by 'or'
     const teamSpans = (indices) => {
-      const names = indices.flatMap(i => qTeams(i));
+      const names = [...new Set(indices.flatMap(i => qTeams(i)))];
       return names.map(n => `<span class="path-opponent">${esc(n)}</span>`).join('<span class="path-or">or</span>');
     };
 
