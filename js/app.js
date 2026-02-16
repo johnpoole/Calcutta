@@ -665,7 +665,15 @@
       return;
     }
 
-    for (const t of teams) {
+    // Sort by EV descending when analysis is available, otherwise by seed
+    const sortedTeams = [...teams].sort((a, b) => {
+      const aEV = cachedAnalysis.find(x => x.teamId === a.id);
+      const bEV = cachedAnalysis.find(x => x.teamId === b.id);
+      if (aEV && bEV) return bEV.buyerEV - aEV.buyerEV;
+      return (a.seed || 0) - (b.seed || 0);
+    });
+
+    for (const t of sortedTeams) {
       const bid = bids.find(b => b.teamId === t.id);
       const curBuyer = bid?.buyer || '';
       // Build buyer dropdown: team names + "Other" for free-text
