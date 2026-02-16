@@ -186,44 +186,64 @@
     }
   ],
   "all_team_rosters": {
+    "\"Plan B\"": {
+      "Friday Night Mixed": [
+        "Mike Mah-Poy",
+        "Tamara Cohos",
+        "Jake Mayell",
+        "Megan Mayell",
+        "Jon Feilding",
+        "Angela McKinnon"
+      ]
+    },
+    "604-3044": {
+      "Friday Night Mixed": [
+        "Francesca Christie & Tim Edwards",
+        "Donalda & Glen Fisher"
+      ]
+    },
+    "Annable": {
+      "Tuesday Night": [
+        "Doug Annable",
+        "Riley Waite",
+        "Ron Slater",
+        "Matt Rallison"
+      ]
+    },
+    "Bailey": {
+      "Monday Night": [
+        "Frank Bailey",
+        "Logan Bailey",
+        "Kevin Vogt",
+        "Ron Hansford",
+        "Paul Armstrong"
+      ]
+    },
+    "Balderston": {
+      "Tuesday Night": [
+        "Ted Leew",
+        "Stuart Erickson",
+        "Dennis Balderston",
+        "Gord Vogt",
+        "Gord Lefebvre"
+      ]
+    },
+    "Bell": {
+      "Friday Night Mixed": [
+        "Dave Bell",
+        "Gail Bell",
+        "Thad Snethun",
+        "Trish Snethun",
+        "Glenn Phelps",
+        "Julia Phelps"
+      ]
+    },
     "Birrell": {
       "Monday Night": [
         "Robert Birrell",
         "Ryan Duckworth",
         "Johnny Hammill",
-        "John Moss",
-        "Jim Bonyai",
-        "Kyle Hawkins"
-      ]
-    },
-    "Phelps": {
-      "Monday Night": [
-        "Glen Phelps",
-        "Dave Bell",
-        "Thad Snethun",
-        "John Lamarsh",
-        "Gregg Delcourt",
-        "Bob Marshall",
-        "Emilio Lupi"
-      ]
-    },
-    "Snethun": {
-      "Monday Night": [
-        "Leif Snethun",
-        "Andrew Brotherhood",
-        "Stuart Brotherhood",
-        "Sean Godfrey",
-        "Jordan Alford",
-        "Jack Moss",
-        "Rob Heemskerk"
-      ]
-    },
-    "Gregg": {
-      "Monday Night": [
-        "Brian Gregg",
-        "Richard Wyman",
-        "Bob Feick",
-        "Brett Code"
+        "John Moss"
       ]
     },
     "Bonyai": {
@@ -232,42 +252,91 @@
         "Kyle Hawkins",
         "James Radder",
         "Russ Waddell",
-        "Glen Hawkins",
-        "Stu Erickson",
-        "Gord Lefebvre"
+        "Glen Hawkins"
       ]
     },
-    "Marshall": {
-      "Monday Night": [
-        "Bob Marshall",
-        "Emilio Lupi",
-        "Richard Barss",
-        "Duve Lang",
-        "Mike Martin",
-        "Scott Iredale"
-      ]
-    },
-    "Moss": {
-      "Monday Night": [
-        "Jack Moss",
-        "Rob Heemskerk",
-        "Graham Bwint",
-        "Trevor Kobluk",
-        "Geoff Williams",
-        "Yves Gauthier"
-      ],
+    "Boog": {
       "Tuesday Night": [
-        "Jack Moss",
-        "David Hall",
-        "John Moss",
-        "Trevor Kobluk",
-        "Russ Waddell"
-      ],
-      "Friday Night Mixed": [
-        "Jack Moss",
-        "Betty Moss",
-        "Greg Smyth",
-        "Leah Ritz-Smyth"
+        "Boog",
+        "Greg Gonis",
+        "Mike Kobluk",
+        "Mark Bowman",
+        "Yve Gauthier"
+      ]
+    },
+    "Bowman": {
+      "Monday Night": [
+        "Mark Bowman",
+        "Bill Rollins",
+        "Mike Breen",
+        "Bob Rooney"
+      ]
+    },
+    "Brill": {
+      "Tuesday Night": [
+        "Tyler Brill",
+        "Jon Feilding",
+        "Mitch Williams",
+        "Chris Webster",
+        "Mark Middlebrook"
+      ]
+    },
+    "Cameron": {
+      "Monday Night": [
+        "Sheldon Cameron",
+        "Michael Gingras",
+        "Trevor Wong=Chor",
+        "Steve Mantrop",
+        "Marcus Perron"
+      ]
+    },
+    "Carson": {
+      "Monday Night": [
+        "Lorne Carson",
+        "Garry Worth",
+        "Zac Carson",
+        "Mike Mah Poy"
+      ]
+    },
+    "Christie": {
+      "Monday Night": [
+        "Tom Christie",
+        "Austen Christie",
+        "Mark Larsen",
+        "Tim Kearns"
+      ]
+    },
+    "Clark": {
+      "Tuesday Night": [
+        "Paul Clark",
+        "Bill Clark",
+        "Jon Clark",
+        "Brian Guichon",
+        "Dylan Clark"
+      ]
+    },
+    "Cole": {
+      "Tuesday Night": [
+        "Rob Cole",
+        "Rod Lebbert",
+        "Pat Murphy",
+        "Emilio Lupi",
+        "Gary Jacques"
+      ]
+    },
+    "Curl  Jam": {
+      "Tuesday Night": [
+        "Steve Saunders",
+        "Mark Lyle",
+        "Fraser"
+      ]
+    },
+    "Duckworth": {
+      "Tuesday Night": [
+        "Ryan Duckworth",
+        "Gerry Graham",
+        "Spencer Bajnok",
+        "Robert Chen"
       ]
     },
     "Erickson": {
@@ -277,160 +346,7 @@
         "Dennis Balderston",
         "Greg Gonis",
         "Boog",
-        "Brock Coates",
-        "Frank Bailey"
-      ]
-    },
-    "Martin": {
-      "Monday Night": [
-        "Mike Martin",
-        "Scott Iredale",
-        "Grant MacKenzie",
-        "Matt Brayford",
-        "Peter Merchant",
-        "Peter Cechnita",
-        "Bill Robinson"
-      ]
-    },
-    "Williams": {
-      "Monday Night": [
-        "Geoff Williams",
-        "Yves Gauthier",
-        "Taylor Gray",
-        "John Howard",
-        "Rob Moffat",
-        "Mark Bowman"
-      ]
-    },
-    "Kennedy": {
-      "Monday Night": [
-        "Rob Kennedy",
-        "Bill Macdonald",
-        "Paul Clark",
-        "Jon Clark",
-        "Lee Richardson",
-        "Stuart Kelly"
-      ],
-      "Tuesday Night": [
-        "Rob Kennedy",
-        "Geoff Williams",
-        "Bill MacDonald",
-        "Lorne Carson",
-        "Doug Annable"
-      ],
-      "Friday Night Mixed": [
-        "Rob Kennedy",
-        "Margie Kennedy",
-        "Jim Bonyai",
-        "Anka Bonyai"
-      ]
-    },
-    "Bailey": {
-      "Monday Night": [
-        "Frank Bailey",
-        "Logan Bailey",
-        "Kevin Vogt",
-        "Ron Hansford",
-        "Paul Armstrong",
-        "Bryan Wright",
-        "Bob Corrigan"
-      ]
-    },
-    "Robinson": {
-      "Monday Night": [
-        "Bill Robinson",
-        "Derek Stuart",
-        "Dan Cuthbertson",
-        "Gibson Scott",
-        "Ian Pavey"
-      ]
-    },
-    "Bowman": {
-      "Monday Night": [
-        "Mark Bowman",
-        "Bill Rollins",
-        "Mike Breen",
-        "Bob Rooney",
-        "John Ferguson",
-        "Ted Leew"
-      ]
-    },
-    "Kelly": {
-      "Monday Night": [
-        "Stuart Kelly",
-        "Mike Murphy",
-        "Alan Surasky",
-        "Travis Corcoran",
-        "Brandon Goods",
-        "Ryan Pinder",
-        "Ryan Frank"
-      ]
-    },
-    "Wright": {
-      "Monday Night": [
-        "Bryan Wright",
-        "Bob Corrigan",
-        "Jake Mayell",
-        "Dan Doherty",
-        "Tom Christie",
-        "Austen Christie"
-      ]
-    },
-    "Ferguson": {
-      "Monday Night": [
-        "John Ferguson",
-        "Ted Leew",
-        "Gord Vogt",
-        "Kevin Wolfe",
-        "Jonathan Schroeder",
-        "Lorne Carson",
-        "Garry Worth"
-      ]
-    },
-    "Pinder": {
-      "Monday Night": [
-        "Ryan Pinder",
-        "Ryan Frank",
-        "Pavan Singh",
-        "Chris Giovanetto"
-      ]
-    },
-    "Christie": {
-      "Monday Night": [
-        "Tom Christie",
-        "Austen Christie",
-        "Mark Larsen",
-        "Tim Kearns",
-        "John Poole",
-        "Jason Grelowski"
-      ]
-    },
-    "Linder": {
-      "Monday Night": [
-        "Peter Linder",
-        "James Newton",
-        "Robyn Hemminger",
-        "David Linder",
-        "Trevor Galon",
-        "Riley Fairbanks",
-        "Grady Fairbanks"
-      ],
-      "Tuesday Night": [
-        "Peter Linder",
-        "Brian Gregg",
-        "Brett Code",
-        "David Linder",
-        "Peter Steski"
-      ]
-    },
-    "Carson": {
-      "Monday Night": [
-        "Lorne Carson",
-        "Garry Worth",
-        "Zac Carson",
-        "Mike Mah Poy",
-        "Curtis Fairhurst",
-        "Matt Hanson"
+        "Brock Coates"
       ]
     },
     "Fairbanks": {
@@ -449,53 +365,93 @@
         "Oliver Jull"
       ]
     },
-    "Cameron": {
+    "Ferguson": {
       "Monday Night": [
-        "Sheldon Cameron",
-        "Michael Gingras",
-        "Trevor Wong=Chor",
-        "Steve Mantrop",
-        "Marcus Perron"
+        "John Ferguson",
+        "Ted Leew",
+        "Gord Vogt",
+        "Kevin Wolfe",
+        "Jonathan Schroeder"
       ]
     },
-    "The Pants": {
+    "Flock": {
       "Tuesday Night": [
-        "Brett Wilson",
-        "Dan Pow",
-        "Jeff Hall",
-        "Stu Markevich",
-        "Jack Moss"
+        "Brad Flock",
+        "Vaughn Inman",
+        "Scott Yaholnitsky"
+      ],
+      "Friday Night Mixed": [
+        "Brad Flock",
+        "Dena Flock",
+        "Vaugh Inman",
+        "Dixie Inman"
       ]
     },
-    "Team Kohlenberg": {
-      "Tuesday Night": [
-        "David Taylor",
-        "Richard Emery",
-        "Mike Powell",
-        "David Kohlenberg",
-        "Bob MacDougall",
-        "Henry Schultz",
-        "Kevin Johnson"
+    "Ford": {
+      "Friday Night Mixed": [
+        "Lindsay Ford",
+        "David Ford",
+        "Amy Thompson",
+        "Shane Ison",
+        "Charles Rooney",
+        "Katie Barbara Ford"
       ]
     },
-    "Cole": {
-      "Tuesday Night": [
-        "Rob Cole",
-        "Rod Lebbert",
-        "Pat Murphy",
+    "Goehring": {
+      "Friday Night Mixed": [
+        "Dale Goehring",
+        "Andrew Kosa",
+        "Leif Snethun",
+        "Kim Snethun",
+        "Amanda Surasky",
+        "Alan Surasky"
+      ]
+    },
+    "Gregg": {
+      "Monday Night": [
+        "Brian Gregg",
+        "Richard Wyman",
+        "Bob Feick",
+        "Brett Code"
+      ]
+    },
+    "Hall": {
+      "Friday Night Mixed": [
+        "David Hall",
+        "David Pakosh",
+        "Courtney Holloway",
+        "Craig Wier",
+        "Amy Yunker & David Murray",
+        "Tina Graham",
+        "Gerry Graham",
+        ". 403.618.0505",
+        "Tracye and Hugh Osler"
+      ]
+    },
+    "Harris": {
+      "Friday Night Mixed": [
+        "Rick Harris",
+        "Gwen Harris",
         "Emilio Lupi",
-        "Gary Jacques",
-        "Paul Clark"
+        "Corarlie Lupi"
       ]
     },
-    "Only UP": {
+    "Henry": {
       "Tuesday Night": [
-        "Brian Kot",
-        "Jeff Holloway",
-        "Bob Grant",
-        "Bryant Tomimoto",
-        "Bob Marshall",
-        "Peter Linder"
+        "Tom Henry",
+        "Jim Newton",
+        "Graham Bwint",
+        "Bryan Wright"
+      ]
+    },
+    "House Hunters": {
+      "Friday Night Mixed": [
+        "Mike Powell",
+        "Terry Griffin",
+        "Cal Fairbanks",
+        "Judy Fairbanks",
+        "Richard Emery",
+        "Karen Emery"
       ]
     },
     "Johnson": {
@@ -504,37 +460,104 @@
         "Art Korpach",
         "Harold Jacques",
         "Bob Feick",
-        "Larry Anderson",
-        "Tyler Brill"
+        "Larry Anderson"
       ]
     },
-    "Clark": {
-      "Tuesday Night": [
+    "Kelly": {
+      "Monday Night": [
+        "Stuart Kelly",
+        "Mike Murphy",
+        "Alan Surasky",
+        "Travis Corcoran",
+        "Brandon Goods"
+      ]
+    },
+    "Kennedy": {
+      "Monday Night": [
+        "Rob Kennedy",
+        "Bill Macdonald",
         "Paul Clark",
-        "Bill Clark",
         "Jon Clark",
-        "Brian Guichon",
-        "Dylan Clark",
-        "Richard Moody"
-      ]
-    },
-    "Waddell": {
+        "Lee Richardson"
+      ],
       "Tuesday Night": [
-        "Russ Waddell",
+        "Rob Kennedy",
+        "Geoff Williams",
+        "Bill MacDonald",
+        "Lorne Carson"
+      ],
+      "Friday Night Mixed": [
+        "Rob Kennedy",
+        "Margie Kennedy",
         "Jim Bonyai",
-        "Johnny Hammil",
-        "James Radder",
-        "Tom Henry"
+        "Anka Bonyai"
       ]
     },
-    "Brill": {
+    "Larsen": {
       "Tuesday Night": [
-        "Tyler Brill",
-        "Jon Feilding",
-        "Mitch Williams",
-        "Chris Webster",
-        "Mark Middlebrook",
-        "Bill Rollins"
+        "Mark Larsen",
+        "Tim Kearns",
+        "Sean O'Neil",
+        "George Newman"
+      ]
+    },
+    "Lebbert": {
+      "Friday Night Mixed": [
+        "Rod Lebbert",
+        "Shelly Lebbert",
+        "Rob Cole",
+        "Lisa Cole"
+      ]
+    },
+    "Linder": {
+      "Monday Night": [
+        "Peter Linder",
+        "James Newton",
+        "Robyn Hemminger",
+        "David Linder",
+        "Trevor Galon"
+      ],
+      "Tuesday Night": [
+        "Peter Linder",
+        "Brian Gregg",
+        "Brett Code",
+        "David Linder",
+        "Peter Steski"
+      ]
+    },
+    "Loczy": {
+      "Friday Night Mixed": [
+        "Pierre Loczy",
+        "Lisa Loczy",
+        "Mike O'Hara",
+        "Lisa O'Hara"
+      ]
+    },
+    "MACH": {
+      "Tuesday Night": [
+        "Richard Melling",
+        "Austin Christie",
+        "Shale Anderson",
+        "Taylor House",
+        "Jackson Kostiuk"
+      ]
+    },
+    "Marshall": {
+      "Monday Night": [
+        "Bob Marshall",
+        "Emilio Lupi",
+        "Richard Barss",
+        "Duve Lang"
+      ]
+    },
+    "Martin": {
+      "Monday Night": [
+        "Mike Martin",
+        "Scott Iredale",
+        "Grant MacKenzie",
+        "Matt Brayford",
+        "Peter Merchant",
+        "Peter Cechnita"
       ]
     },
     "Moody": {
@@ -542,27 +565,122 @@
         "Richard Moody",
         "Brandon McCann",
         "Shawn Nettleton",
-        "Shea Fairbanks",
-        "Roger Smith"
+        "Shea Fairbanks"
       ]
     },
-    "Henry": {
-      "Tuesday Night": [
-        "Tom Henry",
-        "Jim Newton",
+    "Moss": {
+      "Monday Night": [
+        "Jack Moss",
+        "Rob Heemskerk",
         "Graham Bwint",
-        "Bryan Wright",
-        "17 -",
-        "Rob Kennedy"
+        "Trevor Kobluk"
+      ],
+      "Tuesday Night": [
+        "Jack Moss",
+        "David Hall",
+        "John Moss",
+        "Trevor Kobluk"
+      ],
+      "Friday Night Mixed": [
+        "Jack Moss",
+        "Betty Moss",
+        "Greg Smyth",
+        "Leah Ritz-Smyth"
       ]
     },
-    "Balderston": {
+    "Newton": {
+      "Friday Night Mixed": [
+        "Jim Newton",
+        "Joanne Hruska",
+        "Terry McNaughton",
+        "Cara Bonney",
+        "Graham Bwint",
+        "Pauline Simpson",
+        "Graham Garner"
+      ]
+    },
+    "Nickles": {
       "Tuesday Night": [
-        "Ted Leew",
-        "Stuart Erickson",
-        "Dennis Balderston",
-        "Gord Vogt",
-        "Gord Lefebvre"
+        "Brendan Nickles",
+        "Connor Lea",
+        "Kevin Lea",
+        "Harry Robb"
+      ]
+    },
+    "O'Neil": {
+      "Monday Night": [
+        "Sean O'Neil",
+        "Doug Annable",
+        "Rick Harris",
+        "Andy Potter"
+      ]
+    },
+    "Only UP": {
+      "Tuesday Night": [
+        "Brian Kot",
+        "Jeff Holloway",
+        "Bob Grant",
+        "Bryant Tomimoto",
+        "Bob Marshall"
+      ]
+    },
+    "Phelps": {
+      "Monday Night": [
+        "Glen Phelps",
+        "Dave Bell",
+        "Thad Snethun",
+        "John Lamarsh",
+        "Gregg Delcourt"
+      ]
+    },
+    "Pinder": {
+      "Monday Night": [
+        "Ryan Pinder",
+        "Ryan Frank",
+        "Pavan Singh",
+        "Chris Giovanetto"
+      ]
+    },
+    "Plaid Lads": {
+      "Monday Night": [
+        "Craig Smith",
+        "Andy Lee",
+        "Chris Armstrong",
+        "Mark Andreychuk",
+        "Graham Duckworth"
+      ]
+    },
+    "Poole": {
+      "Monday Night": [
+        "John Poole",
+        "Jason Grelowski",
+        "Bryan Jensen",
+        "Phillip LaFlair"
+      ],
+      "Tuesday Night": [
+        "John Poole",
+        "Jason Grelowski",
+        "Thad Snethun",
+        "Glen Phelps"
+      ],
+      "Friday Night Mixed": [
+        "John Poole",
+        "Sarah Scott",
+        "Simon Bregazzi",
+        "Meg Bregazzi",
+        "Karen Radford",
+        "Jason Grelowski",
+        "Brad Culver",
+        "Margot Culver"
+      ]
+    },
+    "Robinson": {
+      "Monday Night": [
+        "Bill Robinson",
+        "Derek Stuart",
+        "Dan Cuthbertson",
+        "Gibson Scott",
+        "Ian Pavey"
       ]
     },
     "Rollins": {
@@ -579,116 +697,34 @@
         "Paul Homik"
       ]
     },
+    "Rooney": {
+      "Friday Night Mixed": [
+        "Jeannie Rooney",
+        "Bob Rooney",
+        "Elizabeth Carson",
+        "Lorne Carson",
+        "Mark Powell",
+        "Pam Powell",
+        "Cindy Royer",
+        "Greg Royer"
+      ]
+    },
     "Smith": {
       "Tuesday Night": [
         "Roger Smith",
         "Don MacKimmie",
         "Dan McDonald",
         "Bob Engbloom",
-        "Rob Moffat",
-        "Mark Larsen"
+        "Rob Moffat"
       ]
     },
-    "MACH": {
-      "Tuesday Night": [
-        "Richard Melling",
-        "Austin Christie",
-        "Shale Anderson",
-        "Taylor House",
-        "Jackson Kostiuk",
-        "Ryan Duckworth"
-      ]
-    },
-    "Team Crushmore": {
-      "Tuesday Night": [
-        "Colin McLean",
-        "Brian Donnelly",
-        "Al Horner",
-        "Ian Scott",
-        "Brendan Nickles"
-      ]
-    },
-    "Larsen": {
-      "Tuesday Night": [
-        "Mark Larsen",
-        "Tim Kearns",
-        "Sean O'Neil",
-        "George Newman",
-        "John Poole"
-      ]
-    },
-    "Annable": {
-      "Tuesday Night": [
-        "Doug Annable",
-        "Riley Waite",
-        "Ron Slater",
-        "Matt Rallison",
-        "Brad Flock",
-        "Vaughn Inman"
-      ]
-    },
-    "Duckworth": {
-      "Tuesday Night": [
-        "Ryan Duckworth",
-        "Gerry Graham",
-        "Spencer Bajnok",
-        "Robert Chen"
-      ]
-    },
-    "Nickles": {
-      "Tuesday Night": [
-        "Brendan Nickles",
-        "Connor Lea",
-        "Kevin Lea",
-        "Harry Robb"
-      ]
-    },
-    "Poole": {
-      "Tuesday Night": [
-        "John Poole",
-        "Jason Grelowski",
-        "Thad Snethun",
-        "Glen Phelps",
-        "Brad Culver"
-      ],
+    "Snethun": {
       "Monday Night": [
-        "John Poole",
-        "Jason Grelowski",
-        "Bryan Jensen",
-        "Phillip LaFlair",
-        "Brad Culver"
-      ],
-      "Friday Night Mixed": [
-        "John Poole",
-        "Sarah Scott",
-        "Simon Bregazzi",
-        "Meg Bregazzi",
-        "Karen Radford",
-        "Jason Grelowski",
-        "Brad Culver",
-        "Margot Culver"
-      ]
-    },
-    "Flock": {
-      "Tuesday Night": [
-        "Brad Flock",
-        "Vaughn Inman",
-        "Scott Yaholnitsky",
-        "2025 2026 Spares",
-        "Kevin Wolfe"
-      ],
-      "Friday Night Mixed": [
-        "Brad Flock",
-        "Dena Flock",
-        "Vaugh Inman",
-        "Dixie Inman"
-      ]
-    },
-    "Curl  Jam": {
-      "Tuesday Night": [
-        "Steve Saunders",
-        "Mark Lyle",
-        "Fraser"
+        "Leif Snethun",
+        "Andrew Brotherhood",
+        "Stuart Brotherhood",
+        "Sean Godfrey",
+        "Jordan Alford"
       ]
     },
     "Team 1": {
@@ -697,69 +733,6 @@
         "Jody Saunders",
         "Mark Lyle",
         "Kelly Lyle"
-      ]
-    },
-    "Goehring": {
-      "Friday Night Mixed": [
-        "Dale Goehring",
-        "Andrew Kosa",
-        "Leif Snethun",
-        "Kim Snethun",
-        "Amanda Surasky",
-        "Alan Surasky"
-      ]
-    },
-    "Lebbert": {
-      "Friday Night Mixed": [
-        "Rod Lebbert",
-        "Shelly Lebbert",
-        "Rob Cole",
-        "Lisa Cole"
-      ]
-    },
-    "Loczy": {
-      "Friday Night Mixed": [
-        "Pierre Loczy",
-        "Lisa Loczy",
-        "Mike O'Hara",
-        "Lisa O'Hara"
-      ]
-    },
-    "Team Worth": {
-      "Friday Night Mixed": [
-        "Kevin Johnson",
-        "Deb Johnson",
-        "Anna Worth",
-        "Gary Worth"
-      ]
-    },
-    "Ford": {
-      "Friday Night Mixed": [
-        "Lindsay Ford",
-        "David Ford",
-        "Amy Thompson",
-        "Shane Ison",
-        "Charles Rooney",
-        "Katie Barbara Ford"
-      ]
-    },
-    "Hall": {
-      "Friday Night Mixed": [
-        "David Hall",
-        "David Pakosh",
-        "Courtney Holloway",
-        "Craig Wier",
-        "Amy Yunker & David Murray",
-        "Tina Graham",
-        "Gerry Graham",
-        ". 403.618.0505",
-        "Tracye and Hugh Osler"
-      ]
-    },
-    "604-3044": {
-      "Friday Night Mixed": [
-        "Francesca Christie & Tim Edwards",
-        "Donalda & Glen Fisher"
       ]
     },
     "Team 2": {
@@ -772,44 +745,60 @@
         "Henry Schultz"
       ]
     },
-    "Bell": {
+    "Team 4": {
       "Friday Night Mixed": [
-        "Dave Bell",
-        "Gail Bell",
-        "Thad Snethun",
-        "Trish Snethun",
-        "Glenn Phelps",
-        "Julia Phelps"
+        "Jon Clark",
+        "Joyce Clark",
+        "Lynn O'Neil",
+        "Sean O'Neil",
+        "Brian Guichon",
+        "Donna Guichon"
       ]
     },
-    "Vogt": {
+    "Team Bernbaum": {
       "Friday Night Mixed": [
-        "Gord Vogt",
-        "Linda Vogt",
-        "Shelly Krake",
-        "Dave Johnson",
-        "Shannon Potter",
-        "Andy Potter"
+        "Robert Birrell",
+        "Talia Bernbaum",
+        "Curtis Fairhurst",
+        "Amber Fairhurst",
+        "Renee Duckworth",
+        "Ryan Duckworth"
       ]
     },
-    "The Upturns": {
+    "Team Crushmore": {
+      "Tuesday Night": [
+        "Colin McLean",
+        "Brian Donnelly",
+        "Al Horner",
+        "Ian Scott"
+      ]
+    },
+    "Team Guinness": {
       "Friday Night Mixed": [
-        "Shelley MacDougall",
+        "Bob Corrigan",
+        "Barb Holland",
+        "Leslie Gell",
+        "Patrick Murphy",
+        "Carey O'Brien",
+        "Barry O'Brien"
+      ]
+    },
+    "Team Kohlenberg": {
+      "Tuesday Night": [
+        "David Taylor",
+        "Richard Emery",
+        "Mike Powell",
+        "David Kohlenberg",
         "Bob MacDougall",
-        "Janice Breen",
-        "Mike Breen"
+        "Henry Schultz"
       ]
     },
-    "Rooney": {
+    "Team Worth": {
       "Friday Night Mixed": [
-        "Jeannie Rooney",
-        "Bob Rooney",
-        "Elizabeth Carson",
-        "Lorne Carson",
-        "Mark Powell",
-        "Pam Powell",
-        "Cindy Royer",
-        "Greg Royer"
+        "Kevin Johnson",
+        "Deb Johnson",
+        "Anna Worth",
+        "Gary Worth"
       ]
     },
     "The Burnt Rocks": {
@@ -826,62 +815,20 @@
         "Christiane Gauthier"
       ]
     },
-    "\"Plan B\"": {
-      "Friday Night Mixed": [
-        "Mike Mah-Poy",
-        "Tamara Cohos",
-        "Jake Mayell",
-        "Megan Mayell",
-        "Jon Feilding",
-        "Angela McKinnon"
+    "The Kerbals": {
+      "Monday Night": [
+        "Jim Pascual",
+        "Andy Sharp",
+        "Steve Saunders",
+        "Paul Lessard"
       ]
     },
-    "Team Bernbaum": {
-      "Friday Night Mixed": [
-        "Robert Birrell",
-        "Talia Bernbaum",
-        "Curtis Fairhurst",
-        "Amber Fairhurst",
-        "Renee Duckworth",
-        "Ryan Duckworth"
-      ]
-    },
-    "Team 4": {
-      "Friday Night Mixed": [
-        "Jon Clark",
-        "Joyce Clark",
-        "Lynn O'Neil",
-        "Sean O'Neil",
-        "Brian Guichon",
-        "Donna Guichon"
-      ]
-    },
-    "Harris": {
-      "Friday Night Mixed": [
-        "Rick Harris",
-        "Gwen Harris",
-        "Emilio Lupi",
-        "Corarlie Lupi"
-      ]
-    },
-    "House Hunters": {
-      "Friday Night Mixed": [
-        "Mike Powell",
-        "Terry Griffin",
-        "Cal Fairbanks",
-        "Judy Fairbanks",
-        "Richard Emery",
-        "Karen Emery"
-      ]
-    },
-    "Team Guinness": {
-      "Friday Night Mixed": [
-        "Bob Corrigan",
-        "Barb Holland",
-        "Leslie Gell",
-        "Patrick Murphy",
-        "Carey O'Brien",
-        "Barry O'Brien"
+    "The Pants": {
+      "Tuesday Night": [
+        "Brett Wilson",
+        "Dan Pow",
+        "Jeff Hall",
+        "Stu Markevich"
       ]
     },
     "The Takeouts": {
@@ -893,15 +840,47 @@
         "Megan Waddell"
       ]
     },
-    "Newton": {
+    "The Upturns": {
       "Friday Night Mixed": [
-        "Jim Newton",
-        "Joanne Hruska",
-        "Terry McNaughton",
-        "Cara Bonney",
-        "Graham Bwint",
-        "Pauline Simpson",
-        "Graham Garner"
+        "Shelley MacDougall",
+        "Bob MacDougall",
+        "Janice Breen",
+        "Mike Breen"
+      ]
+    },
+    "Vogt": {
+      "Friday Night Mixed": [
+        "Gord Vogt",
+        "Linda Vogt",
+        "Shelly Krake",
+        "Dave Johnson",
+        "Shannon Potter",
+        "Andy Potter"
+      ]
+    },
+    "Waddell": {
+      "Tuesday Night": [
+        "Russ Waddell",
+        "Jim Bonyai",
+        "Johnny Hammil",
+        "James Radder"
+      ]
+    },
+    "Williams": {
+      "Monday Night": [
+        "Geoff Williams",
+        "Yves Gauthier",
+        "Taylor Gray",
+        "John Howard",
+        "Rob Moffat"
+      ]
+    },
+    "Wright": {
+      "Monday Night": [
+        "Bryan Wright",
+        "Bob Corrigan",
+        "Jake Mayell",
+        "Dan Doherty"
       ]
     }
   },
