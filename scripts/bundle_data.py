@@ -23,6 +23,7 @@ FILES = {
     'bracket_womens':'bracket_womens.json',
     'odds_mens':     'odds_mens.json',
     'odds_womens':   'odds_womens.json',
+    'team_info':     'team_info.json',
 }
 
 def main():
@@ -54,6 +55,7 @@ def main():
     parts.append('    draw:    { mens: draw_mens,     womens: draw_womens },')
     parts.append('    bracket: { mens: bracket_mens,  womens: bracket_womens },')
     parts.append('    odds:    { mens: odds_mens,     womens: odds_womens },')
+    parts.append('    teamInfo: team_info,')
     parts.append('  };')
     parts.append('})();')
     parts.append('')

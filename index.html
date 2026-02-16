@@ -107,6 +107,7 @@
       <table id="bids-table">
         <thead>
           <tr>
+            <th></th>
             <th>Team</th>
             <th>Buyer</th>
             <th>Bid</th>
@@ -243,6 +244,17 @@
         <button id="modal-cancel" class="btn">Cancel</button>
         <button id="modal-save" class="btn btn-primary">Save</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Info popup (read-only) -->
+  <div id="info-overlay" class="modal-overlay hidden">
+    <div class="modal" style="max-width:480px;">
+      <div class="modal-header">
+        <h3 id="info-title"></h3>
+        <button id="info-close" class="modal-close">&times;</button>
+      </div>
+      <div id="info-body" class="modal-body"></div>
     </div>
   </div>
 

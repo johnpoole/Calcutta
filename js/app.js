@@ -31,6 +31,7 @@
       bindAnalysisActions();
       bindSettingsActions();
       bindModal();
+      bindInfoPopup();
 
       // Load bracket + odds BEFORE first render so nothing shows "Loading…"
       loadBracketTree();
@@ -661,7 +662,7 @@
     const bids = CalcuttaData.getBids();
 
     if (teams.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="7" style="color:var(--muted);text-align:center;">No teams added</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8" style="color:var(--muted);text-align:center;">No teams added</td></tr>';
       return;
     }
 
@@ -693,6 +694,10 @@
       const evColor = analysis ? (analysis.buyerEV >= 0 ? 'var(--success)' : 'var(--danger)') : 'var(--muted)';
       const optBid = analysis ? (analysis.optimalBid === Infinity ? '∞' : fmt$(analysis.optimalBid)) : '—';
       tr.innerHTML = `
+        <td style="text-align:center;padding:0 .3rem;width:1.5rem;">
+          <span class="info-btn" data-team="${t.id}" title="Team info"
+                style="cursor:pointer;font-size:1.1rem;color:var(--muted);opacity:.7;">&#9432;</span>
+        </td>
         <td>${esc(t.name)}</td>
         <td>
           <select class="bid-input buyer-select" data-team="${t.id}" data-field="buyerSelect"
@@ -758,6 +763,84 @@
     });
     tbody.querySelectorAll('input[data-field="selfBuyBack"]').forEach(inp => {
       inp.addEventListener('change', () => saveRow(inp.closest('tr')));
+    });
+
+    // Info buttons
+    tbody.querySelectorAll('.info-btn').forEach(btn => {
+      btn.addEventListener('click', () => showTeamInfo(btn.dataset.team));
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════
+  //  TEAM INFO POPUP
+  // ═══════════════════════════════════════════════════════
+  function showTeamInfo(teamId) {
+    const div = CalcuttaData.activeDivision;
+    const teamInfo = (BundledData.teamInfo || {})[div] || [];
+    const info = teamInfo.find(i => i.id === teamId);
+    const team = CalcuttaData.getTeamById(teamId);
+    if (!info || !team) return;
+
+    const overlay = document.getElementById('info-overlay');
+    const titleEl = document.getElementById('info-title');
+    const bodyEl = document.getElementById('info-body');
+
+    titleEl.textContent = team.name;
+
+    // Build roster section
+    let html = '<div style="margin-bottom:1rem;">';
+    html += '<h4 style="margin:0 0 .5rem;font-size:.9rem;color:var(--accent);">Calcutta Roster</h4>';
+    html += '<table style="width:100%;font-size:.85rem;">';
+    html += `<tr><td style="padding:.15rem .4rem;"><strong>${esc(info.skip)}</strong> <span style="color:var(--muted);font-size:.75rem;">(skip)</span></td></tr>`;
+    for (const m of info.members) {
+      html += `<tr><td style="padding:.15rem .4rem;">${esc(m)}</td></tr>`;
+    }
+    html += '</table></div>';
+
+    // Build league teams section
+    if (info.leagueTeams.length > 0) {
+      const isMulti = info.leagueTeams.length > 1;
+      html += '<div>';
+      html += `<h4 style="margin:0 0 .5rem;font-size:.9rem;color:var(--accent);">League Record${isMulti ? 's (Combined)' : ''}</h4>`;
+
+      let totalW = 0, totalL = 0, totalT = 0;
+
+      for (const lt of info.leagueTeams) {
+        const gp = lt.wins + lt.losses + lt.ties;
+        const wpct = gp > 0 ? ((lt.wins + lt.ties * 0.5) / gp * 100).toFixed(0) : '—';
+        totalW += lt.wins; totalL += lt.losses; totalT += lt.ties;
+
+        html += '<div style="margin-bottom:.6rem;padding:.5rem .6rem;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);">';
+        html += `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem;">`;
+        html += `<strong style="font-size:.85rem;">${esc(lt.team)} <span style="color:var(--muted);font-weight:normal;">(${esc(lt.league)})</span></strong>`;
+        html += `<span style="font-size:.85rem;font-weight:600;">${lt.wins}-${lt.losses}-${lt.ties} <span style="color:var(--muted);font-weight:normal;">(${wpct}%)</span></span>`;
+        html += '</div>';
+        html += '<div style="font-size:.8rem;color:var(--muted);">' + lt.roster.map(esc).join(', ') + '</div>';
+        html += '</div>';
+      }
+
+      if (isMulti) {
+        const totalGP = totalW + totalL + totalT;
+        const totalPct = totalGP > 0 ? ((totalW + totalT * 0.5) / totalGP * 100).toFixed(0) : '—';
+        html += '<div style="padding:.4rem .6rem;border-top:1px solid var(--border);font-size:.85rem;font-weight:600;">';
+        html += `Combined: ${totalW}-${totalL}-${totalT} (${totalPct}%)`;
+        html += '</div>';
+      }
+
+      html += '</div>';
+    }
+
+    bodyEl.innerHTML = html;
+    overlay.classList.remove('hidden');
+  }
+
+  function bindInfoPopup() {
+    const overlay = document.getElementById('info-overlay');
+    document.getElementById('info-close').addEventListener('click', () => {
+      overlay.classList.add('hidden');
+    });
+    overlay.addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) overlay.classList.add('hidden');
     });
   }
 

@@ -239,6 +239,7 @@ tbody tr:hover { background: rgba(79,140,255,.06); }
 }
 
 /* ── Modal ── */
+.info-btn:hover { opacity: 1 !important; color: var(--accent) !important; }
 .modal-overlay {
   position: fixed;
   inset: 0;
