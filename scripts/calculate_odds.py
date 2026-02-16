@@ -13,6 +13,7 @@ Run before deploying the website:
     python scripts/calculate_odds.py
 """
 
+import csv
 import json
 import random
 import argparse
@@ -120,6 +121,39 @@ def build_combined_records(division="mens"):
 
 
 # ═══════════════════════════════════════════════════════════
+#  WIN-PERCENTAGE OVERRIDES
+# ═══════════════════════════════════════════════════════════
+
+def load_overrides() -> dict:
+    """Read data/overrides.csv → { team_name_lower: win_pct_float }.
+
+    CSV format:  Team,WinPct
+    Blank WinPct values are ignored.
+    WinPct can be 0-100 (treated as %) or 0-1 (treated as fraction).
+    """
+    path = DATA_DIR / "overrides.csv"
+    if not path.exists():
+        return {}
+    overrides = {}
+    with open(path, newline="", encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            name = (row.get("Team") or "").strip()
+            val = (row.get("WinPct") or "").strip()
+            if not name or not val:
+                continue
+            try:
+                v = float(val)
+            except ValueError:
+                continue
+            # Treat values > 1 as percentages (e.g. 75 → 0.75)
+            if v > 1:
+                v /= 100.0
+            overrides[name.lower()] = v
+    return overrides
+
+
+# ═══════════════════════════════════════════════════════════
 #  STRENGTH CALCULATIONS
 # ═══════════════════════════════════════════════════════════
 
@@ -132,7 +166,9 @@ def strength_from_standings(t: dict) -> float:
 
 
 def composite_strength(t: dict, weights: dict) -> float:
-    """Team strength based purely on win percentage from standings."""
+    """Team strength — uses manual override if set, otherwise win percentage."""
+    if "_override_pct" in t:
+        return t["_override_pct"]
     return strength_from_standings(t)
 
 
@@ -382,6 +418,19 @@ def process_division(division, weights, iterations):
                 t["wins"] = combined[t["id"]]["wins"]
                 t["losses"] = combined[t["id"]]["losses"]
                 t["ties"] = combined[t["id"]]["ties"]
+
+    # Apply manual win% overrides from data/overrides.csv
+    overrides = load_overrides()
+    applied = []
+    for t in teams:
+        ov = overrides.get(t["name"].lower())
+        if ov is not None:
+            t["_override_pct"] = ov
+            applied.append((t["name"], ov))
+    if applied:
+        print(f"  → Manual overrides from overrides.csv:")
+        for name, pct in applied:
+            print(f"    {name:<14} → {pct*100:.0f}%")
 
     print(f"  → {len(teams)} teams, {len(bracket['a_event'])} A qualifiers")
     print(f"  → Running {iterations:,} iterations...")
