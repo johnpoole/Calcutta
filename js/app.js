@@ -115,6 +115,7 @@
     renderPayoutCards();
     renderOdds();
     renderAnalysis();
+    populateOptimizerBuyerDropdown();
   }
 
   // ═══════════════════════════════════════════════════════
@@ -858,6 +859,242 @@
   }
 
   function bindBidActions() {
+    document.getElementById('btn-optimize').addEventListener('click', runBudgetOptimizer);
+  }
+
+  // ═══════════════════════════════════════════════════════
+  //  BUDGET OPTIMIZER
+  // ═══════════════════════════════════════════════════════
+
+  /** Populate the 'My Buyer Name' dropdown from team names + existing buyers. */
+  function populateOptimizerBuyerDropdown() {
+    const select = document.getElementById('opt-buyer');
+    if (!select) return;
+    const teams = CalcuttaData.getTeams();
+    const bids  = CalcuttaData.getBids();
+    const names = new Set();
+    for (const t of teams) names.add(t.name);
+    for (const b of bids) { if (b.buyer) names.add(b.buyer); }
+    const prev = select.value;
+    select.innerHTML = '<option value="">— planning mode —</option>';
+    for (const n of [...names].sort()) {
+      select.innerHTML += `<option value="${esc(n)}">${esc(n)}</option>`;
+    }
+    if (prev) select.value = prev;
+  }
+
+  /**
+   * Run the budget optimizer and render results.
+   * Classifies teams as locked/sold/candidate based on the selected
+   * buyer name, then calls PoolEstimator.optimizeBudget().
+   */
+  function runBudgetOptimizer() {
+    const budget    = parseFloat(document.getElementById('opt-budget').value) || 0;
+    const buyerName = document.getElementById('opt-buyer').value;
+    const objective = document.getElementById('opt-objective').value;
+    const container = document.getElementById('optimizer-results');
+
+    if (budget <= 0) {
+      container.innerHTML = '<p style="color:var(--danger);">Enter a budget &gt; 0.</p>';
+      return;
+    }
+    if (cachedAnalysis.length === 0 || cachedOdds.length === 0) {
+      container.innerHTML = '<p style="color:var(--muted);">Waiting for analysis data…</p>';
+      return;
+    }
+
+    const bids = CalcuttaData.getBids();
+    const cfg  = CalcuttaData.config;
+    const keepFrac = 1 - (cfg.buyBack.payoutPct ?? 0.25);
+
+    // Build locked / sold / candidate lists
+    const locked     = [];
+    const candidates = [];
+    const soldOther  = [];
+
+    for (const a of cachedAnalysis) {
+      const bid  = bids.find(b => b.teamId === a.teamId);
+      const odds = cachedOdds.find(o => o.teamId === a.teamId);
+      if (!odds) continue;
+      const probs = { A: odds.A, B: odds.B, C: odds.C, D: odds.D };
+
+      if (bid && bid.amount > 0 && buyerName && bid.buyer === buyerName) {
+        // Mine — locked in
+        locked.push({ teamId: a.teamId, teamName: a.teamName, bid: bid.amount, probs });
+      } else if (bid && bid.amount > 0 && buyerName && bid.buyer !== buyerName) {
+        // Sold to someone else — unavailable
+        soldOther.push({ teamId: a.teamId, teamName: a.teamName, bid: bid.amount, probs });
+      } else {
+        // Unsold or planning mode (no buyer name selected)
+        const price = Math.max(5, Math.round((a.predictedPayout || 50) / 5) * 5);
+        candidates.push({
+          teamId: a.teamId, teamName: a.teamName, price,
+          probs, buyerReturn: a.buyerReturn, optimalBid: a.optimalBid,
+        });
+      }
+    }
+
+    // Estimated pool
+    const teams = CalcuttaData.getTeams();
+    const priorPool = cfg.priorPools[CalcuttaData.activeDivision] || 0;
+    const priorPayouts = CalcuttaData.getPriorPayouts();
+    let effectivePriors = priorPayouts;
+    if (!effectivePriors || effectivePriors.length === 0) {
+      effectivePriors = cachedOdds.map(o => {
+        const share = (o.A * cfg.payoutPcts.A) + (o.B * cfg.payoutPcts.B) +
+                      (o.C * cfg.payoutPcts.C) + (o.D * cfg.payoutPcts.D);
+        return { teamId: o.teamId, amount: share * priorPool };
+      });
+    }
+    const poolEst = PoolEstimator.estimatePayouts(
+      teams, bids, effectivePriors, priorPool
+    );
+    const estPool = PoolEstimator.estimatedPool(poolEst);
+
+    const t0 = performance.now();
+    const result = PoolEstimator.optimizeBudget({
+      candidates, locked, budget, estPool,
+      payoutPcts: cfg.payoutPcts, keepFrac, objective,
+    });
+    const elapsed = (performance.now() - t0).toFixed(0);
+
+    renderOptimizerResults(result, soldOther, budget, elapsed);
+  }
+
+  /**
+   * Render the optimizer output into #optimizer-results.
+   */
+  function renderOptimizerResults(result, soldOther, budget, elapsed) {
+    const container = document.getElementById('optimizer-results');
+    const selectedIds = new Set(result.selected.map(s => s.teamId));
+
+    // --- Summary cards ---
+    const summaryHTML = `
+      <div class="payout-grid" style="margin-bottom:1rem;">
+        <div class="payout-card" style="border-left:3px solid var(--accent);">
+          <h4 style="font-size:.75rem;">Total Spend</h4>
+          <p class="big-number" style="font-size:1.3rem;">${fmt$(result.totalSpend)}</p>
+          <span style="font-size:.7rem;color:var(--muted);">of ${fmt$(budget)} budget</span>
+        </div>
+        <div class="payout-card" style="border-left:3px solid var(--success);">
+          <h4 style="font-size:.75rem;">P(Payback)</h4>
+          <p class="big-number" style="font-size:1.3rem;">${(result.paybackProb * 100).toFixed(1)}%</p>
+          <span style="font-size:.7rem;color:var(--muted);">payout ≥ cost</span>
+        </div>
+        <div class="payout-card" style="border-left:3px solid #a78bfa;">
+          <h4 style="font-size:.75rem;">P(Any Win)</h4>
+          <p class="big-number" style="font-size:1.3rem;">${(result.pWinAny * 100).toFixed(1)}%</p>
+          <span style="font-size:.7rem;color:var(--muted);">win at least one event</span>
+        </div>
+        <div class="payout-card" style="border-left:3px solid ${result.ev >= 0 ? 'var(--success)' : 'var(--danger)'};">
+          <h4 style="font-size:.75rem;">Expected Value</h4>
+          <p class="big-number" style="font-size:1.3rem;">${fmt$(result.ev)}</p>
+          <span style="font-size:.7rem;color:var(--muted);">exp. return ${fmt$(result.expectedReturn)}</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:1.5rem;flex-wrap:wrap;font-size:.8rem;color:var(--muted);margin-bottom:.8rem;">
+        <span>Locked: ${result.locked.length} teams (${fmt$(result.lockedSpend)})</span>
+        <span>Buy: ${result.selected.length} teams (${fmt$(result.candidateSpend)})</span>
+        <span>Remaining: ${fmt$(result.budgetRemaining)}</span>
+        <span>Pool est: ${fmt$(result.payoutAmounts.A + result.payoutAmounts.B + result.payoutAmounts.C + result.payoutAmounts.D)}</span>
+        <span>Solved in ${elapsed} ms</span>
+      </div>
+    `;
+
+    // --- Event breakdown ---
+    const p = result.portfolioProbs;
+    const eventHTML = `
+      <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem;">
+        <span class="badge" style="background:#4f8cff22;color:#4f8cff;padding:.2rem .6rem;border-radius:4px;font-size:.8rem;">
+          Champ ${(p.A * 100).toFixed(1)}%</span>
+        <span class="badge" style="background:#a78bfa22;color:#a78bfa;padding:.2rem .6rem;border-radius:4px;font-size:.8rem;">
+          Consol ${(p.B * 100).toFixed(1)}%</span>
+        <span class="badge" style="background:#34d39922;color:#34d399;padding:.2rem .6rem;border-radius:4px;font-size:.8rem;">
+          C Event ${(p.C * 100).toFixed(1)}%</span>
+        <span class="badge" style="background:#fbbf2422;color:#fbbf24;padding:.2rem .6rem;border-radius:4px;font-size:.8rem;">
+          D Event ${(p.D * 100).toFixed(1)}%</span>
+      </div>
+    `;
+
+    // --- Team table ---
+    let rows = '';
+    // Locked teams first
+    for (const t of result.locked) {
+      rows += `<tr style="background:rgba(79,140,255,0.06);">
+        <td style="color:var(--accent);">&#x1F512; Locked</td>
+        <td><strong>${esc(t.teamName)}</strong></td>
+        <td style="text-align:right;">${fmt$(t.bid)}</td>
+        <td style="text-align:right;">${pct(t.probs.A + t.probs.B + t.probs.C + t.probs.D)}</td>
+        <td style="text-align:right;">${pct(t.probs.A)}</td>
+        <td style="text-align:right;">${pct(t.probs.B)}</td>
+        <td style="text-align:right;">${pct(t.probs.C)}</td>
+        <td style="text-align:right;">${pct(t.probs.D)}</td>
+      </tr>`;
+    }
+    // Recommended buys (sorted by EV descending)
+    const buyTeams = [...result.selected].sort(
+      (a, b) => (b.probs.A + b.probs.B + b.probs.C + b.probs.D) -
+                (a.probs.A + a.probs.B + a.probs.C + a.probs.D)
+    );
+    for (const t of buyTeams) {
+      rows += `<tr style="background:rgba(52,211,153,0.08);">
+        <td style="color:var(--success);font-weight:600;">&#x2705; Buy</td>
+        <td><strong>${esc(t.teamName)}</strong></td>
+        <td style="text-align:right;">${fmt$(t.price)}</td>
+        <td style="text-align:right;">${pct(t.probs.A + t.probs.B + t.probs.C + t.probs.D)}</td>
+        <td style="text-align:right;">${pct(t.probs.A)}</td>
+        <td style="text-align:right;">${pct(t.probs.B)}</td>
+        <td style="text-align:right;">${pct(t.probs.C)}</td>
+        <td style="text-align:right;">${pct(t.probs.D)}</td>
+      </tr>`;
+    }
+    // Skipped candidates
+    const skipped = result.allCandidates.filter(c => !selectedIds.has(c.teamId));
+    for (const t of skipped) {
+      rows += `<tr style="opacity:.5;">
+        <td style="color:var(--muted);">&#x274C; Skip</td>
+        <td>${esc(t.teamName)}</td>
+        <td style="text-align:right;">${fmt$(t.price)}</td>
+        <td style="text-align:right;">${pct(t.probs.A + t.probs.B + t.probs.C + t.probs.D)}</td>
+        <td style="text-align:right;">${pct(t.probs.A)}</td>
+        <td style="text-align:right;">${pct(t.probs.B)}</td>
+        <td style="text-align:right;">${pct(t.probs.C)}</td>
+        <td style="text-align:right;">${pct(t.probs.D)}</td>
+      </tr>`;
+    }
+    // Sold to others
+    for (const t of soldOther) {
+      rows += `<tr style="opacity:.35;">
+        <td style="color:var(--muted);">Sold</td>
+        <td>${esc(t.teamName)}</td>
+        <td style="text-align:right;">${fmt$(t.bid)}</td>
+        <td style="text-align:right;">${pct(t.probs.A + t.probs.B + t.probs.C + t.probs.D)}</td>
+        <td style="text-align:right;">—</td>
+        <td style="text-align:right;">—</td>
+        <td style="text-align:right;">—</td>
+        <td style="text-align:right;">—</td>
+      </tr>`;
+    }
+
+    const tableHTML = `
+      <table style="width:100%;font-size:.85rem;">
+        <thead>
+          <tr>
+            <th style="width:5rem;">Status</th>
+            <th>Team</th>
+            <th style="text-align:right;">Price</th>
+            <th style="text-align:right;">Win&nbsp;Any</th>
+            <th style="text-align:right;">Champ</th>
+            <th style="text-align:right;">Consol</th>
+            <th style="text-align:right;">C</th>
+            <th style="text-align:right;">D</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    `;
+
+    container.innerHTML = summaryHTML + eventHTML + tableHTML;
   }
 
   // ═══════════════════════════════════════════════════════

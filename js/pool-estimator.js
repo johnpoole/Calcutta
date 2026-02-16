@@ -138,9 +138,163 @@ const PoolEstimator = (() => {
     return { grossEV, ev: buyerEV, buyerReturn, buyerEV, optimalBid };
   }
 
+  /**
+   * Compute probability of payback (winnings ≥ cost) for a portfolio.
+   * Enumerates all 16 win/loss combinations across the 4 events.
+   *
+   * @param {Object} portfolioProbs - { A, B, C, D } combined prob that
+   *   at least one owned team wins each event
+   * @param {Object} payoutAmounts  - { A, B, C, D } dollar payouts per event
+   * @param {number} keepFrac       - fraction of winnings the buyer keeps
+   * @param {number} totalCost      - total amount spent on all portfolio teams
+   * @returns {number} probability that payout × keepFrac ≥ totalCost
+   */
+  function computePaybackProb(portfolioProbs, payoutAmounts, keepFrac, totalCost) {
+    if (totalCost <= 0) return 1;
+    const events = ['A', 'B', 'C', 'D'];
+    let prob = 0;
+    for (let mask = 0; mask < 16; mask++) {
+      let p = 1;
+      let payout = 0;
+      for (let i = 0; i < 4; i++) {
+        const e = events[i];
+        const pe = Math.min(Math.max(portfolioProbs[e], 0), 1);
+        if (mask & (1 << i)) {
+          p *= pe;
+          payout += payoutAmounts[e];
+        } else {
+          p *= (1 - pe);
+        }
+      }
+      if (payout * keepFrac >= totalCost) prob += p;
+    }
+    return prob;
+  }
+
+  /**
+   * Find the optimal team portfolio within a budget that maximises either
+   * P(payback) or expected value.
+   *
+   * Uses recursive branch-and-bound (exact for up to ~25 candidates).
+   *
+   * @param {Object}   params
+   * @param {Object[]} params.candidates - teams available to buy
+   *   [{ teamId, teamName, price, probs:{A,B,C,D} }]
+   * @param {Object[]} params.locked - teams already purchased
+   *   [{ teamId, teamName, bid, probs:{A,B,C,D} }]
+   * @param {number}   params.budget     - total budget
+   * @param {number}   params.estPool    - estimated total auction pool
+   * @param {Object}   params.payoutPcts - { A, B, C, D }
+   * @param {number}   params.keepFrac   - buyer keep fraction (e.g. 0.75)
+   * @param {string}   params.objective  - 'payback' | 'ev'
+   * @returns {Object} optimal portfolio result
+   */
+  function optimizeBudget(params) {
+    const { candidates, locked, budget, estPool, payoutPcts, keepFrac,
+            objective = 'payback' } = params;
+
+    const payoutAmounts = {
+      A: estPool * payoutPcts.A,
+      B: estPool * payoutPcts.B,
+      C: estPool * payoutPcts.C,
+      D: estPool * payoutPcts.D,
+    };
+
+    const lockedSpend = locked.reduce((s, t) => s + t.bid, 0);
+    const lA = locked.reduce((s, t) => s + t.probs.A, 0);
+    const lB = locked.reduce((s, t) => s + t.probs.B, 0);
+    const lC = locked.reduce((s, t) => s + t.probs.C, 0);
+    const lD = locked.reduce((s, t) => s + t.probs.D, 0);
+
+    const remaining = Math.max(0, budget - lockedSpend);
+
+    // Sort by price ascending so we can prune branches early
+    const sorted = [...candidates].sort((a, b) => a.price - b.price);
+    const n = Math.min(sorted.length, 25); // cap for performance
+
+    let bestMask = 0;
+    let bestScore = -Infinity;
+    let bestCost = Infinity;
+
+    function score(pA, pB, pC, pD, totalSpend) {
+      if (objective === 'ev') {
+        return keepFrac * (pA * payoutAmounts.A + pB * payoutAmounts.B +
+                           pC * payoutAmounts.C + pD * payoutAmounts.D)
+               - totalSpend;
+      }
+      return computePaybackProb(
+        { A: pA, B: pB, C: pC, D: pD },
+        payoutAmounts, keepFrac, totalSpend
+      );
+    }
+
+    function search(idx, cost, pA, pB, pC, pD, mask) {
+      const totalSpend = lockedSpend + cost;
+      const s = score(pA, pB, pC, pD, totalSpend);
+      if (s > bestScore || (s === bestScore && cost < bestCost)) {
+        bestScore = s;
+        bestMask = mask;
+        bestCost = cost;
+      }
+      for (let i = idx; i < n; i++) {
+        const c = sorted[i];
+        const nc = cost + c.price;
+        if (nc > remaining) break; // all subsequent are more expensive
+        search(i + 1, nc,
+               pA + c.probs.A, pB + c.probs.B,
+               pC + c.probs.C, pD + c.probs.D,
+               mask | (1 << i));
+      }
+    }
+
+    search(0, 0, lA, lB, lC, lD, 0);
+
+    // Build result from best mask
+    const selected = [];
+    let finalCost = 0;
+    let fA = lA, fB = lB, fC = lC, fD = lD;
+    for (let i = 0; i < n; i++) {
+      if (bestMask & (1 << i)) {
+        selected.push(sorted[i]);
+        finalCost += sorted[i].price;
+        fA += sorted[i].probs.A;
+        fB += sorted[i].probs.B;
+        fC += sorted[i].probs.C;
+        fD += sorted[i].probs.D;
+      }
+    }
+
+    const totalSpend = lockedSpend + finalCost;
+    const finalProbs = { A: fA, B: fB, C: fC, D: fD };
+    const expectedReturn = keepFrac * (
+      fA * payoutAmounts.A + fB * payoutAmounts.B +
+      fC * payoutAmounts.C + fD * payoutAmounts.D
+    );
+
+    return {
+      selected,
+      locked,
+      totalSpend,
+      lockedSpend,
+      candidateSpend: finalCost,
+      budgetRemaining: budget - totalSpend,
+      expectedReturn,
+      ev: expectedReturn - totalSpend,
+      paybackProb: computePaybackProb(finalProbs, payoutAmounts, keepFrac, totalSpend),
+      pWinAny: 1 - Math.max(0, 1 - fA) * Math.max(0, 1 - fB) *
+                    Math.max(0, 1 - fC) * Math.max(0, 1 - fD),
+      portfolioProbs: finalProbs,
+      payoutAmounts,
+      objective,
+      allCandidates: sorted,
+    };
+  }
+
   return {
     estimatePayouts,
     estimatedPool,
     computeEV,
+    computePaybackProb,
+    optimizeBudget,
   };
 })();

@@ -121,6 +121,42 @@
       </table>
     </div>
 
+    <!-- ── Budget Optimizer ── -->
+    <div class="card wide" style="margin-top:1.5rem;">
+      <h3>Budget Optimizer</h3>
+      <p style="color:var(--muted);font-size:.85rem;margin-bottom:1rem;">
+        Find the best combination of teams to buy within your budget.
+        The optimizer accounts for diversification across events (A–D) to
+        maximise your probability of a payout.
+      </p>
+      <div style="display:flex;gap:1rem;align-items:end;flex-wrap:wrap;margin-bottom:1rem;">
+        <div class="form-group" style="margin:0;">
+          <label>Total Budget ($)</label>
+          <input type="number" id="opt-budget" value="1000" min="0" step="50"
+                 style="width:100px;">
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label>My Buyer Name</label>
+          <select id="opt-buyer"
+                  style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:.3rem .5rem;color:var(--text);font-size:.85rem;min-width:140px;">
+            <option value="">— planning mode —</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label>Objective</label>
+          <select id="opt-objective"
+                  style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:.3rem .5rem;color:var(--text);font-size:.85rem;">
+            <option value="payback">Max P(Payback)</option>
+            <option value="ev">Max Expected Value</option>
+          </select>
+        </div>
+        <button id="btn-optimize" class="btn btn-primary" style="padding:.4rem 1.2rem;">Optimize</button>
+      </div>
+      <div id="optimizer-results" style="color:var(--muted);font-size:.9rem;">
+        Click <strong>Optimize</strong> to find your optimal portfolio.
+      </div>
+    </div>
+
     <!-- ── Payout Structure ── -->
     <div class="card wide" style="margin-top:1.5rem;">
       <h3>Payout Structure</h3>
