@@ -881,6 +881,7 @@
       select.innerHTML += `<option value="${esc(n)}">${esc(n)}</option>`;
     }
     if (prev) select.value = prev;
+    else select.value = 'Poole';
   }
 
   /**
