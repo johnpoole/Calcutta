@@ -281,8 +281,10 @@ const PoolEstimator = (() => {
       expectedReturn,
       ev: expectedReturn - totalSpend,
       paybackProb: computePaybackProb(finalProbs, payoutAmounts, keepFrac, totalSpend),
-      pWinAny: 1 - Math.max(0, 1 - fA) * Math.max(0, 1 - fB) *
-                    Math.max(0, 1 - fC) * Math.max(0, 1 - fD),
+      // Union bound: exact when events are mutually exclusive per team (they always are
+      // for a single team), and a conservative lower bound for a multi-team portfolio
+      // where different teams can win different events simultaneously.
+      pWinAny: Math.min(1, fA + fB + fC + fD),
       portfolioProbs: finalProbs,
       payoutAmounts,
       objective,

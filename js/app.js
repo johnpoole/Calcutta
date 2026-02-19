@@ -11,6 +11,10 @@
   let cachedOdds = [];      // [{ teamId, A, B, C, D, any }]  (loaded from pre-computed JSON)
   let cachedAnalysis = [];   // [{ teamId, ev, optimalBid, ... }]  (pool estimates + EV, computed client-side)
 
+  // ── Optimizer state ────────────────────────────────────
+  // Stored here so renderAll() rebuilding the dropdown doesn't reset the user's selection.
+  let optimizerBuyer = 'Poole';
+
   // ═══════════════════════════════════════════════════════
   //  INIT
   // ═══════════════════════════════════════════════════════
@@ -860,6 +864,10 @@
 
   function bindBidActions() {
     document.getElementById('btn-optimize').addEventListener('click', runBudgetOptimizer);
+    // Persist buyer selection in module-level var so renderAll() can't reset it
+    document.getElementById('opt-buyer').addEventListener('change', (e) => {
+      optimizerBuyer = e.target.value;
+    });
   }
 
   // ═══════════════════════════════════════════════════════
@@ -875,13 +883,12 @@
     const names = new Set();
     for (const t of teams) names.add(t.name);
     for (const b of bids) { if (b.buyer) names.add(b.buyer); }
-    const prev = select.value;
     select.innerHTML = '<option value="">— planning mode —</option>';
     for (const n of [...names].sort()) {
       select.innerHTML += `<option value="${esc(n)}">${esc(n)}</option>`;
     }
-    if (prev) select.value = prev;
-    else select.value = 'Poole';
+    // Restore from module-level variable — never lost on re-render
+    select.value = optimizerBuyer;
   }
 
   /**
@@ -1391,8 +1398,11 @@
       // Pool without this team's contribution (for elastic optimal bid)
       const poolWithoutTeam = estPool - (est.bid > 0 ? est.bid : est.predictedPayout);
       const poolCtx = { poolWithoutTeam, payoutPcts: cfg.payoutPcts };
-      // noBuyBack = false by default: all skips buy back 25%, buyer keeps 75%
-      const noBuyBack = est.noBuyBack || false;
+      // selfBuyBack checked (true) = skip WILL buy back 25% → buyer keeps 75%.
+      // selfBuyBack unchecked (false) = skip opted out → buyer keeps 100%.
+      // Default to true (checked) so noBuyBack is false unless explicitly unchecked.
+      const bidRecord = bids.find(b => b.teamId === est.teamId);
+      const noBuyBack = bidRecord ? (bidRecord.selfBuyBack === false) : false;
       const evResult = PoolEstimator.computeEV(probs, estPayouts, est.bid, noBuyBack, cfg.buyBack, poolCtx);
 
       cachedAnalysis.push({
@@ -1552,13 +1562,17 @@
       CalcuttaData.exportAll();
     });
 
-    document.getElementById('btn-clear-all').addEventListener('click', () => {
-      if (confirm('This will delete ALL data. Are you sure?')) {
+    document.getElementById('btn-clear-all').addEventListener('click', async () => {
+      if (confirm('This will clear all bids and settings. Team and odds data will be reloaded from bundled data. Are you sure?')) {
         CalcuttaData.clearAll();
         syncSettingsUI();
         cachedOdds = [];
         cachedAnalysis = [];
+        await autoLoadData();
+        loadBracketTree();
+        await loadPrecomputedOdds();
         renderAll();
+        runFullAnalysis();
       }
     });
   }
