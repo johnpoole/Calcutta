@@ -139,7 +139,7 @@
     for (const t of sorted) {
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td><strong>${esc(t.name)}</strong></td>
+        <td><strong>${esc(t.name)}</strong>${overrideBadge(t.name)}</td>
         <td>${t.wins}</td>
         <td>${t.losses}</td>
         <td>${t.ties}</td>
@@ -703,7 +703,7 @@
           <span class="info-btn" data-team="${t.id}" title="Team info"
                 style="cursor:pointer;font-size:1.1rem;color:var(--muted);opacity:.7;">&#9432;</span>
         </td>
-        <td>${esc(t.name)}</td>
+        <td>${esc(t.name)}${overrideBadge(t.name)}</td>
         <td>
           <select class="bid-input buyer-select" data-team="${t.id}" data-field="buyerSelect"
                   style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:.25rem .4rem;color:var(--text);width:120px;font-size:.85rem;">
@@ -1122,7 +1122,7 @@
     for (const row of sorted) {
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td><strong>${esc(row.teamName)}</strong></td>
+        <td><strong>${esc(row.teamName)}</strong>${overrideBadge(row.teamName)}</td>
         <td>${pct(row.A)}</td>
         <td>${pct(row.B)}</td>
         <td>${pct(row.C)}</td>
@@ -1580,6 +1580,24 @@
   // ═══════════════════════════════════════════════════════
   //  UTILITY
   // ═══════════════════════════════════════════════════════
+  /**
+   * Return an HTML badge if this team has an active win-pct override.
+   * Keyed by team name (lowercase) in BundledData.overrides.
+   * @param {string} teamName
+   * @returns {string} HTML string — empty if no override
+   */
+  function overrideBadge(teamName) {
+    const overrides = BundledData.overrides || {};
+    const key = (teamName || '').toLowerCase();
+    if (!(key in overrides)) return '';
+    const pctVal = (overrides[key] * 100).toFixed(1);
+    return `<span title="Win % manually overridden to ${pctVal}%" ` +
+      `style="display:inline-block;margin-left:.4rem;padding:.05rem .3rem;` +
+      `background:#fbbf2425;border:1px solid #fbbf2455;border-radius:3px;` +
+      `font-size:.68rem;color:#fbbf24;vertical-align:middle;cursor:default;` +
+      `line-height:1.4;">&#9733; override</span>`;
+  }
+
   function fmt$(n) {
     if (typeof n !== 'number' || isNaN(n)) return '$0';
     const sign = n < 0 ? '-' : '';

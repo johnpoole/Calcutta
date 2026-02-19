@@ -7,6 +7,7 @@ Run after calculate_odds.py (or any time the JSON files change):
     python scripts/bundle_data.py
 """
 
+import csv
 import json
 import os
 import sys
@@ -56,8 +57,28 @@ def main():
     parts.append('    bracket: { mens: bracket_mens,  womens: bracket_womens },')
     parts.append('    odds:    { mens: odds_mens,     womens: odds_womens },')
     parts.append('    teamInfo: team_info,')
+    parts.append('    overrides: overrides_data,')
     parts.append('  };')
     parts.append('})();')
+    parts.append('')
+
+    # Bundle overrides.csv as { team_name_lower: win_pct }
+    overrides = {}
+    overrides_path = os.path.join(DATA_DIR, 'overrides.csv')
+    if os.path.exists(overrides_path):
+        with open(overrides_path, newline='', encoding='utf-8-sig') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                name = (row.get('Team') or '').strip()
+                val  = (row.get('WinPct') or '').strip()
+                if not name or not val:
+                    continue
+                try:
+                    v = float(val)
+                    overrides[name.lower()] = v / 100 if v > 1 else v
+                except ValueError:
+                    pass
+    parts.append(f'  const overrides_data = {json.dumps(overrides, separators=(",", ":"))};')
     parts.append('')
 
     os.makedirs(os.path.dirname(OUT_FILE), exist_ok=True)
