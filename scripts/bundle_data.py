@@ -51,18 +51,7 @@ def main():
             parts.append(f'  const {key} = {json_str};')
         parts.append('')
 
-    parts.append('  return {')
-    parts.append('    teams:   { mens: teams_mens,   womens: teams_womens },')
-    parts.append('    draw:    { mens: draw_mens,     womens: draw_womens },')
-    parts.append('    bracket: { mens: bracket_mens,  womens: bracket_womens },')
-    parts.append('    odds:    { mens: odds_mens,     womens: odds_womens },')
-    parts.append('    teamInfo: team_info,')
-    parts.append('    overrides: overrides_data,')
-    parts.append('  };')
-    parts.append('})();')
-    parts.append('')
-
-    # Bundle overrides.csv as { team_name_lower: win_pct }
+    # Bundle overrides.csv as { team_name_lower: win_pct } — must be inside the IIFE
     overrides = {}
     overrides_path = os.path.join(DATA_DIR, 'overrides.csv')
     if os.path.exists(overrides_path):
@@ -79,6 +68,17 @@ def main():
                 except ValueError:
                     pass
     parts.append(f'  const overrides_data = {json.dumps(overrides, separators=(",", ":"))};')
+    parts.append('')
+
+    parts.append('  return {')
+    parts.append('    teams:   { mens: teams_mens,   womens: teams_womens },')
+    parts.append('    draw:    { mens: draw_mens,     womens: draw_womens },')
+    parts.append('    bracket: { mens: bracket_mens,  womens: bracket_womens },')
+    parts.append('    odds:    { mens: odds_mens,     womens: odds_womens },')
+    parts.append('    teamInfo: team_info,')
+    parts.append('    overrides: overrides_data,')
+    parts.append('  };')
+    parts.append('})();')
     parts.append('')
 
     os.makedirs(os.path.dirname(OUT_FILE), exist_ok=True)
