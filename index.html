@@ -114,7 +114,7 @@
             <th>BB?</th>
             <th>Return</th>
             <th>EV</th>
-            <th>Optimal</th>
+            <th id="bid-col-optimal">Optimal</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -249,12 +249,27 @@
 
 
       <div class="card">
+        <h3>Bidding Strategy</h3>
+        <div class="form-group">
+          <label>Target Return %</label>
+          <input type="number" id="set-target-return" value="0" min="0" max="100" step="5">
+        </div>
+        <div class="info-box" style="margin-top:.6rem;margin-bottom:0;">
+          <p>Scales the Optimal Bid down so you capture a positive return.
+          At 20%, a $200 break-even bid is shown as $167 — your expected profit
+          is 20% of what you paid.</p>
+        </div>
+      </div>
+
+      <div class="card">
         <h3>Odds Weights (Python script)</h3>
         <div class="info-box" style="margin-bottom:0;">
           <p>Win probabilities are computed offline via:<br>
           <code>python scripts/calculate_odds.py</code></p>
           <p style="margin-top:.4rem;">Configure weights with CLI flags:<br>
           <code>--standings-weight 0.7 --draw-weight 0.3</code></p>
+          <p style="margin-top:.4rem;">Bayesian shrinkage (default: 4 virtual games):<br>
+          <code>--alpha 4</code></p>
         </div>
       </div>
 

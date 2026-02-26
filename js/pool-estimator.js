@@ -40,7 +40,7 @@ const PoolEstimator = (() => {
       if (b.amount > 0) bidMap[b.teamId] = b;
     }
 
-    // Compute scaling factor from sold teams (informational)
+    // Compute scaling factor from sold teams (shows whether auction is hot or cold)
     let soldPrior = 0;
     let soldActual = 0;
     for (const tid of Object.keys(bidMap)) {
@@ -50,10 +50,16 @@ const PoolEstimator = (() => {
     }
     const scaleFactor = soldPrior > 0 ? (soldActual / soldPrior) : 1.0;
 
+    // soldFraction: how much of the field has sold (0 → 1).
+    // Used to progressively blend unsold team priors toward the scale-adjusted
+    // estimate as auction data accumulates.  At 0% sold the estimate is pure
+    // prior (no data yet); at 100% sold it fully reflects the auction pace.
+    const soldFraction = Object.keys(bidMap).length / Math.max(teams.length, 1);
+
     // Build per-team predictions
-    // Sold teams: use actual bid as their pool contribution
-    // Unsold teams: use prior as best estimate (stable — one
-    // cheap/expensive sale doesn't distort the whole pool)
+    // Sold teams: use actual bid as their pool contribution.
+    // Unsold teams: blend prior with scale-adjusted prior, weighted by how
+    // much of the field has already sold.
     const results = [];
     for (const team of teams) {
       const bid = bidMap[team.id];
@@ -61,7 +67,9 @@ const PoolEstimator = (() => {
       const selfBuyBack = bid ? bid.selfBuyBack : false;
       const prior = priorMap[team.id] ?? defaultPrior;
 
-      const predictedPayout = bid ? bidAmount : prior;
+      const predictedPayout = bid
+        ? bidAmount
+        : prior * (1 - soldFraction + soldFraction * scaleFactor);
 
       results.push({
         teamId: team.id,

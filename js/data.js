@@ -12,6 +12,7 @@ const CalcuttaData = (() => {
     payoutPcts: { A: 0.40, B: 0.30, C: 0.15, D: 0.15 },
     priorPools: { mens: 12400, womens: 4700 },
     buyBack: { fee: 40, payoutPct: 0.25 },
+    targetReturnPct: 0,
 
     weights: { standings: 0.7, draw: 0.3 },
     currentYear: 2026,

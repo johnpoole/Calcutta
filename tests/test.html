@@ -206,12 +206,14 @@
   // ═══════════════════════════════════════════════════════
   suite('estimatedPool');
 
-  test('sum of bid (sold) + predictedPayout (unsold)', () => {
+  test('sum of bid (sold) + scale-blended predictedPayout (unsold)', () => {
     const bids = [{ teamId: 't1', amount: 1000, buyer: 'Poole', selfBuyBack: true }];
     const est = PoolEstimator.estimatePayouts(teams2, bids, priorPayouts2, 1200);
     const pool = PoolEstimator.estimatedPool(est);
-    // t1 sold for 1000, t2 unsold prior = 400 → total = 1400
-    assertNear(pool, 1400, 'estimated pool = sold bid + unsold prior');
+    // t1 sold for 1000 (prior 800 → scale = 1.25), t2 unsold prior = 400
+    // soldFraction = 0.5 → predictedPayout = 400 * (0.5 + 0.5*1.25) = 450
+    // total = 1000 + 450 = 1450
+    assertNear(pool, 1450, 'estimated pool = sold bid + scale-blended unsold');
   });
 
   test('no bids: estimated pool equals sum of all priors', () => {
@@ -504,6 +506,126 @@
     // the dropdown should show 'Poole'.
     let storedBuyer = 'Poole';
     assertEqual(storedBuyer, 'Poole', 'default optimizerBuyer is Poole');
+  });
+
+
+  // ═══════════════════════════════════════════════════════
+  //  SUITE: Progressive pool scaling
+  // ═══════════════════════════════════════════════════════
+  suite('estimatePayouts — progressive pool scaling');
+
+  const teamsP = [
+    { id: 'p1', name: 'Alpha', wins: 8, losses: 2, ties: 0, seed: 1 },
+    { id: 'p2', name: 'Beta',  wins: 5, losses: 5, ties: 0, seed: 2 },
+    { id: 'p3', name: 'Gamma', wins: 2, losses: 8, ties: 0, seed: 3 },
+    { id: 'p4', name: 'Delta', wins: 3, losses: 7, ties: 0, seed: 4 },
+  ];
+  const priorsP = [
+    { teamId: 'p1', amount: 800 },
+    { teamId: 'p2', amount: 400 },
+    { teamId: 'p3', amount: 200 },
+    { teamId: 'p4', amount: 200 },
+  ];
+
+  test('0% sold: unsold uses pure prior (soldFraction=0, scale irrelevant)', () => {
+    const est = PoolEstimator.estimatePayouts(teamsP, [], priorsP, 1600);
+    const p2 = est.find(e => e.teamId === 'p2');
+    // soldFraction=0 → predictedPayout = 400 * (1 + 0) = 400
+    assertNear(p2.predictedPayout, 400, 'no sales → pure prior');
+  });
+
+  test('hot auction: unsold predicted higher than prior', () => {
+    // p1 sold for 1200 (prior 800 → scale=1.5). soldFraction=1/4=0.25
+    const bids = [{ teamId: 'p1', amount: 1200, buyer: 'Poole', selfBuyBack: true }];
+    const est = PoolEstimator.estimatePayouts(teamsP, bids, priorsP, 1600);
+    const p2 = est.find(e => e.teamId === 'p2');
+    // predictedPayout = 400 * (0.75 + 0.25*1.5) = 400 * 1.125 = 450
+    assertNear(p2.predictedPayout, 450, 'hot auction → unsold predicted higher');
+    assert(p2.predictedPayout > 400, 'unsold predictedPayout > prior when auction runs hot');
+  });
+
+  test('cold auction: unsold predicted lower than prior', () => {
+    // p1 sold for 400 (prior 800 → scale=0.5). soldFraction=0.25
+    const bids = [{ teamId: 'p1', amount: 400, buyer: 'Poole', selfBuyBack: true }];
+    const est = PoolEstimator.estimatePayouts(teamsP, bids, priorsP, 1600);
+    const p2 = est.find(e => e.teamId === 'p2');
+    // predictedPayout = 400 * (0.75 + 0.25*0.5) = 400 * 0.875 = 350
+    assertNear(p2.predictedPayout, 350, 'cold auction → unsold predicted lower');
+    assert(p2.predictedPayout < 400, 'unsold predictedPayout < prior when auction runs cold');
+  });
+
+  test('neutral auction (scale=1): unsold predictedPayout equals prior', () => {
+    // p1 sold exactly at prior (scale=1)
+    const bids = [{ teamId: 'p1', amount: 800, buyer: 'Poole', selfBuyBack: true }];
+    const est = PoolEstimator.estimatePayouts(teamsP, bids, priorsP, 1600);
+    const p2 = est.find(e => e.teamId === 'p2');
+    assertNear(p2.predictedPayout, 400, 'scale=1 → predictedPayout unchanged from prior');
+  });
+
+  test('50% sold: blend weight is 0.5', () => {
+    // p1 and p2 sold; scale = (1200+400)/(800+400) = 1600/1200 ≈ 1.333
+    // soldFraction = 2/4 = 0.5
+    // p3 unsold prior=200 → 200 * (0.5 + 0.5*1.333) = 200 * 1.167 = 233.3
+    const bids = [
+      { teamId: 'p1', amount: 1200, buyer: 'Poole', selfBuyBack: true },
+      { teamId: 'p2', amount: 400,  buyer: 'Jones', selfBuyBack: true },
+    ];
+    const est = PoolEstimator.estimatePayouts(teamsP, bids, priorsP, 1600);
+    const p3 = est.find(e => e.teamId === 'p3');
+    const scale = 1600 / 1200;
+    const expected = 200 * (0.5 + 0.5 * scale);
+    assertNear(p3.predictedPayout, expected, '50% sold → 50% blend weight', 1);
+  });
+
+
+  // ═══════════════════════════════════════════════════════
+  //  SUITE: Target return bid scaling
+  // ═══════════════════════════════════════════════════════
+  suite('targetOptimalBid — return formula');
+
+  test('targetReturnPct=0: targetOptimalBid equals optimalBid', () => {
+    const optBid = 200;
+    const targetBid = optBid / (1 + 0);
+    assertNear(targetBid, 200, 'targetReturnPct=0 → bid unchanged');
+  });
+
+  test('targetReturnPct=0.25: targetOptimalBid = optimalBid / 1.25', () => {
+    const optBid = 200;
+    const targetBid = optBid / (1 + 0.25);
+    assertNear(targetBid, 160, 'targetReturnPct=25% → 200/1.25 = 160');
+  });
+
+  test('targetReturnPct=0.20: targetOptimalBid = optimalBid / 1.20', () => {
+    const optBid = 300;
+    const targetBid = optBid / (1 + 0.20);
+    assertNear(targetBid, 250, 'targetReturnPct=20% → 300/1.20 = 250');
+    assert(targetBid < optBid, 'target bid is always below break-even bid');
+  });
+
+  test('targetOptimalBid approaches optimalBid as targetReturnPct → 0', () => {
+    const optBid = 500;
+    [0.01, 0.001, 0.0001].forEach(r => {
+      const targetBid = optBid / (1 + r);
+      assert(targetBid < optBid && targetBid > optBid * 0.99,
+        `targetReturnPct=${r} → targetBid very close to optimalBid`);
+    });
+  });
+
+  test('higher targetReturnPct → lower targetOptimalBid (more conservative)', () => {
+    const optBid = 400;
+    const bid10 = optBid / (1 + 0.10);
+    const bid25 = optBid / (1 + 0.25);
+    const bid50 = optBid / (1 + 0.50);
+    assert(bid10 > bid25 && bid25 > bid50,
+      'higher target return requires lower bid');
+  });
+
+  test('grossEV unchanged by targetReturnPct (it only affects displayed bid)', () => {
+    // targetReturnPct affects only how optimalBid is displayed, not the underlying EV math
+    const r0 = PoolEstimator.computeEV(probs, payouts, 0, false, buyBackCfg);
+    // grossEV and buyerReturn are independent of targetReturnPct
+    assertNear(r0.grossEV, GROSS_EV, 'grossEV unaffected');
+    assertNear(r0.buyerReturn, GROSS_EV * 0.75, 'buyerReturn unaffected');
   });
 
 

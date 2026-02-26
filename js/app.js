@@ -697,7 +697,9 @@
       const expReturn = analysis ? fmt$(analysis.buyerReturn) : '—';
       const evProfit = analysis ? fmt$(analysis.buyerEV) : '—';
       const evColor = analysis ? (analysis.buyerEV >= 0 ? 'var(--success)' : 'var(--danger)') : 'var(--muted)';
-      const optBid = analysis ? (analysis.optimalBid === Infinity ? '∞' : fmt$(analysis.optimalBid)) : '—';
+      const optBid = analysis
+        ? (analysis.targetOptimalBid === Infinity ? '∞' : fmt$(analysis.targetOptimalBid))
+        : '—';
       tr.innerHTML = `
         <td style="text-align:center;padding:0 .3rem;width:1.5rem;">
           <span class="info-btn" data-team="${t.id}" title="Team info"
@@ -1405,6 +1407,14 @@
       const noBuyBack = bidRecord ? (bidRecord.selfBuyBack === false) : false;
       const evResult = PoolEstimator.computeEV(probs, estPayouts, est.bid, noBuyBack, cfg.buyBack, poolCtx);
 
+      // Target-return bid: the bid that yields the configured return on investment.
+      // optimalBid is the zero-EV ceiling; dividing by (1 + targetReturnPct)
+      // gives the bid where expected profit = targetReturnPct × cost.
+      const targetReturn = cfg.targetReturnPct ?? 0;
+      const targetOptimalBid = evResult.optimalBid === Infinity
+        ? Infinity
+        : evResult.optimalBid / (1 + targetReturn);
+
       cachedAnalysis.push({
         teamId: est.teamId,
         teamName: est.teamName,
@@ -1417,6 +1427,7 @@
         buyerEV: evResult.buyerEV,
         ev: evResult.ev,
         optimalBid: evResult.optimalBid,
+        targetOptimalBid,
       });
     }
 
@@ -1514,7 +1525,12 @@
     document.getElementById('set-womens-pool').value = c.priorPools.womens;
     document.getElementById('set-buyback-fee').value = c.buyBack.fee;
     document.getElementById('set-buyback-pct').value = c.buyBack.payoutPct * 100;
-
+    document.getElementById('set-target-return').value = (c.targetReturnPct ?? 0) * 100;
+    const targetPct = Math.round((c.targetReturnPct ?? 0) * 100);
+    const colHeader = document.getElementById('bid-col-optimal');
+    if (colHeader) {
+      colHeader.textContent = targetPct > 0 ? `Target (${targetPct}%)` : 'Optimal';
+    }
   }
 
   function readSettingsFromUI() {
@@ -1527,7 +1543,7 @@
     c.priorPools.womens = parseFloat(document.getElementById('set-womens-pool').value) || 4700;
     c.buyBack.fee = parseFloat(document.getElementById('set-buyback-fee').value) || 40;
     c.buyBack.payoutPct = (parseFloat(document.getElementById('set-buyback-pct').value) || 25) / 100;
-
+    c.targetReturnPct = (parseFloat(document.getElementById('set-target-return').value) || 0) / 100;
   }
 
   function bindSettingsActions() {
@@ -1535,6 +1551,7 @@
     document.querySelectorAll('#settings input').forEach(inp => {
       inp.addEventListener('change', () => {
         readSettingsFromUI();
+        syncSettingsUI();
         CalcuttaData.save();
         cachedAnalysis = [];
         renderAll();

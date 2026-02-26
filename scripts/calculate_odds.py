@@ -157,19 +157,25 @@ def load_overrides() -> dict:
 #  STRENGTH CALCULATIONS
 # ═══════════════════════════════════════════════════════════
 
-def strength_from_standings(t: dict) -> float:
-    """Win percentage as strength signal (0–1)."""
+def strength_from_standings(t: dict, alpha: float = 0.0) -> float:
+    """Win percentage as strength signal (0–1), with optional Bayesian shrinkage.
+
+    alpha adds virtual games split 50/50 win-loss, shrinking all strengths
+    toward 0.5.  Higher alpha = more shrinkage.  alpha=0 gives raw win%.
+    Recommended default: alpha=4 (equivalent to seeding a 4-game 50% prior).
+    """
     gp = t.get("wins", 0) + t.get("losses", 0) + t.get("ties", 0)
     if gp == 0:
         return 0.5
-    return (t["wins"] + t.get("ties", 0) * 0.5) / gp
+    raw_wins = t["wins"] + t.get("ties", 0) * 0.5
+    return (alpha * 0.5 + raw_wins) / (alpha + gp)
 
 
 def composite_strength(t: dict, weights: dict) -> float:
     """Team strength — uses manual override if set, otherwise win percentage."""
     if "_override_pct" in t:
         return t["_override_pct"]
-    return strength_from_standings(t)
+    return strength_from_standings(t, alpha=weights.get("alpha", 0.0))
 
 
 def pairwise_win_prob(sa: float, sb: float) -> float:
@@ -456,6 +462,9 @@ def main():
     parser.add_argument("--divisions", "-d", nargs="+", default=["mens", "womens"])
     parser.add_argument("--standings-weight", type=float, default=1.0)
     parser.add_argument("--draw-weight", type=float, default=0.0)
+    parser.add_argument("--alpha", "-a", type=float, default=4.0,
+                        help="Bayesian shrinkage toward 50%% (virtual games prior). "
+                             "0 = raw win%%, 4 = recommended default.")
     parser.add_argument("--seed", "-s", type=int, default=None)
     args = parser.parse_args()
 
@@ -465,6 +474,7 @@ def main():
     weights = {
         "standings": args.standings_weight,
         "draw": args.draw_weight,
+        "alpha": args.alpha,
     }
 
     DATA_DIR.mkdir(exist_ok=True)
@@ -472,6 +482,8 @@ def main():
     print("═" * 60)
     print("  Calcutta Auction — Win Probability Calculator")
     print("  (Using actual bracket trees)")
+    print(f"  Shrinkage alpha: {args.alpha} "
+          f"({'raw win%' if args.alpha == 0 else f'{args.alpha} virtual games toward 50%'})")
     print("═" * 60)
 
     for div in args.divisions:
