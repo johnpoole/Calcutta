@@ -1775,10 +1775,10 @@
    * @returns {string} HTML string — empty if no override
    */
   function overrideBadge(teamName) {
-    const overrides = BundledData.overrides || {};
+    const divOverrides = (BundledData.overrides || {})[CalcuttaData.activeDivision] || {};
     const key = (teamName || '').toLowerCase();
-    if (!(key in overrides)) return '';
-    const pctVal = (overrides[key] * 100).toFixed(1);
+    if (!(key in divOverrides)) return '';
+    const pctVal = (divOverrides[key] * 100).toFixed(1);
     return `<span title="Win % manually overridden to ${pctVal}%" ` +
       `style="display:inline-block;margin-left:.4rem;padding:.05rem .3rem;` +
       `background:#fbbf2425;border:1px solid #fbbf2455;border-radius:3px;` +

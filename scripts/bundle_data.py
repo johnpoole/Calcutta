@@ -51,23 +51,29 @@ def main():
             parts.append(f'  const {key} = {json_str};')
         parts.append('')
 
-    # Bundle overrides.csv as { team_name_lower: win_pct } — must be inside the IIFE
-    overrides = {}
-    overrides_path = os.path.join(DATA_DIR, 'overrides.csv')
-    if os.path.exists(overrides_path):
-        with open(overrides_path, newline='', encoding='utf-8-sig') as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                name = (row.get('Team') or '').strip()
-                val  = (row.get('WinPct') or '').strip()
-                if not name or not val:
-                    continue
-                try:
-                    v = float(val)
-                    overrides[name.lower()] = v / 100 if v > 1 else v
-                except ValueError:
-                    pass
-    parts.append(f'  const overrides_data = {json.dumps(overrides, separators=(",", ":"))};')
+    # Bundle per-division overrides CSVs as { team_name_lower: win_pct }
+    def load_overrides_csv(division):
+        result = {}
+        path = os.path.join(DATA_DIR, f'overrides_{division}.csv')
+        if os.path.exists(path):
+            with open(path, newline='', encoding='utf-8-sig') as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    name = (row.get('Team') or '').strip()
+                    val  = (row.get('WinPct') or '').strip()
+                    if not name or not val:
+                        continue
+                    try:
+                        v = float(val)
+                        result[name.lower()] = v / 100 if v > 1 else v
+                    except ValueError:
+                        pass
+        return result
+
+    overrides_mens = load_overrides_csv('mens')
+    overrides_womens = load_overrides_csv('womens')
+    parts.append(f'  const overrides_mens = {json.dumps(overrides_mens, separators=(",", ":"))};')
+    parts.append(f'  const overrides_womens = {json.dumps(overrides_womens, separators=(",", ":"))};')
     parts.append('')
 
     parts.append('  return {')
@@ -76,7 +82,7 @@ def main():
     parts.append('    bracket: { mens: bracket_mens,  womens: bracket_womens },')
     parts.append('    odds:    { mens: odds_mens,     womens: odds_womens },')
     parts.append('    teamInfo: team_info,')
-    parts.append('    overrides: overrides_data,')
+    parts.append('    overrides: { mens: overrides_mens, womens: overrides_womens },')
     parts.append('  };')
     parts.append('})();')
     parts.append('')

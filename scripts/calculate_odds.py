@@ -124,14 +124,14 @@ def build_combined_records(division="mens"):
 #  WIN-PERCENTAGE OVERRIDES
 # ═══════════════════════════════════════════════════════════
 
-def load_overrides() -> dict:
-    """Read data/overrides.csv → { team_name_lower: win_pct_float }.
+def load_overrides(division: str) -> dict:
+    """Read data/overrides_{division}.csv → { team_name_lower: win_pct_float }.
 
     CSV format:  Team,WinPct
     Blank WinPct values are ignored.
     WinPct can be 0-100 (treated as %) or 0-1 (treated as fraction).
     """
-    path = DATA_DIR / "overrides.csv"
+    path = DATA_DIR / f"overrides_{division}.csv"
     if not path.exists():
         return {}
     overrides = {}
@@ -425,8 +425,8 @@ def process_division(division, weights, iterations):
                 t["losses"] = combined[t["id"]]["losses"]
                 t["ties"] = combined[t["id"]]["ties"]
 
-    # Apply manual win% overrides from data/overrides.csv
-    overrides = load_overrides()
+    # Apply manual win% overrides from data/overrides_{division}.csv
+    overrides = load_overrides(division)
     applied = []
     for t in teams:
         ov = overrides.get(t["name"].lower())
