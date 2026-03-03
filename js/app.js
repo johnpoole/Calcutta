@@ -238,8 +238,11 @@
     // Path to Win
     events.path = renderPathToWin();
 
+    // Most Likely Path
+    events.likely = renderMostLikelyPath();
+
     let html = '';
-    for (const key of ['a', 'b', 'champ', 'c', 'd', 'path']) {
+    for (const key of ['a', 'b', 'champ', 'c', 'd', 'path', 'likely']) {
       html += `<div class="bracket-event${key === activeEvent ? ' active' : ''}" data-event="${key}">${events[key]}</div>`;
     }
     container.innerHTML = html;
@@ -249,6 +252,11 @@
       updatePathResult();
       const sel = document.getElementById('path-team-select');
       if (sel) sel.addEventListener('change', updatePathResult);
+    }
+    if (activeEvent === 'likely') {
+      updateLikelyResult();
+      const sel = document.getElementById('likely-team-select');
+      if (sel) sel.addEventListener('change', updateLikelyResult);
     }
   }
 
@@ -494,6 +502,258 @@
     resultEl.innerHTML = html;
   }
 
+  /* ── Most Likely Path: show highest-probability opponent per round ── */
+
+  function renderMostLikelyPath() {
+    if (!cachedBracketTree) return '';
+    const teams = CalcuttaData.getTeams();
+    if (teams.length === 0) return '<p style="color:var(--muted);">No teams loaded</p>';
+
+    const sorted = [...teams].sort((a, b) => a.seed - b.seed);
+    let html = `<div class="path-selector">
+      <label style="margin-right:.5rem;font-weight:600;">Select team:</label>
+      <select id="likely-team-select">
+        ${sorted.map(t => `<option value="${t.id}">${t.seed}. ${esc(t.name)}</option>`).join('')}
+      </select>
+    </div>
+    <div id="likely-result"></div>`;
+    return html;
+  }
+
+  /** Pick the most likely opponent from a list of team ids based on win % */
+  function mostLikelyOpponent(teamIds, teams) {
+    if (teamIds.length === 0) return null;
+    if (teamIds.length === 1) return teamIds[0];
+    let best = null, bestPct = -1;
+    for (const id of teamIds) {
+      const t = teams.find(t => t.id === id);
+      if (t) {
+        const pct = CalcuttaData.winPct(t);
+        if (pct > bestPct) { bestPct = pct; best = id; }
+      }
+    }
+    return best || teamIds[0];
+  }
+
+  function renderLikelyRound(label, opponentId, teams, allIds) {
+    const t = teams.find(t => t.id === opponentId);
+    const name = t ? `${t.seed}. ${t.name}` : opponentId;
+    const pct = t ? (CalcuttaData.winPct(t) * 100).toFixed(0) + '% W' : '';
+    const countNote = allIds.length > 1 ? ` <span style="color:var(--muted);font-size:.75rem;">(of ${allIds.length} possible)</span>` : '';
+    return `<div class="path-round">
+      <div class="path-round-label">${label}</div>
+      <div class="path-opponents"><span class="path-opponent"><strong>${esc(name)}</strong>${pct ? ` <span style="color:var(--success);font-size:.8rem;">${pct}</span>` : ''}${countNote}</span></div>
+    </div>`;
+  }
+
+  function updateLikelyResult() {
+    const resultEl = document.getElementById('likely-result');
+    if (!resultEl || !cachedBracketTree) return;
+
+    const teamId = document.getElementById('likely-team-select')?.value;
+    if (!teamId) return;
+
+    const tree = cachedBracketTree;
+    const teams = CalcuttaData.getTeams();
+    const teamName = (id) => {
+      const t = teams.find(t => t.id === id);
+      return t ? `${t.seed}. ${t.name}` : id;
+    };
+
+    // Build slot → team names map (same as Path to Win)
+    const slotTeams = {};
+    function mapSlotsFromTree(node) {
+      if (!node.match) return;
+      const m = node.match;
+      mapSlotsFromTree(m.left);
+      mapSlotsFromTree(m.right);
+      if (m.loserSlot) {
+        const leftTeams = collectAllLeavesLikely(m.left);
+        const rightTeams = collectAllLeavesLikely(m.right);
+        slotTeams[m.loserSlot] = [...new Set([...leftTeams, ...rightTeams])];
+      }
+    }
+    function collectAllLeavesLikely(node) {
+      if (node.team) return [node.team];
+      if (node.slot) {
+        if (slotTeams[node.slot]) return slotTeams[node.slot];
+        return [node.slot];
+      }
+      if (!node.match) return [];
+      return [...collectAllLeavesLikely(node.match.left), ...collectAllLeavesLikely(node.match.right)];
+    }
+    tree.a_event.forEach(q => mapSlotsFromTree(q));
+    tree.b_event.forEach(q => mapSlotsFromTree(q));
+
+    function resolveToIds(ref) {
+      if (slotTeams[ref]) return slotTeams[ref].filter(id => id !== teamId);
+      if (ref === teamId) return [];
+      return [ref];
+    }
+
+    // Find A-event path
+    let qualifierIdx = -1, aPath = null;
+    for (let i = 0; i < tree.a_event.length; i++) {
+      aPath = findPathWithSlots(tree.a_event[i], teamId);
+      if (aPath) { qualifierIdx = i; break; }
+    }
+    if (!aPath) {
+      resultEl.innerHTML = '<p style="color:var(--muted);">Team not found in bracket.</p>';
+      return;
+    }
+
+    const champ = tree.championship;
+    const odds = cachedOdds.find(o => o.teamId === teamId);
+    let html = '<div class="path-rounds">';
+
+    // ── CHAMPIONSHIP (most likely path) ──────────────────
+    const aPct = odds ? (odds.A * 100).toFixed(1) + '%' : '';
+    html += `<div class="path-section-title">🏆 Championship (40%)${aPct ? ` <span style="color:var(--success);font-weight:400;font-size:.85rem;">${aPct}</span>` : ''}</div>`;
+    html += `<div style="color:var(--muted);font-size:.8rem;margin-bottom:.5rem;">Most likely opponent at each round</div>`;
+
+    const aRoundNames = getRoundNames(aPath.length);
+    aPath.forEach((step, i) => {
+      const oppIds = step.opponents.filter(id => id !== teamId);
+      const likely = mostLikelyOpponent(oppIds, teams);
+      if (likely) html += renderLikelyRound(aRoundNames[i], likely, teams, oppIds);
+    });
+
+    // Championship bracket — most likely opponents
+    const qualifierTeams = [];
+    for (let i = 0; i < tree.a_event.length; i++) {
+      qualifierTeams.push([...new Set(collectTeams(tree.a_event[i]))].filter(id => id !== teamId));
+    }
+    for (let i = 0; i < tree.b_event.length; i++) {
+      const bTeams = [...new Set(collectAllLeavesLikely(tree.b_event[i]))].filter(id => id !== teamId);
+      qualifierTeams.push(bTeams);
+    }
+    html += renderLikelyChampionshipPath(qualifierIdx, champ, 'win', qualifierTeams, teams);
+
+    // ── CONSOLATION (most likely path) ───────────────────
+    const bPct = odds ? (odds.B * 100).toFixed(1) + '%' : '';
+    html += `<hr class="path-divider"><div class="path-section-title">🥈 Consolation (30%)${bPct ? ` <span style="color:var(--primary);font-weight:400;font-size:.85rem;">${bPct}</span>` : ''}</div>`;
+    html += `<div style="color:var(--muted);font-size:.8rem;margin-bottom:.5rem;">Most likely opponent if entering B-Event</div>`;
+
+    for (let i = 0; i < aPath.length; i++) {
+      const slot = aPath[i].loserSlot;
+      if (slot) {
+        const lossRound = aPath.length === 1 ? 'Qualifier Final' : aRoundNames[i];
+        html += `<div class="path-round"><div class="path-round-label" style="color:var(--danger);">Lose ${lossRound}</div>`;
+        html += `<div class="path-opponents"><span class="path-opponent seed-info">→ Enter B Event</span></div></div>`;
+
+        const bPath = findSlotPath(tree.b_event, slot);
+        if (bPath) {
+          const bRounds = getRoundNames(bPath.length);
+          bPath.forEach((step, j) => {
+            const allIds = [...new Set(step.opponents.flatMap(ref => resolveToIds(ref)))];
+            const likely = mostLikelyOpponent(allIds, teams);
+            if (likely) html += renderLikelyRound('  ' + bRounds[j], likely, teams, allIds);
+          });
+        }
+      }
+    }
+    html += renderLikelyChampionshipPath(qualifierIdx, champ, 'consolation', qualifierTeams, teams);
+
+    // ── C EVENT (most likely path) ───────────────────────
+    const cPct = odds ? (odds.C * 100).toFixed(1) + '%' : '';
+    html += `<hr class="path-divider"><div class="path-section-title">🥉 C Event (15%)${cPct ? ` <span style="color:var(--warning);font-weight:400;font-size:.85rem;">${cPct}</span>` : ''}</div>`;
+    html += `<div style="color:var(--muted);font-size:.8rem;margin-bottom:.5rem;">Most likely opponent in C bracket</div>`;
+
+    const cSlots = collectDownstreamSlots(tree.b_event, aPath, 'C');
+    if (cSlots.length > 0 && tree.c_event) {
+      const cEntrySlot = cSlots[0];
+      const cPath = findSlotInTree(tree.c_event, cEntrySlot);
+      if (cPath) {
+        const cRounds = getRoundNames(cPath.length);
+        cPath.forEach((step, j) => {
+          const allIds = [...new Set(step.opponents.flatMap(ref => resolveToIds(ref)))];
+          const likely = mostLikelyOpponent(allIds, teams);
+          if (likely) html += renderLikelyRound(cRounds[j], likely, teams, allIds);
+        });
+      }
+    } else {
+      html += `<div class="path-round"><div class="path-round-label">Path</div>`;
+      html += `<div class="path-opponents"><span class="path-opponent seed-info">Via B-Event losses → C bracket</span></div></div>`;
+    }
+
+    // ── D EVENT (most likely path) ───────────────────────
+    const dPct = odds ? (odds.D * 100).toFixed(1) + '%' : '';
+    html += `<hr class="path-divider"><div class="path-section-title">4️⃣ D Event (15%)${dPct ? ` <span style="color:var(--muted);font-weight:400;font-size:.85rem;">${dPct}</span>` : ''}</div>`;
+    html += `<div style="color:var(--muted);font-size:.8rem;margin-bottom:.5rem;">Most likely opponent in D bracket</div>`;
+
+    const dSlots = collectDownstreamSlots(tree.b_event, aPath, 'D');
+    if (dSlots.length > 0 && tree.d_event) {
+      const dEntrySlot = dSlots[0];
+      const dPath = findSlotInTree(tree.d_event, dEntrySlot);
+      if (dPath) {
+        const dRounds = getRoundNames(dPath.length);
+        dPath.forEach((step, j) => {
+          const allIds = [...new Set(step.opponents.flatMap(ref => resolveToIds(ref)))];
+          const likely = mostLikelyOpponent(allIds, teams);
+          if (likely) html += renderLikelyRound(dRounds[j], likely, teams, allIds);
+        });
+      }
+    } else {
+      html += `<div class="path-round"><div class="path-round-label">Path</div>`;
+      html += `<div class="path-opponents"><span class="path-opponent seed-info">Lose B-Event qualifier final → D bracket</span></div></div>`;
+    }
+
+    html += '</div>';
+    resultEl.innerHTML = html;
+  }
+
+  function renderLikelyChampionshipPath(qualifierIdx, champ, mode, qualifierTeams, teams) {
+    const numQ = champ.numQualifiers;
+    let html = '';
+
+    const bestFromQ = (idx) => {
+      const ids = (qualifierTeams && qualifierTeams[idx]) ? qualifierTeams[idx] : [];
+      const likely = mostLikelyOpponent(ids, teams);
+      return likely;
+    };
+
+    if (numQ === 8) {
+      const qfPair = champ.quarterSeed.find(p => p.includes(qualifierIdx));
+      const qfOpp = qfPair[0] === qualifierIdx ? qfPair[1] : qfPair[0];
+      const qfIdx = champ.quarterSeed.indexOf(qfPair);
+      const semiPair = champ.semiPairs.find(p => p.includes(qfIdx));
+      const semiOppQfIdx = semiPair[0] === qfIdx ? semiPair[1] : semiPair[0];
+      const semiOppSeeds = champ.quarterSeed[semiOppQfIdx];
+      const otherSemi = champ.semiPairs.find(p => !p.includes(qfIdx));
+      const otherSeeds = otherSemi.flatMap(i => champ.quarterSeed[i]);
+
+      if (mode === 'win') {
+        const qfBest = bestFromQ(qfOpp);
+        const semiIds = semiOppSeeds.flatMap(i => qualifierTeams[i] || []);
+        const semiBest = mostLikelyOpponent(semiIds, teams);
+        const finalIds = otherSeeds.flatMap(i => qualifierTeams[i] || []);
+        const finalBest = mostLikelyOpponent(finalIds, teams);
+
+        if (qfBest) html += renderLikelyRound('Quarterfinal', qfBest, teams, qualifierTeams[qfOpp] || []);
+        if (semiBest) html += renderLikelyRound('Semifinal', semiBest, teams, semiIds);
+        if (finalBest) html += renderLikelyRound('Final', finalBest, teams, finalIds);
+      } else {
+        html += `<div style="color:var(--muted);font-size:.8rem;margin-top:.5rem;">Then win Consolation bracket (QF/SF/Final losers play)</div>`;
+      }
+    } else {
+      const sfPair = champ.quarterSeed.find(p => p.includes(qualifierIdx));
+      const sfOpp = sfPair[0] === qualifierIdx ? sfPair[1] : sfPair[0];
+      const otherPair = champ.quarterSeed.find(p => !p.includes(qualifierIdx));
+
+      if (mode === 'win') {
+        const sfBest = bestFromQ(sfOpp);
+        const finalIds = otherPair.flatMap(i => qualifierTeams[i] || []);
+        const finalBest = mostLikelyOpponent(finalIds, teams);
+
+        if (sfBest) html += renderLikelyRound('Semifinal', sfBest, teams, qualifierTeams[sfOpp] || []);
+        if (finalBest) html += renderLikelyRound('Final', finalBest, teams, finalIds);
+      } else {
+        html += `<div style="color:var(--muted);font-size:.8rem;margin-top:.5rem;">Then win Consolation Final (SF losers play)</div>`;
+      }
+    }
+    return html;
+  }
+
   /** Like findPath but also captures the loserSlot at each match node */
   function findPathWithSlots(node, teamId) {
     if (node.team) return node.team === teamId ? [] : null;
@@ -652,6 +912,11 @@
           updatePathResult();
           const sel = document.getElementById('path-team-select');
           if (sel) sel.addEventListener('change', updatePathResult);
+        }
+        if (activeEvent === 'likely') {
+          updateLikelyResult();
+          const sel = document.getElementById('likely-team-select');
+          if (sel) sel.addEventListener('change', updateLikelyResult);
         }
       });
     });

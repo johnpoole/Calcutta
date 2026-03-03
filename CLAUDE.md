@@ -1,0 +1,82 @@
+# Calcutta Auction Calculator
+
+Curling bonspiel auction bid calculator — a static SPA that helps bidders analyze win probabilities, expected value, and optimize their portfolio during a Calcutta auction.
+
+## Tech Stack
+
+- **Frontend:** Vanilla JavaScript (ES2020+), HTML5, CSS3, Chart.js (CDN)
+- **Data Pipeline:** Python 3 scripts for Monte Carlo simulation and data bundling
+- **Deployment:** GitHub Pages via GitHub Actions (push to `main`)
+- **No build tools or package managers** — pure static site
+
+## Project Structure
+
+```
+index.html              # SPA entry point
+js/
+  app.js                # Main UI logic and event handlers
+  bundled-data.js       # Auto-generated — DO NOT edit manually
+  data.js               # State management and localStorage persistence
+  odds.js               # Odds loader module
+  pool-estimator.js     # EV and payout calculation engine
+css/styles.css          # Dark theme styling
+scripts/                # Python data pipeline
+  calculate_odds.py     # Monte Carlo bracket simulation (core algorithm)
+  bundle_data.py        # Bundles JSON/CSV into js/bundled-data.js
+  parse_excel.py        # Parse Excel roster files
+  update_standings.py   # Extract league standings
+  gen_team_info.py      # Generate team info JSON
+data/                   # JSON and CSV data files
+  teams_{mens,womens}.json    # Team records
+  draw_{mens,womens}.json     # Draw structure
+  bracket_{mens,womens}.json  # Bracket tree
+  odds_{mens,womens}.json     # Pre-computed probabilities
+  overrides.csv               # Manual win % overrides
+tests/test.html         # Browser-based unit tests
+docs/                   # Documentation
+```
+
+## Common Commands
+
+```bash
+# Local development
+python -m http.server 8000    # Serve locally, open http://localhost:8000
+
+# Data pipeline (run in order when updating data)
+python scripts/calculate_odds.py          # Run Monte Carlo simulation
+python scripts/bundle_data.py             # Bundle data into JS module
+
+# Full data refresh from source
+python scripts/parse_excel.py             # Parse Excel rosters
+python scripts/update_standings.py        # Update league standings
+python scripts/gen_team_info.py           # Generate team info
+python scripts/calculate_odds.py          # Recalculate odds
+python scripts/bundle_data.py             # Rebundle for frontend
+```
+
+## Key Conventions
+
+- **Module pattern:** All JS modules use `const ModuleName = (() => { ... })()` IIFE pattern
+- **'use strict'** in all JS modules
+- **No frameworks or build tools** — keep dependencies minimal
+- **`js/bundled-data.js` is auto-generated** by `scripts/bundle_data.py` — never edit directly
+- **Script load order matters** in index.html: `bundled-data.js` → `pool-estimator.js` → `odds.js` → `data.js` → `app.js`
+- **localStorage key:** `calcutta_state` stores all app state
+- **Data model:** Teams have `{ id, name, wins, losses, ties, seed }`
+- **Win probability:** Bradley-Terry model with Monte Carlo simulation (500K iterations default)
+- **Event colors:** A=blue, B=purple, C=green, D=yellow
+
+## Testing
+
+Open `tests/test.html` in a browser — tests run inline with no framework. There is no automated test runner.
+
+## Deployment
+
+Push to `main` branch triggers GitHub Actions (`.github/workflows/pages.yml`) which deploys to GitHub Pages. No build step — the repo is deployed as-is, so `js/bundled-data.js` must be committed.
+
+## Key Algorithms
+
+- **Win probability:** `(wins + ties * 0.5) / totalGames`
+- **Bradley-Terry:** `P(A beats B) = strengthA / (strengthA + strengthB)`
+- **EV:** `sum(P(event) * poolAmount * payoutPct) * buyBackFactor - bidAmount`
+- **Overrides:** `data/overrides.csv` allows manual win % adjustments (team name, percentage 0-100)
