@@ -25,8 +25,6 @@ FILES = {
     'odds_mens':     'odds_mens.json',
     'odds_womens':   'odds_womens.json',
     'team_info':     'team_info.json',
-    'schedule_mens':   'schedule_mens.json',
-    'schedule_womens': 'schedule_womens.json',
 }
 
 def main():
@@ -79,7 +77,6 @@ def main():
     parts.append('    odds:    { mens: odds_mens,     womens: odds_womens },')
     parts.append('    teamInfo: team_info,')
     parts.append('    overrides: overrides_data,')
-    parts.append('    schedule: { mens: schedule_mens, womens: schedule_womens },')
     parts.append('  };')
     parts.append('})();')
     parts.append('')

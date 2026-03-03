@@ -12,13 +12,15 @@
                 "right": {
                   "team": "clark"
                 },
-                "loserSlot": "B1"
+                "loserSlot": "B1",
+                "time": "Tues 8:30pm"
               }
             },
             "right": {
               "team": "duckworth"
             },
-            "loserSlot": "B9"
+            "loserSlot": "B9",
+            "time": "Wed 6:15pm"
           }
         },
         "right": {
@@ -29,10 +31,12 @@
             "right": {
               "team": "carson"
             },
-            "loserSlot": "B8"
+            "loserSlot": "B8",
+            "time": "Wed 6:15pm"
           }
         },
-        "loserSlot": "B28"
+        "loserSlot": "B28",
+        "time": "Fri 6:00pm"
       }
     },
     {
@@ -47,13 +51,15 @@
                 "right": {
                   "team": "poole"
                 },
-                "loserSlot": "B2"
+                "loserSlot": "B2",
+                "time": "Tues 8:30pm"
               }
             },
             "right": {
               "team": "moss"
             },
-            "loserSlot": "B10"
+            "loserSlot": "B10",
+            "time": "Wed 6:15pm"
           }
         },
         "right": {
@@ -66,16 +72,19 @@
                 "right": {
                   "team": "flock"
                 },
-                "loserSlot": "B3"
+                "loserSlot": "B3",
+                "time": "Tues 8:30pm"
               }
             },
             "right": {
               "team": "linder"
             },
-            "loserSlot": "B11"
+            "loserSlot": "B11",
+            "time": "Wed 6:15pm"
           }
         },
-        "loserSlot": "B27"
+        "loserSlot": "B27",
+        "time": "Fri 6:00pm"
       }
     },
     {
@@ -90,13 +99,15 @@
                 "right": {
                   "team": "kelly"
                 },
-                "loserSlot": "B4"
+                "loserSlot": "B4",
+                "time": "Tues 6:15pm"
               }
             },
             "right": {
               "team": "waddell"
             },
-            "loserSlot": "B12"
+            "loserSlot": "B12",
+            "time": "Wed 6:15pm"
           }
         },
         "right": {
@@ -109,16 +120,19 @@
                 "right": {
                   "team": "nickles"
                 },
-                "loserSlot": "B5"
+                "loserSlot": "B5",
+                "time": "Tues 6:15pm"
               }
             },
             "right": {
               "team": "lefebvre"
             },
-            "loserSlot": "B13"
+            "loserSlot": "B13",
+            "time": "Wed 6:15pm"
           }
         },
-        "loserSlot": "B29"
+        "loserSlot": "B29",
+        "time": "Fri 6:00pm"
       }
     },
     {
@@ -133,13 +147,15 @@
                 "right": {
                   "team": "annable"
                 },
-                "loserSlot": "B6"
+                "loserSlot": "B6",
+                "time": "Tues 6:15pm"
               }
             },
             "right": {
               "team": "kennedy"
             },
-            "loserSlot": "B14"
+            "loserSlot": "B14",
+            "time": "Wed 6:15pm"
           }
         },
         "right": {
@@ -152,16 +168,19 @@
                 "right": {
                   "team": "snethun"
                 },
-                "loserSlot": "B7"
+                "loserSlot": "B7",
+                "time": "Tues 6:15pm"
               }
             },
             "right": {
               "team": "fairbanks"
             },
-            "loserSlot": "B15"
+            "loserSlot": "B15",
+            "time": "Wed 6:15pm"
           }
         },
-        "loserSlot": "B30"
+        "loserSlot": "B30",
+        "time": "Fri 6:00pm"
       }
     }
   ],
@@ -178,19 +197,22 @@
                 "right": {
                   "slot": "B12"
                 },
-                "loserSlot": "C1"
+                "loserSlot": "C1",
+                "time": "Thu 6:15pm"
               }
             },
             "right": {
               "slot": "B13"
             },
-            "loserSlot": "C8"
+            "loserSlot": "C8",
+            "time": "Fri 8:30pm"
           }
         },
         "right": {
           "slot": "B27"
         },
-        "loserSlot": "D1"
+        "loserSlot": "D1",
+        "time": "Sat 10am"
       }
     },
     {
@@ -205,7 +227,8 @@
                 "right": {
                   "slot": "B15"
                 },
-                "loserSlot": "C2"
+                "loserSlot": "C2",
+                "time": "Thu 6:15pm"
               }
             },
             "right": {
@@ -216,16 +239,19 @@
                 "right": {
                   "slot": "B3"
                 },
-                "loserSlot": "C3"
+                "loserSlot": "C3",
+                "time": "Thu 6:15pm"
               }
             },
-            "loserSlot": "C9"
+            "loserSlot": "C9",
+            "time": "Fri 8:30pm"
           }
         },
         "right": {
           "slot": "B28"
         },
-        "loserSlot": "D2"
+        "loserSlot": "D2",
+        "time": "Sat 10am"
       }
     },
     {
@@ -240,7 +266,8 @@
                 "right": {
                   "slot": "B4"
                 },
-                "loserSlot": "C4"
+                "loserSlot": "C4",
+                "time": "Thu 6:15pm"
               }
             },
             "right": {
@@ -251,16 +278,19 @@
                 "right": {
                   "slot": "B5"
                 },
-                "loserSlot": "C5"
+                "loserSlot": "C5",
+                "time": "Thu 8:30pm"
               }
             },
-            "loserSlot": "C10"
+            "loserSlot": "C10",
+            "time": "Fri 6:00pm"
           }
         },
         "right": {
           "slot": "B29"
         },
-        "loserSlot": "D3"
+        "loserSlot": "D3",
+        "time": "Sat 10am"
       }
     },
     {
@@ -275,7 +305,8 @@
                 "right": {
                   "slot": "B6"
                 },
-                "loserSlot": "C6"
+                "loserSlot": "C6",
+                "time": "Thu 8:30pm"
               }
             },
             "right": {
@@ -286,16 +317,19 @@
                 "right": {
                   "slot": "B7"
                 },
-                "loserSlot": "C7"
+                "loserSlot": "C7",
+                "time": "Thu 8:30pm"
               }
             },
-            "loserSlot": "C11"
+            "loserSlot": "C11",
+            "time": "Fri 6:00pm"
           }
         },
         "right": {
           "slot": "B30"
         },
-        "loserSlot": "D4"
+        "loserSlot": "D4",
+        "time": "Sat 10am"
       }
     }
   ],
@@ -328,7 +362,25 @@
         2,
         3
       ]
-    ]
+    ],
+    "times": {
+      "qf": [
+        "Sat 2pm",
+        "Sat 2pm",
+        "Sat 2pm",
+        "Sat 2pm"
+      ],
+      "sf": [
+        "Sun 10am",
+        "Sun 10am"
+      ],
+      "final": "Sun 1:30pm",
+      "consolation_sf": [
+        "Sun 10am",
+        "Sun 10am"
+      ],
+      "consolation_final": "Sun 1:30pm"
+    }
   },
   "c_event": {
     "match": {
@@ -343,12 +395,14 @@
                   },
                   "right": {
                     "slot": "C6"
-                  }
+                  },
+                  "time": "Fri 8:30pm"
                 }
               },
               "right": {
                 "slot": "C7"
-              }
+              },
+              "time": "Sat 2pm"
             }
           },
           "right": {
@@ -360,14 +414,17 @@
                   },
                   "right": {
                     "slot": "C5"
-                  }
+                  },
+                  "time": "Fri 8:30pm"
                 }
               },
               "right": {
                 "slot": "C9"
-              }
+              },
+              "time": "Sat 2pm"
             }
-          }
+          },
+          "time": "Sat 6:00pm"
         }
       },
       "right": {
@@ -379,7 +436,8 @@
               },
               "right": {
                 "slot": "C8"
-              }
+              },
+              "time": "Sat 2pm"
             }
           },
           "right": {
@@ -391,16 +449,20 @@
                   },
                   "right": {
                     "slot": "C2"
-                  }
+                  },
+                  "time": "Fri 8:30pm"
                 }
               },
               "right": {
                 "slot": "C10"
-              }
+              },
+              "time": "Sat 2pm"
             }
-          }
+          },
+          "time": "Sat 6:00pm"
         }
-      }
+      },
+      "time": "Sun 1:30pm"
     }
   },
   "d_event": {
@@ -412,7 +474,8 @@
           },
           "right": {
             "slot": "D2"
-          }
+          },
+          "time": "Sat 6:00pm"
         }
       },
       "right": {
@@ -422,9 +485,11 @@
           },
           "right": {
             "slot": "D4"
-          }
+          },
+          "time": "Sat 6:00pm"
         }
-      }
+      },
+      "time": "Sun 1:30pm"
     }
   }
 }

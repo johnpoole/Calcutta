@@ -531,18 +531,16 @@
       const t = teamMap.get(id);
       return t ? CalcuttaData.winPct(t) : 0;
     };
-    const schedule = BundledData.schedule[CalcuttaData.activeDivision] || {};
 
     const slotWinners = {};
     const allGames = [];
-    let cMatchIdx = 0, dMatchIdx = 0;
 
-    function sim(node, event, depth) {
+    function sim(node, event) {
       if (node.team) return node.team;
       if (node.slot) return slotWinners[node.slot] || null;
       const m = node.match;
-      const leftWinner = sim(m.left, event, depth + 1);
-      const rightWinner = sim(m.right, event, depth + 1);
+      const leftWinner = sim(m.left, event);
+      const rightWinner = sim(m.right, event);
       if (!leftWinner || !rightWinner) return leftWinner || rightWinner || null;
 
       const leftStr = getStrength(leftWinner);
@@ -550,22 +548,7 @@
       const winner = leftStr >= rightStr ? leftWinner : rightWinner;
       const loser = winner === leftWinner ? rightWinner : leftWinner;
 
-      // Look up time: use loserSlot for A/B events, counter-based keys for C/D
-      let time = '';
-      if (m.loserSlot) {
-        time = schedule[m.loserSlot] || '';
-      } else if (event === 'C') {
-        cMatchIdx++;
-        // C event schedule keys: c_r1_1..c_r1_4, c_r2_1..c_r2_4, c_semi_1, c_semi_2, c_final
-        const cKeys = ['c_r1_1','c_r1_2','c_r1_3','c_r1_4','c_r2_1','c_r2_2','c_r2_3','c_r2_4','c_semi_1','c_semi_2','c_final'];
-        time = schedule[cKeys[cMatchIdx - 1]] || '';
-      } else if (event === 'D') {
-        dMatchIdx++;
-        const dKeys = ['d_semi_1','d_semi_2','d_final'];
-        time = schedule[dKeys[dMatchIdx - 1]] || '';
-      }
-
-      allGames.push({ winner, loser, event, time });
+      allGames.push({ winner, loser, event, time: m.time || '' });
 
       if (m.loserSlot) {
         slotWinners[m.loserSlot] = loser;
@@ -574,16 +557,17 @@
     }
 
     const aWinners = [];
-    tree.a_event.forEach((q) => { aWinners.push(sim(q, 'A', 0)); });
+    tree.a_event.forEach((q) => { aWinners.push(sim(q, 'A')); });
 
     const bWinners = [];
-    tree.b_event.forEach((q) => { bWinners.push(sim(q, 'B', 0)); });
+    tree.b_event.forEach((q) => { bWinners.push(sim(q, 'B')); });
 
-    if (tree.c_event) sim(tree.c_event, 'C', 0);
-    if (tree.d_event) sim(tree.d_event, 'D', 0);
+    if (tree.c_event) sim(tree.c_event, 'C');
+    if (tree.d_event) sim(tree.d_event, 'D');
 
     const qualifiers = [...aWinners, ...bWinners];
     const champ = tree.championship;
+    const ct = champ.times || {};
 
     const qfWinners = [];
     const qfLosers = [];
@@ -592,8 +576,8 @@
       if (!tA || !tB) { qfWinners.push(tA || tB); qfLosers.push(null); return; }
       const winner = getStrength(tA) >= getStrength(tB) ? tA : tB;
       const loser = winner === tA ? tB : tA;
-      const timeKey = champ.numQualifiers === 8 ? `champ_qf_${i + 1}` : `champ_sf_${i + 1}`;
-      allGames.push({ winner, loser, event: 'Champ', time: schedule[timeKey] || '' });
+      const time = (ct.qf && ct.qf[i]) || (ct.sf && ct.sf[i]) || '';
+      allGames.push({ winner, loser, event: 'Champ', time });
       qfWinners.push(winner);
       qfLosers.push(loser);
     });
@@ -606,30 +590,30 @@
         if (!tA || !tB) { sfWinners.push(tA || tB); sfLosers.push(null); return; }
         const winner = getStrength(tA) >= getStrength(tB) ? tA : tB;
         const loser = winner === tA ? tB : tA;
-        allGames.push({ winner, loser, event: 'Champ', time: schedule[`champ_sf_${i + 1}`] || '' });
+        allGames.push({ winner, loser, event: 'Champ', time: (ct.sf && ct.sf[i]) || '' });
         sfWinners.push(winner);
         sfLosers.push(loser);
       });
       if (sfWinners[0] && sfWinners[1]) {
         const winner = getStrength(sfWinners[0]) >= getStrength(sfWinners[1]) ? sfWinners[0] : sfWinners[1];
         const loser = winner === sfWinners[0] ? sfWinners[1] : sfWinners[0];
-        allGames.push({ winner, loser, event: 'Final', time: schedule['champ_final'] || '' });
+        allGames.push({ winner, loser, event: 'Final', time: ct.final || '' });
       }
       if (sfLosers[0] && sfLosers[1]) {
         const winner = getStrength(sfLosers[0]) >= getStrength(sfLosers[1]) ? sfLosers[0] : sfLosers[1];
         const loser = winner === sfLosers[0] ? sfLosers[1] : sfLosers[0];
-        allGames.push({ winner, loser, event: 'Consolation', time: schedule['consolation_final'] || '' });
+        allGames.push({ winner, loser, event: 'Consolation', time: ct.consolation_final || '' });
       }
     } else {
       if (qfWinners[0] && qfWinners[1]) {
         const winner = getStrength(qfWinners[0]) >= getStrength(qfWinners[1]) ? qfWinners[0] : qfWinners[1];
         const loser = winner === qfWinners[0] ? qfWinners[1] : qfWinners[0];
-        allGames.push({ winner, loser, event: 'Final', time: schedule['champ_final'] || '' });
+        allGames.push({ winner, loser, event: 'Final', time: ct.final || '' });
       }
       if (qfLosers[0] && qfLosers[1]) {
         const winner = getStrength(qfLosers[0]) >= getStrength(qfLosers[1]) ? qfLosers[0] : qfLosers[1];
         const loser = winner === qfLosers[0] ? qfLosers[1] : qfLosers[0];
-        allGames.push({ winner, loser, event: 'Consolation', time: schedule['consolation_final'] || '' });
+        allGames.push({ winner, loser, event: 'Consolation', time: ct.consolation_final || '' });
       }
     }
 
