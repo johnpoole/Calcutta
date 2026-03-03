@@ -531,13 +531,12 @@
       const t = teamMap.get(id);
       return t ? CalcuttaData.winPct(t) : 0;
     };
+    const schedule = BundledData.schedule[CalcuttaData.activeDivision] || {};
 
-    // slotWinners: which team fills each loser slot
     const slotWinners = {};
-    // games: ordered list of { winner, loser, event, round } for every match
     const allGames = [];
+    let cMatchIdx = 0, dMatchIdx = 0;
 
-    /** Simulate a subtree node. Returns the winning team id. */
     function sim(node, event, depth) {
       if (node.team) return node.team;
       if (node.slot) return slotWinners[node.slot] || null;
@@ -551,7 +550,22 @@
       const winner = leftStr >= rightStr ? leftWinner : rightWinner;
       const loser = winner === leftWinner ? rightWinner : leftWinner;
 
-      allGames.push({ winner, loser, event });
+      // Look up time: use loserSlot for A/B events, counter-based keys for C/D
+      let time = '';
+      if (m.loserSlot) {
+        time = schedule[m.loserSlot] || '';
+      } else if (event === 'C') {
+        cMatchIdx++;
+        // C event schedule keys: c_r1_1..c_r1_4, c_r2_1..c_r2_4, c_semi_1, c_semi_2, c_final
+        const cKeys = ['c_r1_1','c_r1_2','c_r1_3','c_r1_4','c_r2_1','c_r2_2','c_r2_3','c_r2_4','c_semi_1','c_semi_2','c_final'];
+        time = schedule[cKeys[cMatchIdx - 1]] || '';
+      } else if (event === 'D') {
+        dMatchIdx++;
+        const dKeys = ['d_semi_1','d_semi_2','d_final'];
+        time = schedule[dKeys[dMatchIdx - 1]] || '';
+      }
+
+      allGames.push({ winner, loser, event, time });
 
       if (m.loserSlot) {
         slotWinners[m.loserSlot] = loser;
@@ -559,38 +573,27 @@
       return winner;
     }
 
-    // Simulate A-event qualifiers
     const aWinners = [];
-    tree.a_event.forEach((q, i) => {
-      aWinners.push(sim(q, 'A', 0));
-    });
+    tree.a_event.forEach((q) => { aWinners.push(sim(q, 'A', 0)); });
 
-    // Simulate B-event qualifiers (losers from A feed in via slots)
     const bWinners = [];
-    tree.b_event.forEach((q, i) => {
-      bWinners.push(sim(q, 'B', 0));
-    });
+    tree.b_event.forEach((q) => { bWinners.push(sim(q, 'B', 0)); });
 
-    // Simulate C event
     if (tree.c_event) sim(tree.c_event, 'C', 0);
-
-    // Simulate D event
     if (tree.d_event) sim(tree.d_event, 'D', 0);
 
-    // Simulate championship bracket
-    // Build qualifier list: A winners first, then B winners
     const qualifiers = [...aWinners, ...bWinners];
     const champ = tree.championship;
 
-    // Quarter/Semifinals
     const qfWinners = [];
     const qfLosers = [];
-    champ.quarterSeed.forEach(([a, b]) => {
+    champ.quarterSeed.forEach(([a, b], i) => {
       const tA = qualifiers[a], tB = qualifiers[b];
       if (!tA || !tB) { qfWinners.push(tA || tB); qfLosers.push(null); return; }
       const winner = getStrength(tA) >= getStrength(tB) ? tA : tB;
       const loser = winner === tA ? tB : tA;
-      allGames.push({ winner, loser, event: 'Champ' });
+      const timeKey = champ.numQualifiers === 8 ? `champ_qf_${i + 1}` : `champ_sf_${i + 1}`;
+      allGames.push({ winner, loser, event: 'Champ', time: schedule[timeKey] || '' });
       qfWinners.push(winner);
       qfLosers.push(loser);
     });
@@ -598,38 +601,35 @@
     if (champ.numQualifiers === 8 && champ.semiPairs) {
       const sfWinners = [];
       const sfLosers = [];
-      champ.semiPairs.forEach(([a, b]) => {
+      champ.semiPairs.forEach(([a, b], i) => {
         const tA = qfWinners[a], tB = qfWinners[b];
         if (!tA || !tB) { sfWinners.push(tA || tB); sfLosers.push(null); return; }
         const winner = getStrength(tA) >= getStrength(tB) ? tA : tB;
         const loser = winner === tA ? tB : tA;
-        allGames.push({ winner, loser, event: 'Champ' });
+        allGames.push({ winner, loser, event: 'Champ', time: schedule[`champ_sf_${i + 1}`] || '' });
         sfWinners.push(winner);
         sfLosers.push(loser);
       });
-      // Final
       if (sfWinners[0] && sfWinners[1]) {
         const winner = getStrength(sfWinners[0]) >= getStrength(sfWinners[1]) ? sfWinners[0] : sfWinners[1];
         const loser = winner === sfWinners[0] ? sfWinners[1] : sfWinners[0];
-        allGames.push({ winner, loser, event: 'Final' });
+        allGames.push({ winner, loser, event: 'Final', time: schedule['champ_final'] || '' });
       }
-      // Consolation final
       if (sfLosers[0] && sfLosers[1]) {
         const winner = getStrength(sfLosers[0]) >= getStrength(sfLosers[1]) ? sfLosers[0] : sfLosers[1];
         const loser = winner === sfLosers[0] ? sfLosers[1] : sfLosers[0];
-        allGames.push({ winner, loser, event: 'Consolation' });
+        allGames.push({ winner, loser, event: 'Consolation', time: schedule['consolation_final'] || '' });
       }
     } else {
-      // 4 qualifiers: QF winners go to final
       if (qfWinners[0] && qfWinners[1]) {
         const winner = getStrength(qfWinners[0]) >= getStrength(qfWinners[1]) ? qfWinners[0] : qfWinners[1];
         const loser = winner === qfWinners[0] ? qfWinners[1] : qfWinners[0];
-        allGames.push({ winner, loser, event: 'Final' });
+        allGames.push({ winner, loser, event: 'Final', time: schedule['champ_final'] || '' });
       }
       if (qfLosers[0] && qfLosers[1]) {
         const winner = getStrength(qfLosers[0]) >= getStrength(qfLosers[1]) ? qfLosers[0] : qfLosers[1];
         const loser = winner === qfLosers[0] ? qfLosers[1] : qfLosers[0];
-        allGames.push({ winner, loser, event: 'Consolation' });
+        allGames.push({ winner, loser, event: 'Consolation', time: schedule['consolation_final'] || '' });
       }
     }
 
@@ -666,8 +666,9 @@
       const result = won
         ? '<span style="color:var(--success);font-weight:600;">W</span>'
         : '<span style="color:var(--danger);font-weight:600;">L</span>';
+      const timeStr = g.time ? ` <span style="color:var(--muted);font-size:.75rem;">${esc(g.time)}</span>` : '';
       html += `<div class="path-round">
-        <div class="path-round-label">Game ${i + 1} <span style="font-size:.75rem;color:var(--muted);">${esc(g.event)}</span></div>
+        <div class="path-round-label">Game ${i + 1} <span style="font-size:.75rem;color:var(--muted);">${esc(g.event)}</span>${timeStr}</div>
         <div class="path-opponents"><span class="path-opponent">vs ${esc(teamLabel(oppId))} ${result}</span></div>
       </div>`;
     });
