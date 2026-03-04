@@ -7,6 +7,20 @@
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+  <!-- ═══════════════════  PASSWORD GATE  ═══════════════════ -->
+  <div id="password-gate">
+    <div class="gate-box">
+      <h2>Calcutta Auction</h2>
+      <p>Enter the password to continue.</p>
+      <form id="gate-form">
+        <input type="password" id="gate-input" placeholder="Password" autocomplete="off" autofocus>
+        <button type="submit" class="btn btn-primary">Enter</button>
+      </form>
+      <p id="gate-error" class="gate-error" hidden>Incorrect password.</p>
+    </div>
+  </div>
+
+  <div id="app-content" style="display:none;">
   <header>
     <h1>Bid Calculator</h1>
   </header>
@@ -309,6 +323,49 @@
       <div id="info-body" class="modal-body"></div>
     </div>
   </div>
+
+  </div><!-- /app-content -->
+
+  <!-- Password gate script (runs before app scripts) -->
+  <script>
+  (function() {
+    'use strict';
+    // SHA-256 hash of "curling2026"
+    var HASH = 'c492f7b7f1bad1ba07c39985603b147ed1ab3640012c198835182cac2ce382df';
+    var gate = document.getElementById('password-gate');
+    var app = document.getElementById('app-content');
+    var form = document.getElementById('gate-form');
+    var input = document.getElementById('gate-input');
+    var error = document.getElementById('gate-error');
+
+    async function sha256(str) {
+      var buf = new TextEncoder().encode(str);
+      var hash = await crypto.subtle.digest('SHA-256', buf);
+      return Array.from(new Uint8Array(hash)).map(function(b) {
+        return b.toString(16).padStart(2, '0');
+      }).join('');
+    }
+
+    if (sessionStorage.getItem('calcutta_auth') === 'ok') {
+      gate.style.display = 'none';
+      app.style.display = '';
+    }
+
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      var h = await sha256(input.value);
+      if (h === HASH) {
+        sessionStorage.setItem('calcutta_auth', 'ok');
+        gate.style.display = 'none';
+        app.style.display = '';
+      } else {
+        error.hidden = false;
+        input.value = '';
+        input.focus();
+      }
+    });
+  })();
+  </script>
 
   <!-- Scripts -->
   <script src="js/bundled-data.js"></script>
