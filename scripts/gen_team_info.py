@@ -77,6 +77,8 @@ def main():
             for team_name, league in found:
                 lg_short = "Mon" if "Monday" in league else "Tue"
                 st = standings.get(league, {}).get(team_name, {})
+                if not st:
+                    print(f"WARNING: No standings match for \"{team_name}\" in {league} (calcutta team: {tid})")
                 roster = all_rosters.get(team_name, {}).get(league, [])
                 league_teams.append({
                     "team": team_name,

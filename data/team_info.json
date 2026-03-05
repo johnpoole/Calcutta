@@ -610,7 +610,7 @@
       ],
       "leagueTeams": [
         {
-          "team": "The Kerbals",
+          "team": "Kerbals",
           "league": "Mon",
           "roster": [
             "Jim Pascual",
@@ -618,8 +618,8 @@
             "Steve Saunders",
             "Paul Lessard"
           ],
-          "wins": 0,
-          "losses": 0,
+          "wins": 4,
+          "losses": 6,
           "ties": 0
         }
       ]
