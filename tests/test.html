@@ -630,6 +630,72 @@
 
 
   // ═══════════════════════════════════════════════════════
+  //  SUITE: computeEV — return object shape
+  // ═══════════════════════════════════════════════════════
+  suite('computeEV — return object shape');
+
+  test('return object has all expected keys', () => {
+    const r = PoolEstimator.computeEV(probs, payouts, 100, false, buyBackCfg);
+    assert('grossEV' in r, 'missing grossEV');
+    assert('buyerEV' in r, 'missing buyerEV');
+    assert('buyerReturn' in r, 'missing buyerReturn');
+    assert('ev' in r, 'missing ev');
+    assert('optimalBid' in r, 'missing optimalBid');
+  });
+
+  test('ev and buyerEV are identical', () => {
+    const r = PoolEstimator.computeEV(probs, payouts, 100, false, buyBackCfg);
+    assertNear(r.ev, r.buyerEV, 'ev should equal buyerEV');
+  });
+
+
+  // ═══════════════════════════════════════════════════════
+  //  SUITE: Negative bid validation
+  // ═══════════════════════════════════════════════════════
+  suite('CalcuttaData — negative bid validation');
+
+  test('setBid rejects negative amount', () => {
+    CalcuttaData.clearAll();
+    const t = CalcuttaData.addTeam({ name: 'T', wins: 5, losses: 3, ties: 0, seed: 1 });
+    let threw = false;
+    try {
+      CalcuttaData.setBid(t.id, { buyer: 'Test', amount: -50, selfBuyBack: true });
+    } catch (e) {
+      threw = true;
+      assert(e.message.includes('>= 0'), 'error message should mention >= 0');
+    }
+    assert(threw, 'setBid should throw on negative amount');
+  });
+
+  test('setBid accepts zero amount', () => {
+    CalcuttaData.clearAll();
+    const t = CalcuttaData.addTeam({ name: 'T', wins: 5, losses: 3, ties: 0, seed: 1 });
+    CalcuttaData.setBid(t.id, { buyer: 'Test', amount: 0, selfBuyBack: true });
+    assertEqual(CalcuttaData.getBids()[0].amount, 0, 'zero bid is allowed');
+  });
+
+  test('setBid accepts positive amount', () => {
+    CalcuttaData.clearAll();
+    const t = CalcuttaData.addTeam({ name: 'T', wins: 5, losses: 3, ties: 0, seed: 1 });
+    CalcuttaData.setBid(t.id, { buyer: 'Test', amount: 500, selfBuyBack: true });
+    assertEqual(CalcuttaData.getBids()[0].amount, 500, 'positive bid works');
+  });
+
+
+  // ═══════════════════════════════════════════════════════
+  //  SUITE: poolWithoutTeam floor
+  // ═══════════════════════════════════════════════════════
+  suite('computeEV — poolWithoutTeam floor');
+
+  test('optimalBid finite when poolWithoutTeam = 0', () => {
+    const poolCtx = { poolWithoutTeam: 0, payoutPcts: { A: 0.40, B: 0.30, C: 0.15, D: 0.15 } };
+    const r = PoolEstimator.computeEV(probs, payouts, 0, false, buyBackCfg, poolCtx);
+    assert(r.optimalBid >= 0, 'optimalBid should be >= 0 when poolWithoutTeam is 0');
+    assert(isFinite(r.optimalBid), 'optimalBid should be finite');
+  });
+
+
+  // ═══════════════════════════════════════════════════════
   //  RENDER RESULTS
   // ═══════════════════════════════════════════════════════
   const passed = results.filter(r => r.pass).length;

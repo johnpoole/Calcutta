@@ -126,6 +126,9 @@ const CalcuttaData = (() => {
   }
 
   function setBid(teamId, fields) {
+    if (fields.amount !== undefined && fields.amount < 0) {
+      throw new Error(`Bid amount must be >= 0, got ${fields.amount} for team ${teamId}`);
+    }
     const d = div();
     let bid = d.bids.find(b => b.teamId === teamId);
     if (bid) {

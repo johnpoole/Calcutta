@@ -17,6 +17,7 @@ import csv
 import json
 import random
 import argparse
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -321,6 +322,8 @@ def simulate(teams, bracket, weights, iterations=50_000):
     c_tree = bracket["c_event"]
     d_tree = bracket["d_event"]
 
+    c_errors = 0
+    d_errors = 0
     for _ in range(iterations):
         slot_map = {}
 
@@ -348,15 +351,24 @@ def simulate(teams, bracket, weights, iterations=50_000):
         try:
             c_winner = simulate_tree(c_tree, strength_map, teams_map, slot_map)
             event_wins["C"][c_winner["id"]] += 1
-        except KeyError:
-            pass  # some slots unfilled (shouldn't happen with correct brackets)
+        except KeyError as e:
+            c_errors += 1
+            if c_errors == 1:
+                print(f"  WARNING: C Event bracket KeyError: {e}", file=sys.stderr)
 
         # ── Phase 5: D Event ──────────────────────────
         try:
             d_winner = simulate_tree(d_tree, strength_map, teams_map, slot_map)
             event_wins["D"][d_winner["id"]] += 1
-        except KeyError:
-            pass
+        except KeyError as e:
+            d_errors += 1
+            if d_errors == 1:
+                print(f"  WARNING: D Event bracket KeyError: {e}", file=sys.stderr)
+
+    if c_errors:
+        print(f"  WARNING: C Event had {c_errors}/{iterations} bracket errors — C probabilities may be inaccurate", file=sys.stderr)
+    if d_errors:
+        print(f"  WARNING: D Event had {d_errors}/{iterations} bracket errors — D probabilities may be inaccurate", file=sys.stderr)
 
     # Convert counts to probabilities
     results = []

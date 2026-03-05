@@ -143,7 +143,7 @@ const PoolEstimator = (() => {
       optimalBid = kwp < 1 ? (kwp * poolCtx.poolWithoutTeam) / (1 - kwp) : Infinity;
     }
 
-    return { grossEV, ev: buyerEV, buyerReturn, buyerEV, optimalBid };
+    return { grossEV, buyerEV, buyerReturn, ev: buyerEV, optimalBid };
   }
 
   /**

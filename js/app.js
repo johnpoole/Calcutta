@@ -92,7 +92,7 @@
   function bindDivisionToggles() {
     document.querySelectorAll('.division-toggle').forEach(container => {
       container.querySelectorAll('.div-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', async () => {
           // Update all division toggles in sync
           document.querySelectorAll('.div-btn').forEach(b => b.classList.remove('active'));
           document.querySelectorAll(`.div-btn[data-division="${btn.dataset.division}"]`)
@@ -103,7 +103,8 @@
           cachedBracketTree = null;
           loadBracketTree();
           renderAll();
-          loadPrecomputedOdds().then(() => runFullAnalysis());
+          await loadPrecomputedOdds();
+          runFullAnalysis();
         });
       });
     });
@@ -545,7 +546,8 @@
 
       const leftStr = getStrength(leftWinner);
       const rightStr = getStrength(rightWinner);
-      const winner = leftStr >= rightStr ? leftWinner : rightWinner;
+      // Use strict > so ties go to higher-seeded (right) team instead of always left
+      const winner = leftStr > rightStr ? leftWinner : rightWinner;
       const loser = winner === leftWinner ? rightWinner : leftWinner;
 
       allGames.push({ winner, loser, event, time: m.time || '' });
@@ -1532,6 +1534,7 @@
       if (precomputed) {
         cachedOdds = OddsLoader.mapToTeams(precomputed, teams);
       } else {
+        console.warn('Failed to load pre-computed odds for', CalcuttaData.activeDivision);
         return;
       }
     }
@@ -1569,7 +1572,7 @@
 
       const probs = { A: odds.A, B: odds.B, C: odds.C, D: odds.D };
       // Pool without this team's contribution (for elastic optimal bid)
-      const poolWithoutTeam = estPool - (est.bid > 0 ? est.bid : est.predictedPayout);
+      const poolWithoutTeam = Math.max(0, estPool - (est.bid > 0 ? est.bid : est.predictedPayout));
       const poolCtx = { poolWithoutTeam, payoutPcts: cfg.payoutPcts };
       // selfBuyBack checked (true) = skip WILL buy back 25% → buyer keeps 75%.
       // selfBuyBack unchecked (false) = skip opted out → buyer keeps 100%.
@@ -1582,7 +1585,7 @@
       // optimalBid is the zero-EV ceiling; dividing by (1 + targetReturnPct)
       // gives the bid where expected profit = targetReturnPct × cost.
       const targetReturn = cfg.targetReturnPct ?? 0;
-      const targetOptimalBid = evResult.optimalBid === Infinity
+      const targetOptimalBid = evResult.optimalBid === Infinity || (1 + targetReturn) <= 0
         ? Infinity
         : evResult.optimalBid / (1 + targetReturn);
 
@@ -1706,22 +1709,34 @@
 
   function readSettingsFromUI() {
     const c = CalcuttaData.config;
-    c.payoutPcts.A = (parseFloat(document.getElementById('set-payout-a').value) || 40) / 100;
-    c.payoutPcts.B = (parseFloat(document.getElementById('set-payout-b').value) || 30) / 100;
-    c.payoutPcts.C = (parseFloat(document.getElementById('set-payout-c').value) || 15) / 100;
-    c.payoutPcts.D = (parseFloat(document.getElementById('set-payout-d').value) || 15) / 100;
+    const a = (parseFloat(document.getElementById('set-payout-a').value) || 40) / 100;
+    const b = (parseFloat(document.getElementById('set-payout-b').value) || 30) / 100;
+    const cPct = (parseFloat(document.getElementById('set-payout-c').value) || 15) / 100;
+    const d = (parseFloat(document.getElementById('set-payout-d').value) || 15) / 100;
+    const pctSum = a + b + cPct + d;
+    if (Math.abs(pctSum - 1.0) > 0.001) {
+      alert(`Payout percentages must sum to 100%. Currently ${(pctSum * 100).toFixed(1)}%.`);
+      syncSettingsUI();
+      return false;
+    }
+    c.payoutPcts.A = a;
+    c.payoutPcts.B = b;
+    c.payoutPcts.C = cPct;
+    c.payoutPcts.D = d;
     c.priorPools.mens = parseFloat(document.getElementById('set-mens-pool').value) || 12400;
     c.priorPools.womens = parseFloat(document.getElementById('set-womens-pool').value) || 4700;
-    c.buyBack.fee = parseFloat(document.getElementById('set-buyback-fee').value) || 40;
-    c.buyBack.payoutPct = (parseFloat(document.getElementById('set-buyback-pct').value) || 25) / 100;
+    c.buyBack.fee = Math.max(0, parseFloat(document.getElementById('set-buyback-fee').value) || 40);
+    const rawBuyBackPct = (parseFloat(document.getElementById('set-buyback-pct').value) || 25) / 100;
+    c.buyBack.payoutPct = Math.max(0, Math.min(1, rawBuyBackPct));
     c.targetReturnPct = (parseFloat(document.getElementById('set-target-return').value) || 0) / 100;
+    return true;
   }
 
   function bindSettingsActions() {
     // Monitor all settings inputs for changes
     document.querySelectorAll('#settings input').forEach(inp => {
       inp.addEventListener('change', () => {
-        readSettingsFromUI();
+        if (readSettingsFromUI() === false) return;
         syncSettingsUI();
         CalcuttaData.save();
         cachedAnalysis = [];
@@ -1793,6 +1808,7 @@
   }
 
   function pct(n) {
+    if (typeof n !== 'number' || isNaN(n)) return '0.0%';
     return (n * 100).toFixed(1) + '%';
   }
 
