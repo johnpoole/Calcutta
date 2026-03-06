@@ -887,275 +887,275 @@
   "standings": {
     "Monday Night": {
       "Moss": {
-        "wins": 9,
-        "losses": 1,
-        "ties": 0
-      },
-      "Birrell": {
-        "wins": 8,
-        "losses": 1,
+        "wins": 14,
+        "losses": 3,
         "ties": 1
       },
       "Erickson": {
-        "wins": 8,
-        "losses": 1,
+        "wins": 13,
+        "losses": 4,
         "ties": 1
       },
       "Ferguson": {
-        "wins": 7,
-        "losses": 2,
+        "wins": 12,
+        "losses": 5,
         "ties": 1
+      },
+      "Birrell": {
+        "wins": 12,
+        "losses": 2,
+        "ties": 4
       },
       "Plaid Lads": {
-        "wins": 6,
-        "losses": 4,
-        "ties": 0
+        "wins": 11,
+        "losses": 6,
+        "ties": 1
       },
       "Snethun": {
-        "wins": 6,
-        "losses": 4,
-        "ties": 0
-      },
-      "Christie": {
-        "wins": 5,
-        "losses": 5,
-        "ties": 0
+        "wins": 10,
+        "losses": 7,
+        "ties": 1
       },
       "Poole": {
-        "wins": 3,
-        "losses": 6,
+        "wins": 6,
+        "losses": 11,
         "ties": 1
       },
-      "Robinson": {
-        "wins": 3,
-        "losses": 6,
-        "ties": 1
-      },
-      "Pinder": {
-        "wins": 2,
-        "losses": 7,
+      "Christie": {
+        "wins": 6,
+        "losses": 12,
         "ties": 0
       },
       "Wright": {
-        "wins": 3,
-        "losses": 7,
+        "wins": 6,
+        "losses": 12,
         "ties": 0
       },
       "Marshall": {
-        "wins": 2,
-        "losses": 7,
+        "wins": 7,
+        "losses": 10,
         "ties": 1
       },
+      "Robinson": {
+        "wins": 6,
+        "losses": 11,
+        "ties": 1
+      },
+      "Pinder": {
+        "wins": 5,
+        "losses": 13,
+        "ties": 0
+      },
       "Bailey": {
-        "wins": 2,
-        "losses": 8,
+        "wins": 5,
+        "losses": 13,
         "ties": 0
       },
       "Cameron": {
-        "wins": 2,
-        "losses": 8,
-        "ties": 0
+        "wins": 3,
+        "losses": 14,
+        "ties": 1
       },
       "Bonyai": {
-        "wins": 9,
-        "losses": 1,
-        "ties": 0
-      },
-      "Carson": {
-        "wins": 8,
+        "wins": 16,
         "losses": 2,
         "ties": 0
       },
-      "Linder": {
-        "wins": 7,
-        "losses": 3,
+      "Carson": {
+        "wins": 12,
+        "losses": 6,
         "ties": 0
-      },
-      "Kennedy": {
-        "wins": 6,
-        "losses": 3,
-        "ties": 1
       },
       "Fairbanks": {
-        "wins": 6,
-        "losses": 4,
-        "ties": 0
+        "wins": 10,
+        "losses": 7,
+        "ties": 1
       },
       "Phelps": {
-        "wins": 6,
-        "losses": 4,
-        "ties": 0
-      },
-      "Kelly": {
-        "wins": 5,
-        "losses": 4,
-        "ties": 1
-      },
-      "Kerbals": {
-        "wins": 4,
+        "wins": 12,
         "losses": 6,
-        "ties": 0
-      },
-      "Martin": {
-        "wins": 3,
-        "losses": 6,
-        "ties": 1
-      },
-      "Williams": {
-        "wins": 3,
-        "losses": 6,
-        "ties": 1
-      },
-      "Bowman": {
-        "wins": 2,
-        "losses": 6,
-        "ties": 2
-      },
-      "Fairhurst": {
-        "wins": 2,
-        "losses": 6,
-        "ties": 2
-      },
-      "O'Neil": {
-        "wins": 2,
-        "losses": 6,
-        "ties": 2
-      },
-      "Gregg": {
-        "wins": 2,
-        "losses": 8,
-        "ties": 0
-      }
-    },
-    "Tuesday Night": {
-      "Balderston": {
-        "wins": 8,
-        "losses": 1,
-        "ties": 2
-      },
-      "Waddell": {
-        "wins": 8,
-        "losses": 1,
-        "ties": 2
-      },
-      "Johnson": {
-        "wins": 7,
-        "losses": 4,
-        "ties": 0
-      },
-      "Poole": {
-        "wins": 7,
-        "losses": 4,
-        "ties": 0
-      },
-      "Linder": {
-        "wins": 6,
-        "losses": 4,
-        "ties": 1
-      },
-      "The Pants": {
-        "wins": 6,
-        "losses": 4,
-        "ties": 1
-      },
-      "Larsen": {
-        "wins": 5,
-        "losses": 4,
-        "ties": 2
-      },
-      "Crushmore": {
-        "wins": 4,
-        "losses": 4,
-        "ties": 3
-      },
-      "Rollins": {
-        "wins": 5,
-        "losses": 6,
-        "ties": 0
-      },
-      "Boog": {
-        "wins": 3,
-        "losses": 6,
-        "ties": 2
-      },
-      "Nickles": {
-        "wins": 3,
-        "losses": 8,
-        "ties": 0
-      },
-      "MACH": {
-        "wins": 2,
-        "losses": 8,
-        "ties": 1
-      },
-      "Brill": {
-        "wins": 1,
-        "losses": 10,
         "ties": 0
       },
       "Kennedy": {
         "wins": 11,
-        "losses": 0,
+        "losses": 6,
+        "ties": 1
+      },
+      "Linder": {
+        "wins": 11,
+        "losses": 7,
         "ties": 0
       },
-      "Moss": {
-        "wins": 10,
-        "losses": 1,
-        "ties": 0
-      },
-      "Henry": {
-        "wins": 8,
-        "losses": 3,
-        "ties": 0
-      },
-      "Duckworth": {
+      "Kerbals": {
         "wins": 7,
-        "losses": 4,
+        "losses": 11,
         "ties": 0
       },
-      "Kohlenberg": {
+      "Kelly": {
+        "wins": 8,
+        "losses": 7,
+        "ties": 3
+      },
+      "Williams": {
+        "wins": 7,
+        "losses": 10,
+        "ties": 1
+      },
+      "Bowman": {
+        "wins": 5,
+        "losses": 10,
+        "ties": 3
+      },
+      "Martin": {
+        "wins": 8,
+        "losses": 9,
+        "ties": 1
+      },
+      "Gregg": {
         "wins": 6,
-        "losses": 5,
+        "losses": 12,
         "ties": 0
       },
-      "Smith": {
-        "wins": 5,
-        "losses": 5,
-        "ties": 1
-      },
-      "Moody": {
-        "wins": 5,
-        "losses": 6,
-        "ties": 0
-      },
-      "Clark": {
+      "Fairhurst": {
         "wins": 4,
-        "losses": 6,
-        "ties": 1
+        "losses": 11,
+        "ties": 3
       },
-      "Annable": {
-        "wins": 4,
-        "losses": 7,
-        "ties": 0
-      },
-      "Flock": {
-        "wins": 3,
-        "losses": 7,
+      "O'Neil": {
+        "wins": 5,
+        "losses": 11,
+        "ties": 2
+      }
+    },
+    "Tuesday Night": {
+      "Balderston": {
+        "wins": 13,
+        "losses": 5,
         "ties": 2
       },
-      "Curl Jam": {
-        "wins": 3,
+      "Waddell": {
+        "wins": 16,
+        "losses": 1,
+        "ties": 3
+      },
+      "Johnson": {
+        "wins": 12,
         "losses": 8,
         "ties": 0
       },
-      "Only Up": {
-        "wins": 2,
+      "Linder": {
+        "wins": 11,
+        "losses": 8,
+        "ties": 1
+      },
+      "Poole": {
+        "wins": 12,
+        "losses": 7,
+        "ties": 1
+      },
+      "Larsen": {
+        "wins": 11,
+        "losses": 6,
+        "ties": 3
+      },
+      "The Pants": {
+        "wins": 12,
+        "losses": 7,
+        "ties": 1
+      },
+      "Crushmore": {
+        "wins": 6,
+        "losses": 10,
+        "ties": 4
+      },
+      "Rollins": {
+        "wins": 9,
+        "losses": 11,
+        "ties": 0
+      },
+      "Boog": {
+        "wins": 6,
+        "losses": 11,
+        "ties": 3
+      },
+      "Nickles": {
+        "wins": 3,
+        "losses": 16,
+        "ties": 1
+      },
+      "MACH": {
+        "wins": 4,
+        "losses": 15,
+        "ties": 1
+      },
+      "Brill": {
+        "wins": 4,
+        "losses": 15,
+        "ties": 1
+      },
+      "Kennedy": {
+        "wins": 15,
+        "losses": 4,
+        "ties": 1
+      },
+      "Moss": {
+        "wins": 16,
+        "losses": 3,
+        "ties": 1
+      },
+      "Duckworth": {
+        "wins": 11,
         "losses": 9,
         "ties": 0
       },
-      "Cole": {
-        "wins": 1,
+      "Henry": {
+        "wins": 10,
         "losses": 10,
+        "ties": 0
+      },
+      "Kohlenberg": {
+        "wins": 14,
+        "losses": 6,
+        "ties": 0
+      },
+      "Moody": {
+        "wins": 10,
+        "losses": 9,
+        "ties": 1
+      },
+      "Smith": {
+        "wins": 7,
+        "losses": 10,
+        "ties": 3
+      },
+      "Annable": {
+        "wins": 6,
+        "losses": 13,
+        "ties": 1
+      },
+      "Clark": {
+        "wins": 6,
+        "losses": 12,
+        "ties": 2
+      },
+      "Curl Jam": {
+        "wins": 11,
+        "losses": 9,
+        "ties": 0
+      },
+      "Flock": {
+        "wins": 8,
+        "losses": 10,
+        "ties": 2
+      },
+      "Cole": {
+        "wins": 7,
+        "losses": 13,
+        "ties": 0
+      },
+      "Only Up": {
+        "wins": 4,
+        "losses": 16,
         "ties": 0
       }
     }
