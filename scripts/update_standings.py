@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 """
 update_standings.py — Update teams_mens.json and teams_womens.json
-with league standings.
+from league standings using roster config files.
 
-Men's standings come from poole_team_data.json (Monday/Tuesday leagues).
-Women's standings come from data/women_standings.csv (Wednesday Ladies league).
-
-Nickname / roster-based mappings handle teams that use different names
-in the league vs. bonspiel.
+Men's config:  data/roster_mens.json   (maps bonspiel teams → league sources)
+Men's data:    data/poole_team_data.json  (league standings)
+Women's config: data/roster_womens.json
+Women's data:   data/women_standings.csv
 
 Usage:
     python scripts/update_standings.py
@@ -15,46 +14,11 @@ Usage:
 
 import csv
 import json
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data"
-
-# ── Nickname → bonspiel team ID ──────────────────────────
-NICKNAME_MAP = {
-    "Plaid Lads": "smith",
-    "The Pants": "wilson",
-}
-
-# ── Roster-based mappings: league team name → bonspiel team ID ─────
-# These are league teams whose roster overlaps 3+ members with a
-# bonspiel team that curls under a different skip/name.
-ROSTER_MAP = {
-    "Phelps": "bell",        # Bell's bonspiel team = Phelps' Mon league team (4 shared)
-    "Balderston": "lefebvre", # Lefebvre's bonspiel team = Balderston's Tue league team (3 shared)
-    "Brill": "feilding",     # Feilding's bonspiel team = Brill's Tue league team (4 shared)
-}
-
-
-# ── Manual overrides for teams with no league data ───────
-# Assigned an estimated .300 record (3W-7L) since they have
-# no league team overlap to pull from.
-MANUAL_RECORDS = {
-    "lessard":    {"wins": 3, "losses": 7, "ties": 0},
-    "richardson": {"wins": 3, "losses": 7, "ties": 0},
-}
-
-# ── Women's league name → bonspiel team ID ───────────────
-# Mapped via roster cross-reference (Ladies tab vs bonspiel rosters)
-WOMENS_NICKNAME_MAP = {
-    "Pink":               "sheeran",    # "Team Pink" — skip Louise Sheeran
-    "Patchwork":          "clark",      # skip Joyce Clark
-    "RAAA":               "wilson",     # skip Reagan Wilson
-    "Sweeping Beauties":  "loczy",      # skip Lisa Loczy
-    "Sweep Dreams":       "patrick",    # skip Lorraine Patrick
-    "Sheets and Giggles": "lougheed",   # skip Dana Lougheed
-    "Householders":       "inman",      # "The Householders" — skip Dixie Inman
-}
 
 
 def load_json(path):
@@ -65,180 +29,131 @@ def load_json(path):
 def save_json(path, data):
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
+        f.write("\n")
     print(f"  ✓ {path.relative_to(ROOT)}")
 
 
-def standings_name_to_id(name):
-    """Convert a standings team name to a bonspiel team ID."""
-    if name in NICKNAME_MAP:
-        return NICKNAME_MAP[name]
-    if name in ROSTER_MAP:
-        return ROSTER_MAP[name]
-    return name.lower()
+def update_division(roster_path, standings, out_path):
+    """
+    Build teams JSON from a roster config + standings dict.
+
+    roster_path: path to roster_<division>.json
+    standings:   dict like {"Monday Night": {"TeamName": {wins,losses,ties}, ...}, ...}
+    out_path:    path to write teams_<division>.json
+    """
+    roster = load_json(roster_path)
+    teams = []
+    errors = []
+
+    for entry in roster:
+        tid = entry["id"]
+        name = entry["name"]
+        seed = entry["seed"]
+
+        # Fixed record (no league source)
+        if "record" in entry:
+            rec = entry["record"]
+            teams.append({
+                "id": tid, "name": name, "seed": seed,
+                "wins": rec["wins"], "losses": rec["losses"], "ties": rec["ties"],
+            })
+            gp = rec["wins"] + rec["losses"] + rec["ties"]
+            pct = (rec["wins"] + rec["ties"] * 0.5) / gp if gp else 0
+            print(f"  {name:>14}  {rec['wins']:>2}W {rec['losses']:>2}L {rec['ties']:>1}T  "
+                  f"({pct:.0%})  [fixed]")
+            continue
+
+        # Sum W-L-T from all listed sources
+        sources = entry.get("sources", [])
+        if not sources:
+            errors.append(f"{name}: no sources and no fixed record")
+            continue
+
+        w, l, t = 0, 0, 0
+        source_labels = []
+        for src in sources:
+            league = src["league"]
+            team_name = src["team"]
+            league_standings = standings.get(league, {})
+            rec = league_standings.get(team_name)
+            if rec is None:
+                errors.append(f"{name}: '{team_name}' not found in {league} standings")
+                continue
+            w += rec.get("wins", 0)
+            l += rec.get("losses", 0)
+            t += rec.get("ties", 0)
+            source_labels.append(f"{league[:3]} {team_name}")
+
+        teams.append({
+            "id": tid, "name": name, "seed": seed,
+            "wins": w, "losses": l, "ties": t,
+        })
+        gp = w + l + t
+        pct = (w + t * 0.5) / gp if gp else 0
+        src_str = " + ".join(source_labels)
+        mapped = f" ← {src_str}" if source_labels[0].split(" ", 1)[1] != name else f"  [{src_str}]"
+        print(f"  {name:>14}  {w:>2}W {l:>2}L {t:>1}T  ({pct:.0%}){mapped}")
+
+    if errors:
+        print(f"\n  ERRORS:", file=sys.stderr)
+        for e in errors:
+            print(f"    {e}", file=sys.stderr)
+
+    save_json(out_path, teams)
+    return len(teams), len(errors)
 
 
 def main():
-    print("═" * 60)
-    print("  Updating Men's Team Standings from League Data")
-    print("═" * 60)
+    # ── Men's ────────────────────────────────────────────
+    mens_roster = DATA_DIR / "roster_mens.json"
+    if not mens_roster.exists():
+        print(f"ERROR: {mens_roster} not found", file=sys.stderr)
+        sys.exit(1)
 
-    poole_data = load_json(DATA_DIR / "poole_team_data.json")
-    teams = load_json(DATA_DIR / "teams_mens.json")
+    ptd_path = DATA_DIR / "poole_team_data.json"
+    if not ptd_path.exists():
+        print(f"ERROR: {ptd_path} not found", file=sys.stderr)
+        sys.exit(1)
 
-    standings = poole_data.get("standings", {})
-    team_ids = {t["id"] for t in teams}
+    print("=" * 60)
+    print("  Updating Men's Standings from Roster Config")
+    print("=" * 60)
 
-    # ── Collect per-night records ──────────────────────────
-    # Teams that curl on multiple nights get their win% averaged
-    # rather than summed, so they don't inflate total games played.
-    per_night = {}  # bonspiel_id → [ {wins, losses, ties, night}, ... ]
-    for league_name, league_teams in standings.items():
-        for team_name, record in league_teams.items():
-            bid = standings_name_to_id(team_name)
-            if bid not in team_ids:
-                continue  # not a bonspiel team
-            if bid not in per_night:
-                per_night[bid] = []
-            per_night[bid].append({
-                "wins": record.get("wins", 0),
-                "losses": record.get("losses", 0),
-                "ties": record.get("ties", 0),
-                "night": league_name,
-            })
+    ptd = load_json(ptd_path)
+    standings = ptd.get("standings", {})
+    count, errs = update_division(mens_roster, standings, DATA_DIR / "teams_mens.json")
+    print(f"\n  {count} teams written, {errs} errors")
 
-    # ── Average across nights → synthetic 10-game record ─
-    combined = {}  # bonspiel_id → { wins, losses, ties, nights }
-    for bid, nights in per_night.items():
-        if len(nights) == 1:
-            n = nights[0]
-            combined[bid] = {
-                "wins": n["wins"], "losses": n["losses"], "ties": n["ties"],
-                "nights": [n["night"]],
-            }
+    # ── Women's ──────────────────────────────────────────
+    womens_roster = DATA_DIR / "roster_womens.json"
+    if womens_roster.exists():
+        print(f"\n{'=' * 60}")
+        print("  Updating Women's Standings from Roster Config")
+        print("=" * 60)
+
+        csv_path = DATA_DIR / "women_standings.csv"
+        if not csv_path.exists():
+            print("  women_standings.csv not found — skipping", file=sys.stderr)
         else:
-            # Average win% across nights, then project onto a 10-game record
-            pcts = []
-            for n in nights:
-                gp = n["wins"] + n["losses"] + n["ties"]
-                pcts.append((n["wins"] + n["ties"] * 0.5) / gp if gp else 0.5)
-            avg_pct = sum(pcts) / len(pcts)
-            proj_games = 10
-            proj_wins = round(avg_pct * proj_games)
-            proj_losses = proj_games - proj_wins
-            combined[bid] = {
-                "wins": proj_wins, "losses": proj_losses, "ties": 0,
-                "nights": [n["night"] for n in nights],
-            }
+            # Build standings dict from CSV
+            csv_standings = {"Wednesday Ladies": {}}
+            with open(csv_path, newline="", encoding="utf-8") as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    name = row["Team"].strip()
+                    csv_standings["Wednesday Ladies"][name] = {
+                        "wins": int(row["W"]),
+                        "losses": int(row["L"]),
+                        "ties": int(row["T"]),
+                    }
+            count, errs = update_division(womens_roster, csv_standings, DATA_DIR / "teams_womens.json")
+            print(f"\n  {count} teams written, {errs} errors")
+    else:
+        print(f"\n  No roster_womens.json — skipping women's update")
 
-    # ── Apply to teams JSON ──────────────────────────────
-    updated = 0
-    no_data = []
-    for t in teams:
-        if t["id"] in combined:
-            c = combined[t["id"]]
-            t["wins"] = c["wins"]
-            t["losses"] = c["losses"]
-            t["ties"] = c["ties"]
-            updated += 1
-            nights = " + ".join(c["nights"])
-            gp = c["wins"] + c["losses"] + c["ties"]
-            pct = (c["wins"] + c["ties"] * 0.5) / gp if gp else 0
-            print(f"  {t['name']:>12}  {c['wins']:>2}W {c['losses']:>2}L {c['ties']:>1}T  "
-                  f"({pct:.3f})  [{nights}]")
-        else:
-            if t["id"] in MANUAL_RECORDS:
-                m = MANUAL_RECORDS[t["id"]]
-                t["wins"] = m["wins"]
-                t["losses"] = m["losses"]
-                t["ties"] = m["ties"]
-                updated += 1
-                gp = m["wins"] + m["losses"] + m["ties"]
-                pct = (m["wins"] + m["ties"] * 0.5) / gp if gp else 0
-                print(f"  {t['name']:>12}  {m['wins']:>2}W {m['losses']:>2}L {m['ties']:>1}T  "
-                      f"({pct:.3f})  [manual override]")
-            else:
-                t["wins"] = 0
-                t["losses"] = 0
-                t["ties"] = 0
-                no_data.append(t["name"])
-
-    print(f"\n  Updated {updated} teams from league standings")
-    if no_data:
-        print(f"  No league data for: {', '.join(no_data)}")
-        print("  (These teams will use default 0.50 strength)")
-
-    save_json(DATA_DIR / "teams_mens.json", teams)
-
-    # ── Women's standings from CSV ───────────────────────
-    update_womens_standings()
-
-    print(f"\n{'═' * 60}")
+    print(f"\n{'=' * 60}")
     print("  Done!  Next: python scripts/calculate_odds.py")
-    print(f"{'═' * 60}\n")
-
-
-def womens_csv_name_to_id(name):
-    """Convert a women's standings CSV team name to a bonspiel team ID."""
-    if name in WOMENS_NICKNAME_MAP:
-        return WOMENS_NICKNAME_MAP[name]
-    return name.lower()
-
-
-def update_womens_standings():
-    print(f"\n{'═' * 60}")
-    print("  Updating Women's Team Standings from League CSV")
-    print("═" * 60)
-
-    csv_path = DATA_DIR / "women_standings.csv"
-    if not csv_path.exists():
-        print("  ⚠ women_standings.csv not found — skipping women's update")
-        return
-
-    teams = load_json(DATA_DIR / "teams_womens.json")
-    team_ids = {t["id"] for t in teams}
-
-    # Parse CSV
-    csv_records = {}
-    with open(csv_path, newline="", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            name = row["Team"].strip()
-            bid = womens_csv_name_to_id(name)
-            if bid in team_ids:
-                csv_records[bid] = {
-                    "wins": int(row["W"]),
-                    "losses": int(row["L"]),
-                    "ties": int(row["T"]),
-                    "csv_name": name,
-                }
-
-    # Apply to teams JSON
-    updated = 0
-    no_data = []
-    for t in teams:
-        if t["id"] in csv_records:
-            c = csv_records[t["id"]]
-            t["wins"] = c["wins"]
-            t["losses"] = c["losses"]
-            t["ties"] = c["ties"]
-            updated += 1
-            gp = c["wins"] + c["losses"] + c["ties"]
-            pct = (c["wins"] + c["ties"] * 0.5) / gp if gp else 0
-            src = f" (csv: {c['csv_name']})" if c["csv_name"].lower() != t["id"] else ""
-            print(f"  {t['name']:>12}  {c['wins']:>2}W {c['losses']:>2}L {c['ties']:>1}T  "
-                  f"({pct:.3f}){src}")
-        else:
-            t["wins"] = 0
-            t["losses"] = 0
-            t["ties"] = 0
-            no_data.append(t["name"])
-
-    print(f"\n  Updated {updated}/{len(teams)} women's teams from league standings")
-    if no_data:
-        print(f"  No league data for: {', '.join(no_data)}")
-        print("  (These teams will use default 0.50 strength)")
-
-    save_json(DATA_DIR / "teams_womens.json", teams)
+    print(f"{'=' * 60}\n")
 
 
 if __name__ == "__main__":

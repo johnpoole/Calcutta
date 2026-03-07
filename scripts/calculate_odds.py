@@ -25,103 +25,6 @@ DATA_DIR = ROOT / "data"
 
 
 # ═══════════════════════════════════════════════════════════
-#  COMBINED RECORD LOOKUP
-# ═══════════════════════════════════════════════════════════
-
-def build_combined_records(division="mens"):
-    """
-    Build combined Monday + Tuesday league records for each Calcutta team
-    by looking up the skip's name across all league rosters.
-
-    Returns dict: team_id -> {"wins": W, "losses": L, "ties": T}
-    Only includes entries where the skip was found on multiple league teams.
-    Falls back to single-team record otherwise (no entry returned).
-    """
-    rosters_path = DATA_DIR / "rosters_full.json"
-    ptd_path = DATA_DIR / "poole_team_data.json"
-
-    if not rosters_path.exists() or not ptd_path.exists():
-        return {}
-
-    with open(rosters_path) as f:
-        rosters = json.load(f)
-    with open(ptd_path) as f:
-        ptd = json.load(f)
-
-    # Skip names keyed by team id
-    skips = {}
-    for entry in rosters.get(division, []):
-        skips[entry["id"]] = entry.get("skip", "")
-
-    standings = ptd.get("standings", {})
-    all_rosters = ptd.get("all_team_rosters", {})
-
-    # Common nickname mappings for matching
-    NICKNAME_MAP = {
-        "stu": "stuart",
-        "stuart": "stu",
-        "rob": "robert",
-        "bob": "robert",
-        "dave": "david",
-        "mike": "michael",
-        "bill": "william",
-        "jim": "james",
-        "tom": "thomas",
-        "dan": "daniel",
-        "greg": "gregory",
-    }
-
-    def name_variants(full_name):
-        """Return lowercase name plus variant with nickname swap."""
-        parts = full_name.strip().lower().split()
-        variants = [" ".join(parts)]
-        if parts:
-            first = parts[0]
-            if first in NICKNAME_MAP:
-                alt_parts = [NICKNAME_MAP[first]] + parts[1:]
-                variants.append(" ".join(alt_parts))
-        return variants
-
-    # Build player -> [(team_name, league)] from all_team_rosters
-    player_teams = {}
-    for team_name, leagues in all_rosters.items():
-        for league, players in leagues.items():
-            if league not in ("Monday Night", "Tuesday Night"):
-                continue
-            for p in players:
-                key = p.strip().lower()
-                player_teams.setdefault(key, []).append((team_name, league))
-
-    combined = {}
-    for tid, skip_name in skips.items():
-        skip_key = skip_name.strip().lower()
-        found = player_teams.get(skip_key, [])
-        # Try nickname variants if no match or only one match
-        if len(found) <= 1:
-            for variant in name_variants(skip_name):
-                if variant != skip_key:
-                    extra = player_teams.get(variant, [])
-                    if extra:
-                        found = found + extra
-                        break
-        if len(found) <= 1:
-            continue  # only one league team — no combined record needed
-
-        w_total, l_total, t_total = 0, 0, 0
-        for team_name, league in found:
-            st = standings.get(league, {}).get(team_name)
-            if st:
-                w_total += st["wins"]
-                l_total += st["losses"]
-                t_total += st["ties"]
-
-        if w_total + l_total + t_total > 0:
-            combined[tid] = {"wins": w_total, "losses": l_total, "ties": t_total}
-
-    return combined
-
-
-# ═══════════════════════════════════════════════════════════
 #  WIN-PERCENTAGE OVERRIDES
 # ═══════════════════════════════════════════════════════════
 
@@ -416,26 +319,6 @@ def process_division(division, weights, iterations):
     if not bracket:
         print(f"  ⚠  No bracket file: {bracket_path} — skipping")
         return
-
-    # Merge combined Mon+Tue records for multi-league skips
-    combined = build_combined_records(division)
-    if combined:
-        print(f"  → Combined records for {len(combined)} multi-league skips:")
-        for tid, rec in sorted(combined.items()):
-            orig = next((t for t in teams if t["id"] == tid), None)
-            if orig:
-                orig_gp = orig["wins"] + orig["losses"] + orig.get("ties", 0)
-                orig_pct = (orig["wins"] + orig.get("ties", 0) * 0.5) / orig_gp * 100 if orig_gp else 0
-                new_gp = rec["wins"] + rec["losses"] + rec["ties"]
-                new_pct = (rec["wins"] + rec["ties"] * 0.5) / new_gp * 100 if new_gp else 0
-                print(f"    {orig['name']:<14} {orig['wins']}-{orig['losses']}-{orig.get('ties',0)} "
-                      f"({orig_pct:.0f}%) → {rec['wins']}-{rec['losses']}-{rec['ties']} ({new_pct:.0f}%)")
-        # Override team W-L-T with combined records
-        for t in teams:
-            if t["id"] in combined:
-                t["wins"] = combined[t["id"]]["wins"]
-                t["losses"] = combined[t["id"]]["losses"]
-                t["ties"] = combined[t["id"]]["ties"]
 
     # Apply manual win% overrides from data/overrides_{division}.csv
     overrides = load_overrides(division)

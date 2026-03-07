@@ -25,6 +25,8 @@
       if (CalcuttaData.getTeams().length === 0) {
         await autoLoadData();
       }
+      // Always sync W-L-T records from bundled data (preserves bids)
+      syncTeamRecords();
       syncSettingsUI();
       bindTabs();
       bindDivisionToggles();
@@ -69,6 +71,28 @@
     } catch (e) {
       console.warn('Auto-load failed:', e);
     }
+  }
+
+  function syncTeamRecords() {
+    const saved = CalcuttaData.activeDivision;
+    for (const div of ['mens', 'womens']) {
+      const bundled = BundledData.teams[div];
+      if (!bundled) continue;
+      CalcuttaData.activeDivision = div;
+      const current = CalcuttaData.getTeams();
+      if (current.length === 0) continue;
+      const lookup = Object.fromEntries(bundled.map(t => [t.id, t]));
+      for (const team of current) {
+        const fresh = lookup[team.id];
+        if (fresh) {
+          team.wins = fresh.wins;
+          team.losses = fresh.losses;
+          team.ties = fresh.ties;
+        }
+      }
+    }
+    CalcuttaData.activeDivision = saved;
+    CalcuttaData.save();
   }
 
   // ═══════════════════════════════════════════════════════
