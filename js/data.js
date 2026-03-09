@@ -22,8 +22,8 @@ const CalcuttaData = (() => {
   let state = {
     config: structuredClone(DEFAULT_CONFIG),
     activeDivision: 'mens',
-    mens: { teams: [], draw: [], bids: [], priorPayouts: [] },
-    womens: { teams: [], draw: [], bids: [], priorPayouts: [] },
+    mens: { teams: [], draw: [], bids: [], priorPayouts: [], overrides: {} },
+    womens: { teams: [], draw: [], bids: [], priorPayouts: [], overrides: {} },
   };
 
   // ── Team schema ────────────────────────────────────────
@@ -125,6 +125,25 @@ const CalcuttaData = (() => {
     return m;
   }
 
+  function setOverride(teamName, pct) {
+    const key = (teamName || '').toLowerCase();
+    if (pct === null || pct === undefined || pct === '') {
+      delete div().overrides[key];
+    } else {
+      const val = parseFloat(pct);
+      if (isNaN(val) || val < 0 || val > 100) {
+        throw new Error(`Override must be 0-100, got ${pct} for ${teamName}`);
+      }
+      div().overrides[key] = val / 100;
+    }
+  }
+
+  function getOverride(teamName) {
+    const key = (teamName || '').toLowerCase();
+    const val = div().overrides[key];
+    return val !== undefined ? val : null;
+  }
+
   function setBid(teamId, fields) {
     if (fields.amount !== undefined && fields.amount < 0) {
       throw new Error(`Bid amount must be >= 0, got ${fields.amount} for team ${teamId}`);
@@ -183,6 +202,10 @@ const CalcuttaData = (() => {
           ...parsed,
           config: { ...DEFAULT_CONFIG, ...parsed.config },
         };
+        // Ensure overrides map exists for each division (may be absent in old data)
+        if (!state.mens.overrides) state.mens.overrides = {};
+        if (!state.womens.overrides) state.womens.overrides = {};
+
       }
     } catch (e) {
       console.warn('Failed to load from localStorage:', e);
@@ -222,8 +245,8 @@ const CalcuttaData = (() => {
     state = {
       config: structuredClone(DEFAULT_CONFIG),
       activeDivision: 'mens',
-      mens: { teams: [], draw: [], bids: [], priorPayouts: [] },
-      womens: { teams: [], draw: [], bids: [], priorPayouts: [] },
+      mens: { teams: [], draw: [], bids: [], priorPayouts: [], overrides: {} },
+      womens: { teams: [], draw: [], bids: [], priorPayouts: [], overrides: {} },
     };
     localStorage.removeItem(STORAGE_KEY);
   }
@@ -240,7 +263,7 @@ const CalcuttaData = (() => {
     getTeamById, getTeamName,
     addTeam, updateTeam, removeTeam,
     addMatch,
-    setBid,
+    setBid, setOverride, getOverride,
     winPct, totalPool, eventPayouts,
     save, load, exportAll, importJSON, clearAll,
     DEFAULT_CONFIG,

@@ -1034,7 +1034,64 @@
       html += '</div>';
     }
 
+    // Override win % input
+    const bundledOverrides = (BundledData.overrides || {})[div] || {};
+    const localOverride = CalcuttaData.getOverride(team.name);
+    const bundledVal = bundledOverrides[(team.name || '').toLowerCase()];
+    // Show local override if set, else bundled override, else empty
+    const currentPct = localOverride !== null
+      ? (localOverride * 100).toFixed(1)
+      : (bundledVal !== undefined ? (bundledVal * 100).toFixed(1) : '');
+
+    html += '<div style="margin-top:1rem;padding:.6rem;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);">';
+    html += '<h4 style="margin:0 0 .5rem;font-size:.9rem;color:var(--accent);">Win % Override</h4>';
+    html += '<div style="display:flex;align-items:center;gap:.5rem;">';
+    html += `<input type="number" id="info-override-pct" min="0" max="100" step="0.1" `
+      + `value="${esc(currentPct)}" placeholder="auto" `
+      + `style="background:var(--bg);border:1px solid var(--border);border-radius:4px;`
+      + `padding:.4rem .5rem;color:var(--text);width:80px;font-size:1rem;">`;
+    html += '<span style="color:var(--muted);font-size:.8rem;">%</span>';
+    html += `<button id="info-override-save" style="margin-left:auto;padding:.35rem .8rem;`
+      + `background:var(--accent);color:#fff;border:none;border-radius:4px;`
+      + `font-size:.85rem;cursor:pointer;">Save</button>`;
+    html += `<button id="info-override-clear" style="padding:.35rem .6rem;`
+      + `background:transparent;color:var(--muted);border:1px solid var(--border);`
+      + `border-radius:4px;font-size:.85rem;cursor:pointer;">Clear</button>`;
+    html += '</div>';
+    if (bundledVal !== undefined) {
+      html += `<div style="font-size:.75rem;color:var(--muted);margin-top:.3rem;">`
+        + `Bundled default: ${(bundledVal * 100).toFixed(1)}%</div>`;
+    }
+    html += '</div>';
+
     bodyEl.innerHTML = html;
+
+    // Bind override save/clear buttons
+    document.getElementById('info-override-save').addEventListener('click', () => {
+      const input = document.getElementById('info-override-pct');
+      const val = input.value.trim();
+      if (val === '') {
+        CalcuttaData.setOverride(team.name, null);
+      } else {
+        const num = parseFloat(val);
+        if (isNaN(num) || num < 0 || num > 100) {
+          input.style.borderColor = 'var(--danger)';
+          return;
+        }
+        CalcuttaData.setOverride(team.name, num);
+      }
+      CalcuttaData.save();
+      overlay.classList.add('hidden');
+      loadPrecomputedOdds().then(() => { runFullAnalysis(); renderAll(); });
+    });
+
+    document.getElementById('info-override-clear').addEventListener('click', () => {
+      CalcuttaData.setOverride(team.name, null);
+      CalcuttaData.save();
+      overlay.classList.add('hidden');
+      loadPrecomputedOdds().then(() => { runFullAnalysis(); renderAll(); });
+    });
+
     overlay.classList.remove('hidden');
   }
 
@@ -1416,12 +1473,76 @@
   // ═══════════════════════════════════════════════════════
   //  ODDS LOADING (from pre-computed Python output)
   // ═══════════════════════════════════════════════════════
+  /**
+   * Apply local win% overrides to pre-computed odds.
+   *
+   * For each team with an override, compute the ratio of override strength
+   * to bundled strength (Bradley-Terry: strength = winPct / (1 - winPct)).
+   * Scale that team's event probabilities by this ratio, then renormalize
+   * all teams so each event's probabilities still sum to 1.
+   */
+  function applyOddsOverrides(odds, teams) {
+    const div = CalcuttaData.activeDivision;
+    const bundledOverrides = (BundledData.overrides || {})[div] || {};
+
+    // Collect effective override for each team (local > bundled already in odds)
+    // We only need to adjust if a LOCAL override differs from what was baked in
+    const adjustments = {}; // teamId -> scale factor
+    for (const t of teams) {
+      const key = (t.name || '').toLowerCase();
+      const localVal = CalcuttaData.getOverride(t.name);
+      if (localVal === null) continue; // no local override, bundled odds are correct
+
+      // Bundled odds were computed with the bundled override (if any).
+      // We need to scale from the bundled strength to the local override strength.
+      const bundledPct = bundledOverrides[key];
+      const basePct = bundledPct !== undefined ? bundledPct : CalcuttaData.winPct(t);
+      if (basePct <= 0 || basePct >= 1 || localVal <= 0 || localVal >= 1) continue;
+
+      const baseStrength = basePct / (1 - basePct);
+      const newStrength = localVal / (1 - localVal);
+      adjustments[t.id] = newStrength / baseStrength;
+    }
+
+    if (Object.keys(adjustments).length === 0) return odds;
+
+    // Scale raw probabilities
+    const adjusted = odds.map(o => {
+      const scale = adjustments[o.teamId];
+      if (!scale) return { ...o };
+      return {
+        ...o,
+        A: o.A * scale,
+        B: o.B * scale,
+        C: o.C * scale,
+        D: o.D * scale,
+        any: o.any * scale,
+      };
+    });
+
+    // Renormalize each event so probabilities sum to 1
+    for (const event of ['A', 'B', 'C', 'D']) {
+      const total = adjusted.reduce((s, o) => s + o[event], 0);
+      if (total > 0) {
+        for (const o of adjusted) {
+          o[event] /= total;
+        }
+      }
+    }
+    // Recompute 'any' as capped sum
+    for (const o of adjusted) {
+      o.any = Math.min(1, o.A + o.B + o.C + o.D);
+    }
+
+    return adjusted;
+  }
+
   async function loadPrecomputedOdds() {
     const precomputed = await OddsLoader.loadCurrentOdds();
     const teams = CalcuttaData.getTeams();
 
     if (precomputed && precomputed.length > 0) {
-      cachedOdds = OddsLoader.mapToTeams(precomputed, teams);
+      cachedOdds = applyOddsOverrides(OddsLoader.mapToTeams(precomputed, teams), teams);
     } else {
       cachedOdds = [];
     }
@@ -1814,15 +1935,21 @@
    * @returns {string} HTML string — empty if no override
    */
   function overrideBadge(teamName) {
-    const divOverrides = (BundledData.overrides || {})[CalcuttaData.activeDivision] || {};
     const key = (teamName || '').toLowerCase();
-    if (!(key in divOverrides)) return '';
-    const pctVal = (divOverrides[key] * 100).toFixed(1);
+    // Check localStorage override first, then bundled
+    const localVal = CalcuttaData.getOverride(teamName);
+    const bundledOverrides = (BundledData.overrides || {})[CalcuttaData.activeDivision] || {};
+    const bundledVal = bundledOverrides[key];
+    const pct = localVal !== null ? localVal : bundledVal;
+    if (pct === undefined) return '';
+    const pctVal = (pct * 100).toFixed(1);
+    const isLocal = localVal !== null;
+    const label = isLocal ? '&#9733; override (local)' : '&#9733; override';
     return `<span title="Win % manually overridden to ${pctVal}%" ` +
       `style="display:inline-block;margin-left:.4rem;padding:.05rem .3rem;` +
       `background:#fbbf2425;border:1px solid #fbbf2455;border-radius:3px;` +
       `font-size:.68rem;color:#fbbf24;vertical-align:middle;cursor:default;` +
-      `line-height:1.4;">&#9733; override</span>`;
+      `line-height:1.4;">${label}</span>`;
   }
 
   function fmt$(n) {
